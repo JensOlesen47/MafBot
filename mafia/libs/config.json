@@ -1,0 +1,10 @@
+{
+    "start_time": 300,
+    "votecount_time": 180,
+    "night_time": 180,
+    "night_reminder_time": 45,
+    "minimum_players": 3,
+    "maximum_players": 40,
+    "chosen_time": 180,
+    "player_role": "Alive"
+}

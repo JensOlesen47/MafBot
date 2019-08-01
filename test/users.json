@@ -1,0 +1,44 @@
+[
+    {
+        "user": {
+            "id": 1,
+            "username": "Arabel"
+        },
+        "displayName": "Arabelle"
+    },
+    {
+        "user": {
+            "id": 2,
+            "username": "Blinsky"
+        },
+        "displayName": "Blinskie"
+    },
+    {
+        "user": {
+            "id": 3,
+            "username": "Czernobog"
+        },
+        "displayName": "Chernobog"
+    },
+    {
+        "user": {
+            "id": 4,
+            "username": "Davian"
+        },
+        "displayName": "Dave"
+    },
+    {
+        "user": {
+            "id": 5,
+            "username": "Ezmerelda"
+        },
+        "displayName": "Esmerelda"
+    },
+    {
+        "user": {
+            "id": 6,
+            "username": "Fisk"
+        },
+        "displayName": "Fysk"
+    }
+]
