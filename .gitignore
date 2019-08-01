@@ -1,0 +1,12 @@
+.vscode/
+.idea/
+
+/auth.json
+
+node_modules/
+
+**.js
+**.map
+
+!test.**.js
+!cmd.js
