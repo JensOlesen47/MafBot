@@ -1,4 +1,6 @@
 import {Phase} from "../game-state";
+import {MafiaRole, Roles} from "./roles.lib";
+import {Factions, MafiaTeam} from "./factions.lib";
 
 export class MafiaSetup {
     name: string;
@@ -28,14 +30,34 @@ export class MafiaSetup {
     }
 }
 
+export class MafiaPlayer {
+    role: MafiaRole;
+    team: MafiaTeam;
+    alive: boolean;
+
+    constructor(role: MafiaRole, team: MafiaTeam) {
+        this.role = role;
+        this.team = team;
+        this.alive = true;
+    }
+}
+
 class FixedSetup {
     minPlayers: number;
-    setup: string[];
-    fillRole?: string;
+    setup: MafiaPlayer[];
+    fillRole?: MafiaPlayer;
+
     constructor(minPlayers: number, setup: string[], fillRole?: string) {
         this.minPlayers = minPlayers;
-        this.setup = setup;
-        this.fillRole = fillRole;
+        this.setup = setup.map(FixedSetup.toPlayer);
+        this.fillRole = fillRole ? FixedSetup.toPlayer(fillRole) : null;
+    }
+
+    private static toPlayer(code: string) : MafiaPlayer {
+        const roleAndTeam = code.split('/');
+        const mafiaRole = Roles.get(roleAndTeam[0]);
+        const mafiaTeam = Factions.get(roleAndTeam[1] || 'town');
+        return new MafiaPlayer(mafiaRole, mafiaTeam);
     }
 }
 
@@ -63,6 +85,18 @@ class FixedSetupArray {
 }
 
 export const Setups: Map<string, MafiaSetup> = new Map([
+    ['moderated', new MafiaSetup(
+        'moderated',
+        'moderated (3+ players): A special type of setup where the person who starts the game is a host who subjects the players to his cruel designs.',
+        false,
+        false,
+        false,
+        true,
+        Phase.DAY,
+        3,
+        40,
+        new FixedSetupArray([new FixedSetup(3, [], 't')])
+    )],
     ['straight', new MafiaSetup(
         'straight',
         'straight (3+ players): Only Townies, Cops, Doctors, Vigilantes, Roleblockers, Mafiosi, and Godfathers appear.',

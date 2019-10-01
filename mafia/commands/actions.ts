@@ -35,7 +35,7 @@ export async function resolveActions () : Promise<void> {
     actionQueue.length = 0;
 }
 
-export async function doAction (user: User, cmd: string, args: string[]) : Promise<void> {
+export async function doAction (user: User, args: string[], cmd: string) : Promise<void> {
     console.log('doing action: ' + cmd);
     const actioner = state.players.find(player => player.user.id === user.id);
     if (!state.isGameInProgress()) {

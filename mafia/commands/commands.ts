@@ -1,11 +1,13 @@
 import config = require('../libs/config.json');
 import setup = require('../setup');
 import state = require('../game-state');
-import {GuildMember, TextChannel} from "discord.js";
+import {GuildMember, TextChannel, User} from "discord.js";
 import {Phase, Vote} from "../game-state";
-import {MafiaSetup} from "../libs/setups.lib";
+import {MafiaPlayer, MafiaSetup} from "../libs/setups.lib";
 import {Core} from "../../core/core";
 import {Permissions} from "../../core/permissions";
+import {MafiaRole, MafiaStatus} from "../libs/roles.lib";
+import {Factions} from "../libs/factions.lib";
 
 let minplayers, maxplayers;
 
@@ -29,6 +31,7 @@ export async function startGame (channel: TextChannel, user: GuildMember, args: 
         return;
     } else if (setup.currentSetup.unimplemented) {
         channel.send(`Sorry ${user.displayName}, ${args[0]} isn't ready to play yet.`);
+        return;
     }
 
     minplayers = setup.currentSetup.minplayers || config.minimum_players;
@@ -36,22 +39,35 @@ export async function startGame (channel: TextChannel, user: GuildMember, args: 
     const allowedPlayerCount = setup.currentSetup.maxplayers ? `${minplayers} - ${maxplayers}` : `${minplayers}+`;
 
     let timer = config.start_time;
-
-    channel.send(
-        `Starting a game of Mafia [${setupName} for ${allowedPlayerCount} players] in ${timer / 60} minutes. ` +
-        `Type "!in" to sign up.`
-    );
-
     state.playerrole = channel.guild.roles.find(role => role.name === config.player_role);
 
-    Core.waitWithCheck(() => !state.isGameInSignups(), 5, 300).then(async () => {
-        if (state.players.length >= minplayers && state.players.length <= maxplayers) {
-            await beginGame(channel);
-        } else {
-            channel.send(`Not enough players signed up.`);
-            await abortGame(channel);
-        }
-    });
+    if (setupName === 'moderated') {
+        state.moderator = user.user;
+        channel.send(
+            `Starting a game of Mafia [moderated by ${user.displayName}]. Type "!in" to sign up.`
+        );
+        Core.waitWithCheck(() => !state.isGameInSignups(), 10, 7200).then(async (isFulfilled) => {
+            if (!isFulfilled) {
+                channel.send(`Sorry ${user.displayName}, your moderated game timed out after two hours.`);
+                await abortGame(channel);
+            }
+        });
+    } else {
+        channel.send(
+            `Starting a game of Mafia [${setupName} for ${allowedPlayerCount} players] in ${timer / 60} minutes. Type "!in" to sign up.`
+        );
+        Core.waitWithCheck(() => !state.isGameInSignups(), 5, 300).then(async (isFulfilled) => {
+            if (isFulfilled) {
+                return;
+            }
+            if (state.players.length >= minplayers && state.players.length <= maxplayers) {
+                await beginGame(channel);
+            } else {
+                channel.send(`Not enough players signed up.`);
+                await abortGame(channel);
+            }
+        });
+    }
 }
 
 export async function playerIn (channel: TextChannel, user: GuildMember) : Promise<void> {
@@ -154,4 +170,67 @@ export async function listSetups (channel: TextChannel, user: GuildMember, args:
     }
 
     channel.send(setups.map(i => i.name).sort((a, b) => a > b ? 1 : 0).join(', '));
+}
+
+export async function addRole (user: User, args: string[]) : Promise<void> {
+    if (!isModerator(user)) {
+        return;
+    }
+
+    const team = args.shift();
+    const roleName = args.shift();
+    const roleText = args.shift();
+    if (!(team && ['town', 'mafia', 'sk'].includes(team)) || !roleName || !roleText || args.length) {
+        user.send('I think you might have made a mistake. Please use the format `addrole [town|mafia|sk] "[rolename]" "[roletext]"` for this command.');
+        return;
+    }
+
+    const mafiaRole = new MafiaRole(roleName, roleText, [], new MafiaStatus());
+    const mafiaTeam = Factions.get(team);
+    const mafiaPlayer = new MafiaPlayer(mafiaRole, mafiaTeam);
+    setup.currentSetup.fixedSetups.setups[0].setup.push(mafiaPlayer);
+    user.send(`Confirmed! Role #${setup.currentSetup.fixedSetups.setups[0].setup.length} is now ${mafiaRole.name} (${mafiaTeam.name})`);
+}
+
+export async function removeRole(user: User, args: string[]) : Promise<void> {
+    if (!isModerator(user)) {
+        return;
+    }
+
+    const index = Number(args[0]);
+    const currentRoles = setup.currentSetup.fixedSetups.setups[0].setup;
+    if (isNaN(index) || index < 1 || index > currentRoles.length) {
+        user.send(`Please use the format \`removerole [1-${currentRoles.length}]\``);
+        return;
+    }
+
+    currentRoles.splice(index, 1);
+}
+
+export async function modkill(user: User, args: string[]) : Promise<void> {
+    if (!state.isGameInProgress()) {
+        user.send(`I can't kill anybody while there are no games in progress.`);
+        return;
+    }
+    const member = state.channel.members.find(member => member.id === user.id);
+    if ((member && !Permissions.isHop(member)) && !isModerator(user)) {
+        return;
+    }
+
+    args.forEach(arg => {
+        const player = state.players.find(player => player.displayName.toLowerCase().includes(arg.toLowerCase()));
+        if (!player) {
+            user.send(`Player '${arg}' was not found.`);
+            return;
+        }
+        state.killPlayer(player, 'was modkilled');
+    });
+}
+
+function isModerator(user: User) {
+    if (user.id !== state.moderator.id) {
+        user.send(`You're not moderating any games.`);
+        return false;
+    }
+    return true;
 }

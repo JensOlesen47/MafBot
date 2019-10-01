@@ -49,7 +49,16 @@ export class Cmd {
     }
 
     static getPrivateCommand (cmd: string) : PrivateCommand {
-        return new PrivateCommand(action.doAction);
+        switch (cmd) {
+            case 'modkill':
+                return new PrivateCommand(mafia.modkill);
+            case 'addrole':
+                return new PrivateCommand(mafia.addRole);
+            case 'removerole':
+                return new PrivateCommand(mafia.removeRole);
+            default:
+                return new PrivateCommand(action.doAction);
+        }
     }
 }
 
@@ -64,9 +73,9 @@ class PublicCommand {
 }
 
 class PrivateCommand {
-    execute: (user: User, cmd: string, args: string[]) => Promise<void>;
+    execute: (user: User, args: string[], cmd?: string) => Promise<void>;
 
-    constructor(command: (user: User, cmd: string, args: string[]) => Promise<void>) {
+    constructor(command: (user: User, args: string[], cmd?: string) => Promise<void>) {
         this.execute = command;
     }
 }

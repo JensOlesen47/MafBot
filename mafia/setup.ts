@@ -1,20 +1,9 @@
 import state = require('./game-state');
 import actions = require('./commands/actions');
 import {MafiaRole, Roles} from "./libs/roles.lib";
-import {MafiaSetup, Setups} from "./libs/setups.lib";
-import {Factions, MafiaTeam} from "./libs/factions.lib";
+import {MafiaSetup, Setups, MafiaPlayer} from "./libs/setups.lib";
+import {Factions} from "./libs/factions.lib";
 import {Core} from "../core/core";
-
-export class MafiaPlayer {
-    role: MafiaRole;
-    team: MafiaTeam;
-    alive: boolean;
-    constructor(role: MafiaRole, team: MafiaTeam, alive: boolean) {
-        this.role = role;
-        this.team = team;
-        this.alive = alive;
-    }
-}
 
 export let currentSetup: MafiaSetup;
 
@@ -77,9 +66,9 @@ function selectRoles (numPlayers: number, numScum: number, possibleTownRoles: Ma
             const randomRole = Core.getRandomArrayValue(possibleTownRoles);
             townPower += randomRole.power;
 
-            roleList.push(new MafiaPlayer(randomRole, townFaction, true));
+            roleList.push(new MafiaPlayer(randomRole, townFaction));
         } else {
-            roleList.push(new MafiaPlayer(Roles.get('t'), townFaction, true));
+            roleList.push(new MafiaPlayer(Roles.get('t'), townFaction));
         }
     }
 
@@ -89,9 +78,9 @@ function selectRoles (numPlayers: number, numScum: number, possibleTownRoles: Ma
         if (Math.random() < targetMafiaPower - mafiaPower) {
             const randomRole = Core.getRandomArrayValue(possibleMafiaRoles);
             mafiaPower += randomRole.power;
-            roleList.push(new MafiaPlayer(randomRole, mafiaFaction, true));
+            roleList.push(new MafiaPlayer(randomRole, mafiaFaction));
         } else {
-            roleList.push(new MafiaPlayer(Roles.get('m'), mafiaFaction, true));
+            roleList.push(new MafiaPlayer(Roles.get('m'), mafiaFaction));
         }
     }
 
@@ -156,12 +145,5 @@ async function initSetup (roleList: MafiaPlayer[]) : Promise<void> {
 function getFixedSetupRoleList () : MafiaPlayer[] {
     const fixedSetup = currentSetup.fixedSetups.getForPlayers(state.players.length);
 
-    return fixedSetup.setup.map(role => {
-        const roleOpportunities = role.split(',');
-        const randomizedRoleAndTeam = Core.getRandomArrayValue(roleOpportunities).split('/');
-
-        const mafiaRole = Roles.get(randomizedRoleAndTeam[0]);
-        const mafiaTeam = Factions.get(randomizedRoleAndTeam[1] || 'town');
-        return new MafiaPlayer(mafiaRole, mafiaTeam, true);
-    });
+    return fixedSetup.setup;
 }

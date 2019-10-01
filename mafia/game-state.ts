@@ -2,9 +2,9 @@ import {Core} from "../core/core";
 import actions = require('./commands/actions');
 import commands = require('./commands/commands');
 import {GuildMember, Role, TextChannel, User} from "discord.js";
-import {MafiaPlayer} from "./setup";
 import {Abilities} from "./libs/abilities.lib";
 import {Action} from "./commands/actions";
+import {MafiaPlayer} from "./libs/setups.lib";
 
 export enum Status {NONE = '', SIGNUPS = 'signups', PROGRESS = 'in progress'}
 export enum Phase {NONE = '', DAY = 'day', NIGHT = 'night', DUSK = 'dusk'}
@@ -61,6 +61,7 @@ let gameStatus: Status = Status.NONE;
 let gamePhase: GamePhase;
 let duskAwaitingPlayer: Player;
 
+export let moderator: User;
 export let players: Player[] = [];
 export let votes: Vote[] = [];
 export let playerrole: Role;
@@ -218,14 +219,18 @@ export async function checkForEndgame () : Promise<void> {
     const livingPlayers = players.filter(player => player.mafia.alive);
     const livingMafia = livingPlayers.filter(player => player.mafia.team.name === 'mafia');
     const livingTown = livingPlayers.filter(player => player.mafia.team.name === 'town');
+    const isSkAlive = livingPlayers.length - livingMafia.length - livingTown.length > 0;
     let winningTeam, winningPlayers;
 
     if (livingTown.length === livingPlayers.length) {
         winningTeam = 'town';
         winningPlayers = getWinningPlayers('town');
-    } else if (livingMafia.length >= livingPlayers.length / 2) {
+    } else if (!isSkAlive && livingMafia.length >= livingPlayers.length / 2) {
         winningTeam = 'mafia';
         winningPlayers = getWinningPlayers('mafia');
+    } else if (isSkAlive && (livingPlayers.length === 1 || livingPlayers.length === 2 && livingTown.length === 1)) {
+        winningTeam = 'sk';
+        winningPlayers = getWinningPlayers('sk');
     }
 
     if (winningTeam) {
@@ -240,9 +245,10 @@ export async function endGame () : Promise<void> {
         }
     });
     players = [];
+    moderator = null;
     votes = [];
     gameStatus = Status.NONE;
-    gamePhase.phase = Phase.NONE;
+    gamePhase = null;
     await Core.unmute(channel);
 }
 

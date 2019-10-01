@@ -2,7 +2,7 @@ import discord = require('discord.js');
 import logger = require('winston');
 import auth = require('./auth.json');
 
-import {Message, TextChannel} from "discord.js";
+import {DMChannel, Message, TextChannel} from "discord.js";
 import {Cmd} from "./cmd";
 
 logger.level = 'debug';
@@ -26,7 +26,7 @@ mafbot.on('message', async function(message: Message) {
 
 	switch (channel.type) {
 		case 'text':
-			if (content.substring(0,1) !== '!') {
+			if (!content.startsWith('!')) {
 				return;
 			}
 			args = content.substring(1).split(' ');
@@ -42,10 +42,13 @@ mafbot.on('message', async function(message: Message) {
 			}
 			break;
 		case 'dm':
-			if (content.substring(0,1) === '!') {
-				args = content.substring(1).split(' ');
+			if (content.startsWith('!')) {
+				args = parsePrivateArgs(content.substring(1), channel as DMChannel);
 			} else {
-				args = content.split(' ');
+				args = parsePrivateArgs(content, channel as DMChannel);
+			}
+			if (!args.length) {
+				return;
 			}
 			cmdArg = args.shift().toLowerCase();
 			const privateCommand = Cmd.getPrivateCommand(cmdArg);
@@ -53,11 +56,32 @@ mafbot.on('message', async function(message: Message) {
 			if (!privateCommand) {
 				channel.send(`${author.username}, that is not a valid command. Shame on you.`);
 			} else {
-				await privateCommand.execute(author, cmdArg, args);
+				await privateCommand.execute(author, args, cmdArg);
 			}
 			break;
 	}
 });
+
+function parsePrivateArgs (content: string, channel: DMChannel) : string[] {
+	const args = [] as string[];
+	while (content.length) {
+		if (!content.startsWith('"')) {
+			const spaceIndex = content.indexOf(' ');
+			args.push(content.substring(0, spaceIndex).trim());
+			content = content.substring(spaceIndex).trim();
+		} else {
+			content = content.substring(1);
+			const quoteIndex = content.indexOf('"');
+			if (quoteIndex === -1) {
+				channel.send('Looks like you forgot to close your "s there buddy.');
+				return [];
+			}
+			args.push(content.substring(0, quoteIndex).trim());
+			content = content.substring(quoteIndex + 1).trim();
+		}
+	}
+	return args;
+}
 
 // noinspection JSIgnoredPromiseFromCall
 mafbot.login(auth.token);

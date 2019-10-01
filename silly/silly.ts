@@ -4,8 +4,8 @@ import {Core} from "../core/core";
 export class Silly {
     static async slap (channel: TextChannel, user: GuildMember, args: string[]) : Promise<void> {
         const weight = Core.randomNumber(1000);
-        const animalIndex = Core.randomNumber(this.CREATURES.length);
-        const animal = this.CREATURES[animalIndex];
+        const animalIndex = Core.randomNumber(Silly.CREATURES.length);
+        const animal = Silly.CREATURES[animalIndex];
 
         const pings: string[] = [];
         if (args.length > 3 || args.some(arg => arg.includes('everyone') || arg.includes('here'))) {

@@ -44,7 +44,7 @@ export class Core {
     }
 
     static findUserMention(channel: TextChannel, displayName: string) : string {
-        const guildMember = channel.members.find(member => member.displayName.toLowerCase() === displayName.toLowerCase());
+        const guildMember = channel.members.find(member => member.displayName.toLowerCase().includes(displayName.toLowerCase()));
         return guildMember && `<@${guildMember.user.id}>`;
     }
 

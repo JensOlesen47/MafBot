@@ -24,6 +24,11 @@ export const Factions: Map<string, MafiaTeam> = new Map([
         true,
         [Abilities.get('mafiakill')]
     )],
+    ['sk', new MafiaTeam(
+        'sk',
+        'You win when you are in the final two and there are no other killers.',
+        false
+    )],
     ['lyncher', new MafiaTeam(
         'lyncher',
         'You win if your target is lynched.'
