@@ -8,4 +8,4 @@ node_modules/
 **.js
 **.map
 
-!test.**.js
+!test/**
