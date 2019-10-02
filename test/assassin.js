@@ -1,6 +1,6 @@
 const assertThat = require('./assertions');
 const test = require('./test');
-const cmd = require('../cmd');
+const cmd = require('../cmd').Cmd;
 
 module.exports = {
     townWins: townWins,
@@ -27,7 +27,7 @@ async function townWins () {
 
     await test.waitXMillis(50);
 
-    await cmd.getPrivateCommand('kill').execute(scum.user, 'kill', [guards[0].displayName]);
+    await cmd.getPrivateCommand('kill').execute(scum.user, [guards[0].displayName], 'kill');
     await hammerVote;
 
     await assertThat.testIsReady();
@@ -56,7 +56,7 @@ async function kingIsBombed () {
     const hammerVote = test.vote(guards[3], scum);
 
     await test.waitXMillis(50);
-    await cmd.getPrivateCommand('kill').execute(scum.user, 'kill', [king.displayName]);
+    await cmd.getPrivateCommand('kill').execute(scum.user, [king.displayName], 'kill');
     await hammerVote;
 
     await assertThat.testIsReady();

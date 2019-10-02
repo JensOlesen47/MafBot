@@ -45,7 +45,7 @@ export async function doAction (user: User, args: string[], cmd: string) : Promi
     } else if (actioner.mafia.role.abilities.length === 0) {
         user.send(`Your role cannot perform any actions.`);
     } else if (!actioner.mafia.role.abilities.find(ability => ability.name === cmd) && cmd !== 'none') {
-        user.send(`Your role can only perform the following action${actioner.mafia.role.abilities.length !== 1 ? 's' : null}: ${actioner.mafia.role.abilities.join(', ')}`);
+        user.send(`Your role can only perform the following action${actioner.mafia.role.abilities.length !== 1 ? 's' : ''}: ${actioner.mafia.role.abilities.map(ability => ability.name).join(', ')}`);
     } else if (cmd === 'mafiakill' && actionQueue.find(actn => actn.name === 'mafiakill')) {
         user.send(`Your team has already submitted a mafiakill for this phase.`);
     } else if (actionQueue.find(actn => actn.actioner === actioner)) {
@@ -58,7 +58,7 @@ export async function doAction (user: User, args: string[], cmd: string) : Promi
         if (state.isDay()) {
             cmd = cmd.split('day')[1];
         }
-        const action = getAction(actioner, cmd, args);
+        const action = getAction(actioner, args, cmd);
         if (!action) {
             return;
         }
@@ -85,7 +85,7 @@ export async function doAction (user: User, args: string[], cmd: string) : Promi
     }
 }
 
-function getAction (actioner: Player, cmd: string, args: string[]) : Action {
+function getAction (actioner: Player, args: string[], cmd: string) : Action {
     console.log('getting action: ' + cmd);
     const action = Abilities.get(cmd) as Action;
     if (args.length !== action.targets.length) {

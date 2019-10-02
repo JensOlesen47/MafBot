@@ -1,5 +1,5 @@
 const test = require('./test');
-const cmd = require('../cmd');
+const cmd = require('../cmd').Cmd;
 
 const assert = require('assert');
 const assertThat = require('./assertions');
@@ -47,7 +47,7 @@ async function lyncherTransforms () {
     await test.vote(mafia, d1Lynch);
     assert.ok(test.channel.messages.includes('It is now night 1. Send in your actions!'));
 
-    await cmd.getPrivateCommand('mafiakill').execute(mafia.user, 'mafiakill', [lynchee.displayName]);
+    await cmd.getPrivateCommand('mafiakill').execute(mafia.user, [lynchee.displayName], 'mafiakill');
     assert.ok(lyncher.mafia.role.name === 'Townie' && lyncher.mafia.team.name === 'town');
     assert.ok(lyncher.messages.includes('You have a new role. You are now a Townie (town).'));
 }

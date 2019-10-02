@@ -1,5 +1,5 @@
 const test = require('./test');
-const cmd = require('../cmd');
+const cmd = require('../cmd').Cmd;
 const assertThat = require('./assertions');
 
 module.exports = {

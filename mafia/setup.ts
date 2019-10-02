@@ -127,7 +127,7 @@ async function initSetup (roleList: MafiaPlayer[]) : Promise<void> {
     }
 
     for (const player of state.players) {
-        const actionString = player.mafia.role.abilities.length > 0 ? player.mafia.role.abilities.join(', ') : `none`;
+        const actionString = player.mafia.role.abilities.length > 0 ? player.mafia.role.abilities.map(ability => ability.name).join(', ') : `none`;
         if (player.mafia.role.roletext.includes('BUDDY1')) {
             player.mafia.role.roletext = player.mafia.role.roletext.replace('BUDDY1', player.mafia.role.buddy.displayName);
         }

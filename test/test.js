@@ -1,4 +1,4 @@
-const cmd = require('../cmd');
+const cmd = require('../cmd').Cmd;
 
 const PLAYER_ROLE = "Players";
 const HOP_ROLE = "HalfOps";

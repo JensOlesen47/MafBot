@@ -78,7 +78,7 @@ class FixedSetupArray {
         }
 
         while (lastMatch.setup.length < numPlayers) {
-            lastMatch.setup.push(lastMatch.fillRole);
+            lastMatch.setup.push(Object.assign({}, lastMatch.fillRole));
         }
         return lastMatch;
     }

@@ -86,16 +86,16 @@ export async function setGameInProgress (startPhase: Phase) : Promise<void> {
     await advancePhase();
 }
 export function isDay () : boolean {
-    return gamePhase.phase === Phase.DAY;
+    return gamePhase && gamePhase.phase === Phase.DAY;
 }
 export function isNight () : boolean {
-    return gamePhase.phase === Phase.NIGHT;
+    return gamePhase && gamePhase.phase === Phase.NIGHT;
 }
 export function isDusk () : boolean {
-    return gamePhase.phase === Phase.DUSK;
+    return gamePhase && gamePhase.phase === Phase.DUSK;
 }
 export function isDuskAwaitingPlayer (user: User) : boolean {
-    return duskAwaitingPlayer.user === user;
+    return duskAwaitingPlayer && duskAwaitingPlayer.user === user;
 }
 export async function advancePhase () : Promise<void> {
     if (!isGameInProgress()) {
