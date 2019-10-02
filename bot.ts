@@ -1,11 +1,22 @@
 import discord = require('discord.js');
-import logger = require('winston');
 import auth = require('./auth.json');
 
 import {DMChannel, Message, TextChannel} from "discord.js";
 import {Cmd} from "./cmd";
+import {createLogger, format, transports} from "winston";
 
-logger.level = 'debug';
+const logger = createLogger({
+	level: 'debug',
+	transports: [
+		new transports.Console(),
+		new transports.File({ filename: 'info.log' })
+	],
+	format: format.combine(
+		format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+		format.colorize(),
+		format.simple()
+	)
+});
 
 const mafbot = new discord.Client();
 
@@ -36,6 +47,7 @@ mafbot.on('message', async function(message: Message) {
 			if (!publicCommand) {
 				channel.send(`${member.displayName}, that is not a valid command. Shame on you.`);
 			} else if (publicCommand.hasPermission(member)) {
+				logger.debug(`Executing PUBLIC command ${cmdArg} [${args}] for user ${member.user.username}`);
 				await publicCommand.execute(channel as TextChannel, member, args);
 			} else {
 				channel.send(`Sorry ${member.displayName}, you don't have permission to use that command.`);
@@ -56,6 +68,7 @@ mafbot.on('message', async function(message: Message) {
 			if (!privateCommand) {
 				channel.send(`${author.username}, that is not a valid command. Shame on you.`);
 			} else {
+				logger.debug(`Executing PRIVATE command ${cmdArg} [${args}] for user ${author.username}`);
 				await privateCommand.execute(author, args, cmdArg);
 			}
 			break;
@@ -67,6 +80,10 @@ function parsePrivateArgs (content: string, channel: DMChannel) : string[] {
 	while (content.length) {
 		if (!content.startsWith('"')) {
 			const spaceIndex = content.indexOf(' ');
+			if (spaceIndex === -1) {
+				args.push(content);
+				return args;
+			}
 			args.push(content.substring(0, spaceIndex).trim());
 			content = content.substring(spaceIndex).trim();
 		} else {

@@ -39,7 +39,7 @@ export async function doAction (user: User, args: string[], cmd: string) : Promi
     console.log('doing action: ' + cmd);
     const actioner = state.players.find(player => player.user.id === user.id);
     if (!state.isGameInProgress()) {
-        user.send(`There is no game in progress.`);
+        user.send(`This is not a valid thing to be doing at this time sir and/or madam.`);
     } else if (!actioner || !actioner.mafia.alive) {
         user.send(`You are not a living player in the current game.`);
     } else if (actioner.mafia.role.abilities.length === 0) {

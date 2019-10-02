@@ -7,5 +7,6 @@ node_modules/
 
 **.js
 **.map
+**.log
 
 !test/**
