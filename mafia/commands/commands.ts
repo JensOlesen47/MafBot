@@ -124,15 +124,16 @@ export async function abortGame (channel: TextChannel) : Promise<void> {
 }
 
 export async function vote (channel: TextChannel, user: GuildMember, args: string[]) : Promise<void> {
-    const vote = args[0].toLowerCase();
     state.votes = state.votes.filter(vote => vote.voter.displayName !== user.displayName);
     let votee: string;
+
+    const vote = args[0];
     if (!vote) {
         votee = '';
     } else if (vote.toLowerCase() === 'nolynch' || vote.toLowerCase() === 'no lynch') {
         votee = 'No Lynch';
     } else {
-        const votedPlayer = state.players.find(player => player.displayName.toLowerCase().startsWith(vote));
+        const votedPlayer = state.players.find(player => player.displayName.toLowerCase().startsWith(vote.toLowerCase()));
         votee = votedPlayer ? votedPlayer.displayName : '';
     }
     state.votes.push(new Vote(user, votee));

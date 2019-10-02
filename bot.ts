@@ -45,6 +45,7 @@ mafbot.on('message', async function(message: Message) {
 			const publicCommand = Cmd.getPublicCommand(cmdArg);
 			const member = message.member;
 			if (!publicCommand) {
+				logger.debug(`Received failed PUBLIC command ${cmdArg} [${args}] from user ${member.user.username}`);
 				channel.send(`${member.displayName}, that is not a valid command. Shame on you.`);
 			} else if (publicCommand.hasPermission(member)) {
 				logger.debug(`Executing PUBLIC command ${cmdArg} [${args}] for user ${member.user.username}`);
@@ -66,6 +67,7 @@ mafbot.on('message', async function(message: Message) {
 			const privateCommand = Cmd.getPrivateCommand(cmdArg);
 			const author = message.author;
 			if (!privateCommand) {
+				logger.debug(`Received failed PRIVATE command ${cmdArg} [${args}] from user ${author.username}`);
 				channel.send(`${author.username}, that is not a valid command. Shame on you.`);
 			} else {
 				logger.debug(`Executing PRIVATE command ${cmdArg} [${args}] for user ${author.username}`);
