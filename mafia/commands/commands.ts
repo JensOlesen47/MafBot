@@ -2,7 +2,7 @@ import config = require('../libs/config.json');
 import setup = require('../setup');
 import state = require('../game-state');
 import {GuildMember, TextChannel, User} from "discord.js";
-import {Phase, Vote} from "../game-state";
+import {channel, Phase, Vote} from "../game-state";
 import {MafiaPlayer, MafiaSetup} from "../libs/setups.lib";
 import {Core} from "../../core/core";
 import {Permissions} from "../../core/permissions";
@@ -110,8 +110,16 @@ export async function playerOut (channel: TextChannel, user: GuildMember) : Prom
     channel.send(`You are no longer signed up for the next game, ${user.displayName}.`);
 }
 
+export async function players (channel: TextChannel) : Promise<void> {
+    channel.send(`Players: ${state.players.map(player => Core.findUserMention(channel, player.displayName)).join(', ')}`);
+}
+
 export async function beginGame (channel: TextChannel) : Promise<void> {
     if (state.isGameInSignups()) {
+        if (state.players.length < minplayers) {
+            channel.send(`You should probably wait for at least ${minplayers} to be signed up before trying to start the game.`);
+            return;
+        }
         state.channel = channel;
         await setup.initializeSetup();
         await state.startGame(setup.currentSetup.start || Phase.NIGHT);

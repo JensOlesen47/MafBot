@@ -32,6 +32,8 @@ export class Cmd {
                 return new PublicCommand(mafia.abortGame, Permissions.isHop);
             case 'force-start':
                 return new PublicCommand(mafia.beginGame, Permissions.isAny);
+            case 'players':
+                return new PublicCommand(mafia.players, Permissions.isAny);
             case 'kiss':
                 return new PublicCommand(Silly.kiss, Permissions.isAny);
             case 'vote':
