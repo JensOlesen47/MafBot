@@ -204,5 +204,11 @@ export const Roles: Map<string, MafiaRole> = new Map([
         'You are the godfather. If you are lynched, your team loses.',
         [],
         new MafiaStatus()
+    )],
+    ['lover', new MafiaRole( // doesn't really work yet!
+        'Lover',
+        'You are a lover. If your soulmate dies, you will die as well.',
+        [],
+        new MafiaStatus()
     )]
 ]);

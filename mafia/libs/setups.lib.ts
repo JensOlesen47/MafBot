@@ -169,5 +169,20 @@ export const Setups: Map<string, MafiaSetup> = new Map([
             new FixedSetup(5, ['venge_m/mafia', 'venge_gf/mafia'], 'venge_t')
         ]),
         true
+    )],
+    ['lovers', new MafiaSetup(
+        'lovers',
+        'lovers (6 players): A fixed setup with two mafia lovers and four townies.',
+        false,
+        false,
+        true,
+        true,
+        Phase.DAY,
+        6,
+        6,
+        new FixedSetupArray([
+            new FixedSetup(6, ['lover/mafia', 'lover/mafia'], 't')
+        ]),
+        true
     )]
 ]);
