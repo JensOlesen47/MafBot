@@ -8,6 +8,7 @@ export class MafiaStatus {
     onroledeath?: string;
     onrolekill?: string;
     onrolelynch?: string;
+    onphase?: string;
     gifts?: string[];
     transform?: string;
     inspect?: string;
@@ -51,6 +52,10 @@ export class MafiaStatus {
     }
     setOnrolelynch(value: string) : MafiaStatus {
         this.onrolelynch = value;
+        return this;
+    }
+    setOnphase(value: string) : MafiaStatus {
+        this.onphase = value;
         return this;
     }
 }
@@ -181,5 +186,23 @@ export const Roles: Map<string, MafiaRole> = new Map([
         0,
         false,
         'Lyncher Target'
+    )],
+    ['venge_t', new MafiaRole(
+        'Vengeful Townie',
+        'You\'re a special kind of VT. If you are lynched on day one, you will be able to shoot somebody.',
+        [],
+        new MafiaStatus().setOnrolelynch('Godfather:win').setOnphase('day 2:action:transform #@').setTransform('t/town').setGhostaction('kill')
+    )],
+    ['venge_m', new MafiaRole(
+        'Goon',
+        'You are a normal goon. If your godfather is lynched, you lose the game.',
+        [],
+        new MafiaStatus()
+    )],
+    ['venge_gf', new MafiaRole(
+        'Godfather',
+        'You are the godfather. If you are lynched, your team loses.',
+        [],
+        new MafiaStatus()
     )]
 ]);

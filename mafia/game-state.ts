@@ -5,15 +5,19 @@ import {GuildMember, Role, TextChannel, User} from "discord.js";
 import {Abilities} from "./libs/abilities.lib";
 import {Action} from "./commands/actions";
 import {MafiaPlayer} from "./libs/setups.lib";
+import {currentSetup} from "./setup";
 
 export enum Status {NONE = '', SIGNUPS = 'signups', PROGRESS = 'in progress'}
-export enum Phase {NONE = '', DAY = 'day', NIGHT = 'night', DUSK = 'dusk'}
+export enum Phase {DAY = 'day', NIGHT = 'night', DUSK = 'dusk'}
 export class GamePhase {
     phase: Phase;
     number: number;
     constructor(phase: Phase, number: number) {
         this.phase = phase;
         this.number = number;
+    }
+    toString () : string {
+        return `${this.phase} ${this.number}`;
     }
 }
 export class Vote {
@@ -103,17 +107,20 @@ export async function advancePhase () : Promise<void> {
     }
     resetVotes();
     duskAwaitingPlayer = null;
-    if (isNight()) {
-        await actions.resolveActions();
+    if (isNight() || currentSetup.nightless) {
+        if (isNight()) {
+            await actions.resolveActions();
+        }
         gamePhase.phase = Phase.DAY;
         gamePhase.number += 1;
-        channel.send(`It is now day ${gamePhase.number}. With ${players.filter(player => player.mafia.alive).length} alive, it takes ${getLynchThreshold()} to lynch.`);
+        channel.send(`It is now ${gamePhase.toString()}. With ${players.filter(player => player.mafia.alive).length} alive, it takes ${getLynchThreshold()} to lynch.`);
         await Core.unmute(channel);
     } else {
         gamePhase.phase = Phase.NIGHT;
-        channel.send(`It is now night ${gamePhase.number}. Send in your actions!`);
+        channel.send(`It is now ${gamePhase.toString()}. Send in your actions!`);
         await Core.mute(channel);
     }
+    await checkForOnPhase();
 }
 
 export async function startGame (startPhase: Phase) : Promise<void> {
@@ -131,6 +138,7 @@ export function getVotecount () : Votecount {
 }
 
 function resetVotes () : void {
+    votes = [];
     players.forEach(player => votes.push(new Vote(player, '')));
 }
 
@@ -210,6 +218,17 @@ async function checkForOnRoleKill (user: Player) : Promise<void> {
     }
 }
 
+async function checkForOnPhase () : Promise<void> {
+    for (const player of players) {
+        const onphase = player.mafia.role.status.onphase;
+        if (onphase && onphase.startsWith(gamePhase.toString())) {
+            const actionString = onphase.split(`${gamePhase.toString()}:`)[1];
+            const actionFn = await actions.deduceActionFromRole(actionString, player);
+            await actionFn();
+        }
+    }
+}
+
 export async function checkForEndgame () : Promise<void> {
     console.log('checking for endgame...');
     if (!isGameInProgress()) {
@@ -239,11 +258,11 @@ export async function checkForEndgame () : Promise<void> {
 }
 
 export async function endGame () : Promise<void> {
-    players.forEach(async player => {
+    for (const player of players) {
         if (player.roles.some(role => role === playerrole)) {
             await player.removeRole(playerrole);
         }
-    });
+    }
     players = [];
     moderator = null;
     votes = [];
@@ -253,13 +272,15 @@ export async function endGame () : Promise<void> {
 }
 
 async function triggerEndGame (winningTeam: string, winningPlayers: string) : Promise<void> {
-    channel.send(`Game Over! The ${winningTeam} wins! \:tada:`);
-    channel.send(`Winners: ${winningPlayers}`);
-    const playerString = players
-        .map(player => `${player.displayName} (${player.mafia.role.truename || player.mafia.role.name})`)
-        .join(', ');
-    channel.send(`Players: ${playerString}`);
-    await endGame();
+    if (isGameInProgress()) {
+        channel.send(`Game Over! The ${winningTeam} wins! \:tada:`);
+        channel.send(`Winners: ${winningPlayers}`);
+        const playerString = players
+            .map(player => `${player.displayName} (${player.mafia.role.truename || player.mafia.role.name})`)
+            .join(', ');
+        channel.send(`Players: ${playerString}`);
+        await endGame();
+    }
 }
 
 async function playerDeath (user: Player, killedString: string) : Promise<void> {
@@ -281,7 +302,10 @@ async function playerDeath (user: Player, killedString: string) : Promise<void> 
         await actions.giveability(giveability);
 
         channel.send(`Waiting for ${user.displayName} to submit a ${ghostAction}...`);
-        await Core.waitWithCheck(() => !isDusk());
+        const submitted = await Core.waitWithCheck(() => !isDusk());
+        if (!submitted) {
+            channel.send(`Timed out while waiting for ${user.displayName} to get his poop in a group.`);
+        }
         await checkForEndgame();
     }
 

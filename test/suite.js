@@ -2,6 +2,7 @@ const lyncher = require('./lyncher');
 const ss3 = require('./ss3');
 const assassin = require('./assassin');
 const moderated = require('./moderated');
+const vengeful = require('./vengeful');
 const cmd = require('../cmd').Cmd;
 const tests = require('./test');
 
@@ -18,4 +19,6 @@ suite('Setups', function () {
     test('6p assassin - town wins', assassin.townWins);
     test('6p assassin - assassin wins by suicidebombing the king', assassin.kingIsBombed);
     test('3p moderated - able to run a moderated setup with autofill', moderated.runSimpleSetupWithAutofill);
+    test('5p vengeful - town can win by lynching goon, townie, godfather', vengeful.townWinsByLynchingGoon);
+    test('5p vengeful - town can win by lynching godfather day one', vengeful.townWinsByLynchingGodfather);
 });

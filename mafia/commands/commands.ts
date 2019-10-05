@@ -2,14 +2,13 @@ import config = require('../libs/config.json');
 import setup = require('../setup');
 import state = require('../game-state');
 import {GuildMember, TextChannel, User} from "discord.js";
-import {channel, Phase, Vote} from "../game-state";
+import {Phase, Vote} from "../game-state";
 import {MafiaPlayer, MafiaSetup} from "../libs/setups.lib";
 import {Core} from "../../core/core";
 import {Permissions} from "../../core/permissions";
 import {MafiaRole, MafiaStatus} from "../libs/roles.lib";
 import {Factions} from "../libs/factions.lib";
-
-let minplayers, maxplayers;
+import {currentSetup} from "../setup";
 
 export async function startGame (channel: TextChannel, user: GuildMember, args: string[]) : Promise<void> {
     if (state.isGameInProgress()) {
@@ -34,8 +33,8 @@ export async function startGame (channel: TextChannel, user: GuildMember, args: 
         return;
     }
 
-    minplayers = setup.currentSetup.minplayers || config.minimum_players;
-    maxplayers = setup.currentSetup.maxplayers || config.maximum_players;
+    const minplayers = setup.currentSetup.minplayers || config.minimum_players;
+    const maxplayers = setup.currentSetup.maxplayers || config.maximum_players;
     const allowedPlayerCount = setup.currentSetup.maxplayers ? `${minplayers} - ${maxplayers}` : `${minplayers}+`;
 
     let timer = config.start_time;
@@ -84,16 +83,17 @@ export async function playerIn (channel: TextChannel, user: GuildMember) : Promi
         channel.send(`You cannot join a game with that nick, ${user.displayName}.`);
         return;
     }
-    if (state.players.length >= maxplayers) {
+    if (currentSetup.maxplayers && state.players.length >= currentSetup.maxplayers) {
         channel.send(`Sorry ${user.displayName}, the game is full!`);
         return;
     }
 
     await state.addPlayer(user);
     channel.send(`You are now signed up for the next game, ${user.displayName}.`);
-    if (state.players.length === maxplayers) {
-        await beginGame(channel);
-    }
+    // problem with multiple people inning at once... it takes too long to init the setup... commenting this out til i figure out a fix
+    // if (currentSetup.maxplayers && state.players.length === currentSetup.maxplayers) {
+    //     await beginGame(channel);
+    // }
 }
 
 export async function playerOut (channel: TextChannel, user: GuildMember) : Promise<void> {
@@ -116,8 +116,8 @@ export async function players (channel: TextChannel) : Promise<void> {
 
 export async function beginGame (channel: TextChannel) : Promise<void> {
     if (state.isGameInSignups()) {
-        if (state.players.length < minplayers) {
-            channel.send(`You should probably wait for at least ${minplayers} to be signed up before trying to start the game.`);
+        if (currentSetup.minplayers && state.players.length < currentSetup.minplayers) {
+            channel.send(`You should probably wait for at least ${currentSetup.minplayers} to be signed up before trying to start the game.`);
             return;
         }
         state.channel = channel;
@@ -213,7 +213,8 @@ export async function removeRole(user: User, args: string[]) : Promise<void> {
         return;
     }
 
-    currentRoles.splice(index, 1);
+    const removedRole = currentRoles.splice(index, 1)[0];
+    user.send(`Removed this role from your setup: ${removedRole.role.name} (${removedRole.team.name}).`);
 }
 
 export async function modkill(user: User, args: string[]) : Promise<void> {

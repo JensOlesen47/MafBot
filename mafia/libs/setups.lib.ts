@@ -13,9 +13,10 @@ export class MafiaSetup {
     minplayers?: number;
     maxplayers?: number;
     fixedSetups?: FixedSetupArray;
+    nightless?: boolean;
     townpowermult?: number;
 
-    constructor(name: string, helptext: string, basic: boolean, unimplemented: boolean, hidden: boolean, fixed: boolean, start: Phase, minplayers?: number, maxplayers?: number, fixedSetups?: FixedSetupArray, townpowermult?: number) {
+    constructor(name: string, helptext: string, basic: boolean, unimplemented: boolean, hidden: boolean, fixed: boolean, start: Phase, minplayers?: number, maxplayers?: number, fixedSetups?: FixedSetupArray, nightless?: boolean, townpowermult?: number) {
         this.name = name;
         this.helptext = helptext;
         this.basic = basic;
@@ -26,6 +27,7 @@ export class MafiaSetup {
         this.minplayers = minplayers;
         this.maxplayers = maxplayers;
         this.fixedSetups = fixedSetups;
+        this.nightless = nightless;
         this.townpowermult = townpowermult;
     }
 }
@@ -135,7 +137,8 @@ export const Setups: Map<string, MafiaSetup> = new Map([
             new FixedSetup(4, ['ass_king', 'ass_assassin/assassin'], 'ass_guard'),
             new FixedSetup(8, ['ass_king', 'ass_assassin/assassin', 'ass_assassin/assassin'], 'ass_guard'),
             new FixedSetup(12, ['ass_king', 'ass_assassin/assassin', 'ass_assassin/assassin', 'ass_assassin/assassin'], 'ass_guard')
-        ])
+        ]),
+        true
     )],
     ['lyncher', new MafiaSetup(
         'lyncher',
@@ -151,5 +154,20 @@ export const Setups: Map<string, MafiaSetup> = new Map([
             new FixedSetup(4, ['tly', 'ly/lyncher'], 't'),
             new FixedSetup(5, ['tly', 'ly/lyncher', 'm/mafia'], 't')
         ])
+    )],
+    ['vengeful', new MafiaSetup(
+        'vengeful',
+        'vengeful (5 players): A fixed setup with one mafia godfather, one mafia goon, and three vengeful townies. If a vengeful townie is lynched day one, they get to kill someone. If the godfather is lynched day one, town wins.',
+        false,
+        false,
+        false,
+        true,
+        Phase.DAY,
+        5,
+        5,
+        new FixedSetupArray([
+            new FixedSetup(5, ['venge_m/mafia', 'venge_gf/mafia'], 'venge_t')
+        ]),
+        true
     )]
 ]);
