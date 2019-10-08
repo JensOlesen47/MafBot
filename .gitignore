@@ -4,6 +4,7 @@
 /auth.json
 
 node_modules/
+build/
 
 **.js
 **.map
