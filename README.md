@@ -1,5 +1,12 @@
 # MafBot
 Join our Discord server to play! https://discord.gg/DUEFa9s
+
+#### Using Typescript
+Typescript is essentially object-oriented JavaScript.
+For this project, it's necessary to install npm and node. I won't go into how to do that here.
+Install Typescript by running `npm i -g typescript`.
+Compile the project by running `tsc` in the project root directory.
+
 #### Adding commands
 
 You should first modify [commands.ts](/mafia/commands/commands.ts). Then you can add the command to [cmd.ts](/cmd.ts) as a public/private command.
