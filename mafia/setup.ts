@@ -6,6 +6,7 @@ import {Factions} from "./libs/factions.lib";
 import {Core} from "../core/core";
 
 export let currentSetup: MafiaSetup;
+export let rolesOnly: boolean;
 
 export function fetchAllSetups (showHidden: boolean = false, showUnimplemented: boolean = false) : MafiaSetup[] {
     return Core.filterMap(Setups, value =>

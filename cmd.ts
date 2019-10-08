@@ -30,7 +30,7 @@ export class Cmd {
                 return new PublicCommand(mafia.playerOut, Permissions.isAny);
             case 'abort':
                 return new PublicCommand(mafia.abortGame, Permissions.isHop);
-            case 'force-start':
+            case 'go':
                 return new PublicCommand(mafia.beginGame, Permissions.isAny);
             case 'players':
                 return new PublicCommand(mafia.players, Permissions.isAny);

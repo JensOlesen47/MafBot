@@ -37,7 +37,7 @@ mafbot.on('message', async function(message: Message) {
 
 	switch (channel.type) {
 		case 'text':
-			if (!content.startsWith('!')) {
+			if (!content.startsWith('!') || content === '!') {
 				return;
 			}
 			args = content.substring(1).split(' ');

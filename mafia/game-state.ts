@@ -5,7 +5,7 @@ import {GuildMember, Role, TextChannel, User} from "discord.js";
 import {Abilities} from "./libs/abilities.lib";
 import {Action} from "./commands/actions";
 import {MafiaPlayer} from "./libs/setups.lib";
-import {currentSetup} from "./setup";
+import {currentSetup, rolesOnly} from "./setup";
 
 export enum Status {NONE = '', SIGNUPS = 'signups', PROGRESS = 'in progress'}
 export enum Phase {DAY = 'day', NIGHT = 'night', DUSK = 'dusk'}
@@ -80,8 +80,9 @@ export function isGameInProgress () : boolean {
 export async function setGameInSignups () : Promise<void> {
     gameStatus = Status.SIGNUPS;
 }
-export async function setGameInProgress (startPhase: Phase) : Promise<void> {
+export async function setGameInProgress () : Promise<void> {
     gameStatus = Status.PROGRESS;
+    const startPhase = currentSetup.start || Phase.NIGHT;
     if (startPhase === Phase.DAY) {
         gamePhase = new GamePhase(Phase.NIGHT, 0);
     } else {
@@ -123,10 +124,14 @@ export async function advancePhase () : Promise<void> {
     await checkForOnPhase();
 }
 
-export async function startGame (startPhase: Phase) : Promise<void> {
-    channel.send(`The game is afoot!`);
+export async function startGame () : Promise<void> {
+    channel.send(`${rolesOnly ? 'Roles have been sent out!' : 'The game is afoot!'}`);
     channel.send(`Players: ${players.map(player => Core.findUserMention(channel, player.displayName)).join(', ')}`);
-    await setGameInProgress(startPhase);
+    if (rolesOnly) {
+        await endGame();
+    } else {
+        await setGameInProgress();
+    }
 }
 
 export function getLynchThreshold () : number {

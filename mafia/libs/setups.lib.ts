@@ -91,7 +91,7 @@ export const Setups: Map<string, MafiaSetup> = new Map([
         'moderated',
         'moderated (3+ players): A special type of setup where the person who starts the game is a host who subjects the players to his cruel designs.',
         false,
-        false,
+        true,
         false,
         true,
         Phase.DAY,

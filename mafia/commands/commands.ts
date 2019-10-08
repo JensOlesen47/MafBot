@@ -28,10 +28,9 @@ export async function startGame (channel: TextChannel, user: GuildMember, args: 
     if (!setup.currentSetup) {
         channel.send(`Sorry ${user.displayName}, ${args[0]} is not a valid setup.`);
         return;
-    } else if (setup.currentSetup.unimplemented) {
-        channel.send(`Sorry ${user.displayName}, ${args[0]} isn't ready to play yet.`);
-        return;
     }
+
+    setup.rolesOnly = setup.currentSetup.unimplemented || (args[1] && args[1] === 'roles');
 
     const minplayers = setup.currentSetup.minplayers || config.minimum_players;
     const maxplayers = setup.currentSetup.maxplayers || config.maximum_players;
@@ -53,7 +52,7 @@ export async function startGame (channel: TextChannel, user: GuildMember, args: 
         });
     } else {
         channel.send(
-            `Starting a game of Mafia [${setupName} for ${allowedPlayerCount} players] in ${timer / 60} minutes. Type "!in" to sign up.`
+            `Starting a game of Mafia [${setupName} for ${allowedPlayerCount} players${setup.rolesOnly ? ', roles only' : ''}] in ${timer / 60} minutes. Type "!in" to sign up.`
         );
         Core.waitWithCheck(() => !state.isGameInSignups(), 5, 300).then(async (isFulfilled) => {
             if (isFulfilled) {
@@ -122,7 +121,7 @@ export async function beginGame (channel: TextChannel) : Promise<void> {
         }
         state.channel = channel;
         await setup.initializeSetup();
-        await state.startGame(setup.currentSetup.start || Phase.NIGHT);
+        await state.startGame();
     }
 }
 
@@ -170,9 +169,9 @@ export async function listSetups (channel: TextChannel, user: GuildMember, args:
         setups = setup.fetchAllSetups();
     } else if (Permissions.isHop(user) && arg === 'hidden') {
         setups = setup.fetchAllSetups(true);
-    } else if (Permissions.isOp(user) && arg === 'unimplemented') {
+    } else if (arg === 'unimplemented') {
         setups = setup.fetchAllSetups(false, true);
-    } else if (Permissions.isOp(user) && arg === 'all') {
+    } else if (Permissions.isHop(user) && arg === 'all') {
         setups = setup.fetchAllSetups(true, true);
     } else {
         return;
