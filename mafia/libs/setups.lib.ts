@@ -170,12 +170,12 @@ export const Setups: Map<string, MafiaSetup> = new Map([
         ]),
         true
     )],
-    ['lovers', new MafiaSetup(
+    ['maflovers', new MafiaSetup(
         'lovers',
         'lovers (6 players): A fixed setup with two mafia lovers and four townies.',
         false,
         false,
-        true,
+        false,
         true,
         Phase.DAY,
         6,
@@ -184,5 +184,35 @@ export const Setups: Map<string, MafiaSetup> = new Map([
             new FixedSetup(6, ['lover/mafia', 'lover/mafia'], 't')
         ]),
         true
+    )],
+    ['masons', new MafiaSetup(
+        'masons',
+        'masons (5 - 24 players): A fixed setup with a few mafia, a few masons, and the rest townies.',
+        false,
+        false,
+        false,
+        true,
+        Phase.DAY,
+        5,
+        24,
+        new FixedSetupArray([
+            new FixedSetup(5, ['m/mafia', 'm/mafia', 'mason/town', 'mason/town'], 't'),
+            new FixedSetup(12, ['m/mafia', 'm/mafia', 'm/mafia', 'mason/town', 'mason/town', 'mason/town'], 't'),
+            new FixedSetup(18, ['m/mafia', 'm/mafia', 'm/mafia', 'm/mafia', 'mason/town', 'mason/town', 'mason/town', 'mason/town'], 't')
+        ])
+    )],
+    ['kidswithguns', new MafiaSetup(
+        'kidswithguns',
+        'kidswithguns (8 players): A fixed setup with a couple of killing roles. Don\'t get shot!',
+        false,
+        false,
+        false,
+        true,
+        Phase.DAY,
+        8,
+        8,
+        new FixedSetupArray([
+            new FixedSetup(8, ['m/mafia', 'suibomb/mafia', 'inno/town', 'v1/town'], 't')
+        ])
     )]
 ]);

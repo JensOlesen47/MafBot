@@ -1,5 +1,5 @@
 const test = require('./test');
-const cmd = require('../cmd').Cmd;
+const cmd = require('../build/cmd').Cmd;
 
 const assert = require('assert');
 const assertThat = require('./assertions');

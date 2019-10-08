@@ -1,6 +1,6 @@
 const assertThat = require('./assertions');
 const test = require('./test');
-const cmd = require('../cmd').Cmd;
+const cmd = require('../build/cmd').Cmd;
 
 module.exports = {
     townWins: townWins,

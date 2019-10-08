@@ -1,5 +1,6 @@
 [
     {
+        "id": 1,
         "user": {
             "id": 1,
             "username": "Arabel"
@@ -7,6 +8,7 @@
         "displayName": "Arabelle"
     },
     {
+        "id": 2,
         "user": {
             "id": 2,
             "username": "Blinsky"
@@ -14,6 +16,7 @@
         "displayName": "Blinskie"
     },
     {
+        "id": 3,
         "user": {
             "id": 3,
             "username": "Czernobog"
@@ -21,6 +24,7 @@
         "displayName": "Chernobog"
     },
     {
+        "id": 4,
         "user": {
             "id": 4,
             "username": "Davian"
@@ -28,6 +32,7 @@
         "displayName": "Dave"
     },
     {
+        "id": 5,
         "user": {
             "id": 5,
             "username": "Ezmerelda"
@@ -35,6 +40,7 @@
         "displayName": "Esmerelda"
     },
     {
+        "id": 6,
         "user": {
             "id": 6,
             "username": "Fisk"

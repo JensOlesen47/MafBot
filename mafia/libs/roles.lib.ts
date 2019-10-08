@@ -205,10 +205,34 @@ export const Roles: Map<string, MafiaRole> = new Map([
         [],
         new MafiaStatus()
     )],
-    ['lover', new MafiaRole( // doesn't really work yet!
+    ['lover', new MafiaRole(
         'Lover',
-        'You are a lover. If your soulmate dies, you will die as well.',
+        'You are a lover. If your soulmate BUDDY1 dies, you will die as well.',
         [],
+        new MafiaStatus().setOnstart('action:setbuddy #lover #@').setOnroledeath('Lover:action:suicide')
+    )],
+    ['mason', new MafiaRole(
+        'Mason',
+        'You are a mason. You know that BUDDY1 is town.',
+        [],
+        new MafiaStatus().setOnstart('action:setbuddy #mason #@')
+    )],
+    ['suibomb', new MafiaRole(
+        'Suicide Bomber',
+        'You are a suicide bomber. During the day, you may target a player to kill both you and them.',
+        [Abilities.get('suicidebomb').isDay()],
+        new MafiaStatus()
+    )],
+    ['inno', new MafiaRole(
+        'Innocent Child',
+        'You are an innocent child. During the day, you may publicly reveal yourself to be town.',
+        [Abilities.get('reveal').isDay()],
+        new MafiaStatus()
+    )],
+    ['v1', new MafiaRole(
+        'One-shot Vigilante',
+        'You are a vigilante, but you only have one bullet left. You can kill a person during the night, but only once!',
+        [Abilities.get('kill').hasShots(1)],
         new MafiaStatus()
     )]
 ]);

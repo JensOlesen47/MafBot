@@ -46,6 +46,8 @@ export async function doAction (user: User, args: string[], cmd: string) : Promi
         user.send(`Your role cannot perform any actions.`);
     } else if (!actioner.mafia.role.abilities.find(ability => ability.name === cmd) && cmd !== 'none') {
         user.send(`Your role can only perform the following action${actioner.mafia.role.abilities.length !== 1 ? 's' : ''}: ${actioner.mafia.role.abilities.map(ability => ability.name).join(', ')}`);
+    } else if (actioner.mafia.role.abilities.find(ability => ability.name === cmd).shots <= 0) {
+        user.send(`You've already used all your shots of ${cmd}.`);
     } else if (cmd === 'mafiakill' && actionQueue.find(actn => actn.name === 'mafiakill')) {
         user.send(`Your team has already submitted a mafiakill for this phase.`);
     } else if (actionQueue.find(actn => actn.actioner === actioner)) {
@@ -155,7 +157,9 @@ export async function deduceActionFromRole (status: string, player: Player) : Pr
                     break;
                 default:
                     const targetedRole = Roles.get(target);
-                    const targetedPlayers = state.players.filter(i => (i.mafia.role.truename || i.mafia.role.name) === targetedRole.name);
+                    const targetedPlayers = state.players.filter(
+                        i => (i.mafia.role.truename || i.mafia.role.name) === targetedRole.name && i.id !== player.id
+                    );
                     victims = victims.concat(targetedPlayers);
                     break;
             }
@@ -240,6 +244,10 @@ export async function transform (action: Action) : Promise<void> {
         }
         victim.send(`You have a new role. You are now a ${victim.mafia.role.name} (${victim.mafia.team.name}).`);
     });
+}
+
+export async function reveal (action: Action) : Promise<void> {
+    state.channel.send(`${action.actioner.displayName} has revealed himself to be ${action.actioner.mafia.team.name}!`);
 }
 
 export async function decreasestatus (action: Action) : Promise<void> {

@@ -35,7 +35,7 @@ export async function startGame (channel: TextChannel, user: GuildMember, args: 
 
     const minplayers = setup.currentSetup.minplayers || config.minimum_players;
     const maxplayers = setup.currentSetup.maxplayers || config.maximum_players;
-    const allowedPlayerCount = setup.currentSetup.maxplayers ? `${minplayers} - ${maxplayers}` : `${minplayers}+`;
+    const allowedPlayerCount = maxplayers ? maxplayers === minplayers ? `${minplayers}` : `${minplayers} - ${maxplayers}` : `${minplayers}+`;
 
     let timer = config.start_time;
     state.playerrole = channel.guild.roles.find(role => role.name === config.player_role);

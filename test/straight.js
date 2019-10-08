@@ -1,5 +1,5 @@
 const test = require('./test');
-const cmd = require('../cmd').Cmd;
+const cmd = require('../build/cmd').Cmd;
 
 (() => {
     test.logger.info('Starting 6p [straight] test');

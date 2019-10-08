@@ -4,6 +4,8 @@ export class MafiaAbility {
     targets: string[];
     helptext: string;
     alias?: string;
+    day = false;
+    shots = 99;
 
     constructor(name: string, priority: number, targets: string[], helptext: string, alias?: string) {
         this.name = name;
@@ -11,6 +13,16 @@ export class MafiaAbility {
         this.targets = targets;
         this.helptext = helptext;
         this.alias = alias;
+    }
+
+    isDay() : MafiaAbility {
+        this.day = true;
+        return this;
+    }
+
+    hasShots(shots: number) : MafiaAbility {
+        this.shots = shots;
+        return this;
     }
 }
 
@@ -63,6 +75,12 @@ export const Abilities: Map<string, MafiaAbility> = new Map([
         [],
         'suicide: Kills you. Why would you want to do that?'
     )],
+    ['suicidebomb', new MafiaAbility(
+        'suicidebomb',
+        900,
+        ['alive,nonself'],
+        'suicidebomb: Kills another player, at the cost of your own life.'
+    )],
     ['kill', new MafiaAbility(
         'kill',
         901,
@@ -81,5 +99,11 @@ export const Abilities: Map<string, MafiaAbility> = new Map([
         1200,
         ['alive,nonself'],
         'inspect [player]: Determines some information about another player. Be careful, the information might not be true.'
+    )],
+    ['reveal', new MafiaAbility(
+        'reveal',
+        1250,
+        [],
+        'reveal: Reveals your alignment to everyone in the game! You should probably consider not using this if you are not town.'
     )]
 ]);

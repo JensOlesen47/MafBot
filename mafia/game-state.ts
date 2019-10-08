@@ -211,7 +211,7 @@ export async function killPlayer (user: Player, killedString: string = 'was kill
 
 async function checkForOnRoleKill (user: Player) : Promise<void> {
     const deadRole = user.mafia.role.truename || user.mafia.role.name;
-    const playersWithRoleKillTrigger = players.filter(player => player.mafia.role.status.onrolekill);
+    const playersWithRoleKillTrigger = players.filter(player => player.mafia.role.status.onrolekill && player.mafia.alive);
     for (const player of playersWithRoleKillTrigger) {
         const onrolekill = player.mafia.role.status.onrolekill;
         await checkOnDeathTriggers(onrolekill, deadRole, player);
@@ -314,7 +314,7 @@ async function playerDeath (user: Player, killedString: string) : Promise<void> 
     user.mafia.alive = false;
 
     const deadRole = user.mafia.role.truename || user.mafia.role.name;
-    const playersWithRoleDeathTrigger = players.filter(player => player.mafia.role.status.onroledeath);
+    const playersWithRoleDeathTrigger = players.filter(player => player.mafia.role.status.onroledeath && player.mafia.alive);
     for (const player of playersWithRoleDeathTrigger) {
         const onroledeath = player.mafia.role.status.onroledeath;
         await checkOnDeathTriggers(onroledeath, deadRole, player);

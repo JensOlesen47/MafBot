@@ -1,4 +1,4 @@
-const cmd = require('../cmd').Cmd;
+const cmd = require('../build/cmd').Cmd;
 
 const PLAYER_ROLE = "Players";
 const HOP_ROLE = "HalfOps";
@@ -37,7 +37,7 @@ module.exports.channel = {
     members: exports.users
 };
 
-module.exports.gameState = require('../mafia/game-state');
+module.exports.gameState = require('../build/mafia/game-state');
 
 module.exports.in = user => {
     cmd.getPublicCommand('in').execute(exports.channel, user);
