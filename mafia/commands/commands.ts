@@ -113,6 +113,13 @@ export async function players (channel: TextChannel) : Promise<void> {
     channel.send(`Players: ${state.players.map(player => Core.findUserMention(channel, player.displayName)).join(', ')}`);
 }
 
+export async function spoilers (channel: TextChannel, user: GuildMember) : Promise<void> {
+    if (state.isGameInProgress() && !state.players.find(player => player.displayName === user.displayName && player.mafia.alive)) {
+        const playerList = state.players.map(player => `${player.displayName} - ${player.mafia.role.name} (${player.mafia.team.name})`);
+        user.send(playerList.join(', '));
+    }
+}
+
 export async function beginGame (channel: TextChannel) : Promise<void> {
     if (state.isGameInSignups()) {
         if (currentSetup.minplayers && state.players.length < currentSetup.minplayers) {

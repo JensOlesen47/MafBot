@@ -47,6 +47,8 @@ export class Cmd {
                 return new PublicCommand(mafia.voteCount, Permissions.isPlayer);
             case 'setups':
                 return new PublicCommand(mafia.listSetups, Permissions.isAny);
+            case 'spoilers':
+                return new PublicCommand(mafia.spoilers, Permissions.isAny);
         }
     }
 
