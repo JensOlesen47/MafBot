@@ -67,6 +67,7 @@ let duskAwaitingPlayer: Player;
 
 export let moderator: User;
 export let players: Player[] = [];
+export let lastPlayedPlayers: Player[] = [];
 export let votes: Vote[] = [];
 export let playerrole: Role;
 export let channel: TextChannel;
@@ -76,6 +77,9 @@ export function isGameInSignups () : boolean {
 }
 export function isGameInProgress () : boolean {
     return gameStatus === Status.PROGRESS;
+}
+export function isGameOver () : boolean {
+    return gameStatus === Status.NONE;
 }
 export async function setGameInSignups () : Promise<void> {
     gameStatus = Status.SIGNUPS;
@@ -127,6 +131,7 @@ export async function advancePhase () : Promise<void> {
 export async function startGame () : Promise<void> {
     channel.send(`${rolesOnly ? 'Roles have been sent out!' : 'The game is afoot!'}`);
     channel.send(`Players: ${players.map(player => Core.findUserMention(channel, player.displayName)).join(', ')}`);
+    lastPlayedPlayers = Object.assign([], players);
     if (rolesOnly) {
         await endGame();
     } else {
