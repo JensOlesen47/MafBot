@@ -114,7 +114,7 @@ export async function players (channel: TextChannel) : Promise<void> {
 }
 
 export async function spoilers (channel: TextChannel, user: GuildMember) : Promise<void> {
-    if (state.isGameInProgress() && !state.players.find(player => player.displayName === user.displayName && player.mafia.alive)) {
+    if (!state.players.find(player => player.displayName === user.displayName && player.mafia.alive)) {
         const playerList = state.lastPlayedPlayers.map(player => `${player.displayName} - ${player.mafia.role.name} (${player.mafia.team.name})`);
         user.send(playerList.join(', '));
     }
