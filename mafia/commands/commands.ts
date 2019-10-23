@@ -2,7 +2,7 @@ import config = require('../libs/config.json');
 import setup = require('../setup');
 import state = require('../game-state');
 import {GuildMember, TextChannel, User} from "discord.js";
-import {Phase, Vote} from "../game-state";
+import {Vote} from "../game-state";
 import {MafiaPlayer, MafiaSetup} from "../libs/setups.lib";
 import {Core} from "../../core/core";
 import {Permissions} from "../../core/permissions";
