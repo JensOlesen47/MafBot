@@ -5,7 +5,7 @@ import {GuildMember, Role, TextChannel, User} from "discord.js";
 import {Abilities} from "./libs/abilities.lib";
 import {Action} from "./commands/actions";
 import {MafiaPlayer} from "./libs/setups.lib";
-import {currentSetup, rolesOnly} from "./setup";
+import {currentSetup, rolesOnly, setSetup} from "./setup";
 
 export enum Status {NONE = '', SIGNUPS = 'signups', PROGRESS = 'in progress'}
 export enum Phase {DAY = 'day', NIGHT = 'night', DUSK = 'dusk'}
@@ -271,6 +271,7 @@ export async function endGame () : Promise<void> {
     players = [];
     moderator = null;
     votes = [];
+    setSetup(null);
     gameStatus = Status.NONE;
     gamePhase = null;
     await Core.unmute(channel);
