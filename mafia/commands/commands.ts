@@ -54,7 +54,7 @@ export async function startGame (channel: TextChannel, user: GuildMember, args: 
         channel.send(
             `Starting a game of Mafia [${setupName} for ${allowedPlayerCount} players${setup.rolesOnly ? ', roles only' : ''}] in ${timer / 60} minutes. Type "!in" to sign up.`
         );
-        Core.waitWithCheck(() => !state.isGameInSignups(), 5, 300).then(async (isFulfilled) => {
+        Core.waitWithCheck(() => state.isGameInProgress() || state.isGameOver(), 5, 300).then(async (isFulfilled) => {
             if (isFulfilled) {
                 return;
             }
@@ -111,6 +111,13 @@ export async function playerOut (channel: TextChannel, user: GuildMember) : Prom
 
 export async function players (channel: TextChannel) : Promise<void> {
     channel.send(`Players: ${state.players.map(player => Core.findUserMention(channel, player.displayName)).join(', ')}`);
+}
+
+export async function spoilers (channel: TextChannel, user: GuildMember) : Promise<void> {
+    if (!state.players.find(player => player.displayName === user.displayName && player.mafia.alive)) {
+        const playerList = state.lastPlayedPlayers.map(player => `${player.displayName} - ${player.mafia.role.name} (${player.mafia.team.name})`);
+        user.send(playerList.join(', '));
+    }
 }
 
 export async function beginGame (channel: TextChannel) : Promise<void> {

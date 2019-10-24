@@ -4,6 +4,7 @@ import {MafiaRole, Roles} from "./libs/roles.lib";
 import {MafiaSetup, MafiaPlayer, getSetup} from "./libs/setups.lib";
 import {Factions} from "./libs/factions.lib";
 import {Core} from "../core/core";
+import {logger} from "../logger";
 
 export let currentSetup: MafiaSetup;
 export let rolesOnly: boolean;
@@ -18,6 +19,7 @@ export async function initializeSetup () : Promise<void> {
     } else {
         await initializeRandomSetup();
     }
+    logger.debug(state.players.map(player => `${player.displayName} - ${player.mafia.role.name} (${player.mafia.team.name})`));
 }
 
 async function initializeFixedSetup () : Promise<void> {

@@ -184,8 +184,8 @@ const Setups: Map<string, MafiaSetup> = new Map([
         true
     )],
     ['maflovers', new MafiaSetup(
-        'lovers',
-        'lovers (6 players): A fixed setup with two mafia lovers and four townies.',
+        'maflovers',
+        'maflovers (6 players): A fixed setup with two mafia lovers and four townies.',
         false,
         false,
         false,
