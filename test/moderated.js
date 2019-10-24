@@ -15,7 +15,7 @@ async function runSimpleSetupWithAutofill() {
     await test.in(test.users[3]);
 
     await cmd.getPrivateCommand('addrole').execute(test.users[0].user, ['mafia', 'mafioso', '"you are a bad man."']);
-    await cmd.getPublicCommand('force-start').execute(test.channel, test.users[0]);
+    await cmd.getPublicCommand('go').execute(test.channel, test.users[0]);
 
     const mafioso = test.gameState.players.filter(plyr => plyr.mafia.role.name === 'mafioso' && plyr.mafia.team.name === 'mafia');
     const townies = test.gameState.players.filter(plyr => plyr.mafia.role.name === 'Townie' && plyr.mafia.team.name === 'town');

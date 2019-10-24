@@ -16,7 +16,7 @@ async function townWins () {
     await test.in(test.users[3]);
     await test.in(test.users[4]);
     await test.in(test.users[5]);
-    await cmd.getPublicCommand('force-start').execute(test.channel, test.users[0]);
+    await cmd.getPublicCommand('go').execute(test.channel, test.users[0]);
 
     const mafia = test.gameState.players.filter(player => player.mafia.team.name === 'mafia');
     const town = test.gameState.players.filter(player => player.mafia.team.name === 'town');

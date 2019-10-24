@@ -15,7 +15,7 @@ async function townWins () {
     await test.in(test.users[3]);
     await test.in(test.users[4]);
     await test.in(test.users[5]);
-    await cmd.getPublicCommand('force-start').execute(test.channel, test.users[0]);
+    await cmd.getPublicCommand('go').execute(test.channel, test.users[0]);
 
     const scum = test.gameState.players.find(player => player.mafia.role.name === 'Assassin');
     const guards = test.gameState.players.filter(player => player.mafia.role.name === 'Guard');
@@ -44,7 +44,7 @@ async function kingIsBombed () {
     await test.in(test.users[3]);
     await test.in(test.users[4]);
     await test.in(test.users[5]);
-    await cmd.getPublicCommand('force-start').execute(test.channel, test.users[0]);
+    await cmd.getPublicCommand('go').execute(test.channel, test.users[0]);
 
     const scum = test.gameState.players.find(player => player.mafia.team.name === 'assassin');
     const king = test.gameState.players.find(player => player.mafia.role.name === 'King');

@@ -1,21 +1,15 @@
 import state = require('./game-state');
 import actions = require('./commands/actions');
 import {MafiaRole, Roles} from "./libs/roles.lib";
-import {MafiaSetup, Setups, MafiaPlayer} from "./libs/setups.lib";
+import {MafiaSetup, MafiaPlayer, getSetup} from "./libs/setups.lib";
 import {Factions} from "./libs/factions.lib";
 import {Core} from "../core/core";
 
 export let currentSetup: MafiaSetup;
 export let rolesOnly: boolean;
 
-export function fetchAllSetups (showHidden: boolean = false, showUnimplemented: boolean = false) : MafiaSetup[] {
-    return Core.filterMap(Setups, value =>
-        (!value.hidden || showHidden) && (!value.unimplemented || showUnimplemented)
-    );
-}
-
 export function setSetup (setupName: string) : void {
-    currentSetup = Setups.get(setupName);
+    currentSetup = getSetup(setupName);
 }
 
 export async function initializeSetup () : Promise<void> {
@@ -136,11 +130,15 @@ async function initSetup (roleList: MafiaPlayer[]) : Promise<void> {
         }
         player.send(`You are a ${player.mafia.role.name} (${player.mafia.team.name}). ${player.mafia.role.roletext} ${player.mafia.team.wintext}`);
         player.send(`Actions: ${actionString}`);
+
+        let teammates = [];
         if (player.mafia.team.openteam) {
-            const teammates = state.players.filter(p => p.mafia.team.name === player.mafia.team.name && p.user.id !== player.user.id);
-            if (teammates.length > 0) {
-                player.send(`Your ${player.mafia.team.name} budd${teammates.length > 1 ? 'ies' : 'y'}: ${teammates.map(mate => mate.displayName).join(', ')}`);
-            }
+            teammates = state.players.filter(p => p.mafia.team.name === player.mafia.team.name && p.user.id !== player.user.id);
+        } else if (player.mafia.role.name === 'Mason') {
+            teammates = state.players.filter(p => p.mafia.role.name === 'Mason' && p.user.id !== player.user.id);
+        }
+        if (teammates.length > 0) {
+            player.send(`Your ${player.mafia.team.name} budd${teammates.length > 1 ? 'ies' : 'y'}: ${teammates.map(mate => mate.displayName).join(', ')}`);
         }
     }
 }

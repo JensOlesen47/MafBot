@@ -195,44 +195,62 @@ export const Roles: Map<string, MafiaRole> = new Map([
     )],
     ['venge_m', new MafiaRole(
         'Goon',
-        'You are a normal goon. If your godfather is lynched, you lose the game.',
+        'If your godfather is lynched, you lose the game.',
         [],
         new MafiaStatus()
     )],
     ['venge_gf', new MafiaRole(
         'Godfather',
-        'You are the godfather. If you are lynched, your team loses.',
+        'If you are lynched, your team loses.',
         [],
         new MafiaStatus()
     )],
     ['lover', new MafiaRole(
         'Lover',
-        'You are a lover. If your soulmate BUDDY1 dies, you will die as well.',
+        'If your soulmate BUDDY1 dies, you will die as well.',
         [],
         new MafiaStatus().setOnstart('action:setbuddy #lover #@').setOnroledeath('Lover:action:suicide')
     )],
     ['mason', new MafiaRole(
         'Mason',
-        'You are a mason. You know that BUDDY1 is town.',
+        'You know that your buddies are town.',
         [],
         new MafiaStatus().setOnstart('action:setbuddy #mason #@')
     )],
     ['suibomb', new MafiaRole(
         'Suicide Bomber',
-        'You are a suicide bomber. During the day, you may target a player to kill both you and them.',
+        'During the day, you may target a player to kill both you and them.',
         [Abilities.get('suicidebomb').isDay()],
         new MafiaStatus()
     )],
     ['inno', new MafiaRole(
         'Innocent Child',
-        'You are an innocent child. During the day, you may publicly reveal yourself to be town.',
-        [Abilities.get('reveal').isDay()],
+        'You may publicly reveal yourself to be town.',
+        [Abilities.get('reveal')],
         new MafiaStatus()
     )],
     ['v1', new MafiaRole(
         'One-shot Vigilante',
         'You are a vigilante, but you only have one bullet left. You can kill a person during the night, but only once!',
         [Abilities.get('kill').hasShots(1)],
+        new MafiaStatus()
+    )],
+    ['parity', new MafiaRole( // not implemented
+        'Parity Cop',
+        'You can inspect people, but you won\'t know what your results mean until you get a flip.',
+        [],
+        new MafiaStatus()
+    )],
+    ['fog_cm', new MafiaRole( // not implemented
+        'Combat Medic',
+        'At night, you will be told who is dying and can choose whether to save them. Also, if you\'re lynched you\'ll get to kill somebody. You lose your powers if somebody else uses theirs.',
+        [],
+        new MafiaStatus()
+    )],
+    ['fog_m', new MafiaRole( // not implemented
+        'Vengeful Goon',
+        'If you\'re lynched, you get to kill somebody. You lose this power if the combat medic or your partner use theirs.',
+        [],
         new MafiaStatus()
     )]
 ]);

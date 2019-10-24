@@ -4,6 +4,8 @@ const assassin = require('./assassin');
 const moderated = require('./moderated');
 const vengeful = require('./vengeful');
 const maflovers = require('./maflovers');
+const masons = require('./masons');
+const listsetup = require('./list-setup');
 const cmd = require('../build/cmd').Cmd;
 const tests = require('./test');
 
@@ -14,6 +16,7 @@ suite('Setups', function () {
         tests.channel.messages.length = 0;
         await cmd.getPublicCommand('abort').execute(tests.channel, tests.opUser);
     });
+    test('can list setups', listsetup.a);
     test('5p lyncher - lyncher wins if his target is lynched', lyncher.lyncherWins);
     test('5p lyncher - lyncher transforms into a townie if his target is killed', lyncher.lyncherTransforms);
     test('3p ss3 - town wins due to mafia hammering the super-saint', ss3.townWinsByLynchingSuperSaint);
@@ -23,4 +26,5 @@ suite('Setups', function () {
     test('5p vengeful - town can win by lynching goon, townie, godfather', vengeful.townWinsByLynchingGoon);
     test('5p vengeful - town can win by lynching godfather day one', vengeful.townWinsByLynchingGodfather);
     test('6p maflovers - town can win by lynching one goon', maflovers.townWins);
+    test('12p masons - buddies know each other', masons.buddyKnowledge);
 });

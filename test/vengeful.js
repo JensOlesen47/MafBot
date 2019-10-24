@@ -16,7 +16,7 @@ async function townWinsByLynchingGoon () {
     await test.in(test.users[2]);
     await test.in(test.users[3]);
     await test.in(test.users[4]);
-    await cmd.getPublicCommand('force-start').execute(test.channel, test.users[0]);
+    await cmd.getPublicCommand('go').execute(test.channel, test.users[0]);
 
     const goon = test.gameState.players.find(player => player.mafia.role.name === 'Goon');
     const godfather = test.gameState.players.find(player => player.mafia.role.name === 'Godfather');
@@ -46,7 +46,7 @@ async function townWinsByLynchingGodfather () {
     await test.in(test.users[2]);
     await test.in(test.users[3]);
     await test.in(test.users[4]);
-    await cmd.getPublicCommand('force-start').execute(test.channel, test.users[0]);
+    await cmd.getPublicCommand('go').execute(test.channel, test.users[0]);
 
     const godfather = test.gameState.players.find(player => player.mafia.role.name === 'Godfather');
     const town = test.gameState.players.filter(player => player.mafia.role.name === 'Vengeful Townie');

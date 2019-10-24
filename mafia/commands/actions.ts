@@ -176,7 +176,7 @@ export async function deduceActionFromRole (status: string, player: Player) : Pr
 export async function none (action: Action) : Promise<void> {}
 
 export async function kill (action: Action) : Promise<void> {
-    action.victims.forEach(async victim => {
+    for (const victim of action.victims) {
         if (victim.mafia.alive) {
             if (!hasStatus(victim, 'immunekill')) {
                 await state.killPlayer(victim);
@@ -184,13 +184,13 @@ export async function kill (action: Action) : Promise<void> {
                 await _decreaseStatus(victim, 'immunekill');
             }
         }
-    });
+    }
 }
 
 export async function protect (action: Action) : Promise<void> {
-    action.victims.forEach(async victim => {
+    for (const victim of action.victims) {
         await tempIncreaseStatus(victim, 'immunekill');
-    });
+    }
 }
 
 export async function inspect (action: Action) : Promise<void> {
@@ -306,6 +306,6 @@ async function tempIncreaseStatus (player: Player, status: string) : Promise<voi
     actionQueue.push(queueDecreaseAction);
 }
 
-function hasStatus (player: Player, status: string) : Promise<void> {
-    return player.mafia.role.status[status];
+function hasStatus (player: Player, status: string) : boolean {
+    return !!player.mafia.role.status[status];
 }

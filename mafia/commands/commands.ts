@@ -3,7 +3,7 @@ import setup = require('../setup');
 import state = require('../game-state');
 import {GuildMember, TextChannel, User} from "discord.js";
 import {Vote} from "../game-state";
-import {MafiaPlayer, MafiaSetup} from "../libs/setups.lib";
+import {MafiaPlayer, MafiaSetup, fetchAllSetups} from "../libs/setups.lib";
 import {Core} from "../../core/core";
 import {Permissions} from "../../core/permissions";
 import {MafiaRole, MafiaStatus} from "../libs/roles.lib";
@@ -166,13 +166,13 @@ export async function listSetups (channel: TextChannel, user: GuildMember, args:
     let setups: MafiaSetup[] = [];
 
     if (!Permissions.isHop(user) || !arg) {
-        setups = setup.fetchAllSetups();
+        setups = fetchAllSetups();
     } else if (Permissions.isHop(user) && arg === 'hidden') {
-        setups = setup.fetchAllSetups(true);
+        setups = fetchAllSetups(true);
     } else if (arg === 'unimplemented') {
-        setups = setup.fetchAllSetups(false, true);
+        setups = fetchAllSetups(false, true);
     } else if (Permissions.isHop(user) && arg === 'all') {
-        setups = setup.fetchAllSetups(true, true);
+        setups = fetchAllSetups(true, true);
     } else {
         return;
     }

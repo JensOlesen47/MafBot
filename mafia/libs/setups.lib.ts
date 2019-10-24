@@ -1,6 +1,8 @@
 import {Phase} from "../game-state";
 import {MafiaRole, Roles} from "./roles.lib";
 import {Factions, MafiaTeam} from "./factions.lib";
+import {cloneDeep} from "lodash";
+import {Core} from "../../core/core";
 
 export class MafiaSetup {
     name: string;
@@ -86,7 +88,18 @@ class FixedSetupArray {
     }
 }
 
-export const Setups: Map<string, MafiaSetup> = new Map([
+export function getSetup (key: string) : MafiaSetup {
+    const setup = Setups.get(key);
+    return setup ? cloneDeep(setup) : null;
+}
+
+export function fetchAllSetups (showHidden: boolean = false, showUnimplemented: boolean = false) : MafiaSetup[] {
+    return Core.filterMap(Setups, value =>
+        (!value.hidden || showHidden) && (!value.unimplemented || showUnimplemented)
+    );
+}
+
+const Setups: Map<string, MafiaSetup> = new Map([
     ['moderated', new MafiaSetup(
         'moderated',
         'moderated (3+ players): A special type of setup where the person who starts the game is a host who subjects the players to his cruel designs.',
@@ -212,7 +225,35 @@ export const Setups: Map<string, MafiaSetup> = new Map([
         8,
         8,
         new FixedSetupArray([
-            new FixedSetup(8, ['m/mafia', 'suibomb/mafia', 'inno/town', 'v1/town'], 't')
+            new FixedSetup(8, ['suibomb/mafia', 'suibomb/mafia', 'inno/town', 'v1/town'], 't')
+        ])
+    )],
+    ['paritycop', new MafiaSetup(
+        'paritycop',
+        'paritycop (9 players): A fixed setup that has two mafia and one parity cop.',
+        false,
+        true,
+        false,
+        true,
+        Phase.DAY,
+        9,
+        9,
+        new FixedSetupArray([
+            new FixedSetup(9, ['m/mafia', 'm/mafia', 'parity/town'], 't')
+        ])
+    )],
+    ['fogofwar', new MafiaSetup(
+        'fogofwar',
+        'fogofwar (8 players): A fixed setup with two mafia and a combat medic. Only one person gets a power role!',
+        false,
+        true,
+        false,
+        true,
+        Phase.DAY,
+        8,
+        8,
+        new FixedSetupArray([
+            new FixedSetup(8, ['fog_m/mafia', 'fog_m/mafia', 'fog_cm/town'], 't')
         ])
     )]
 ]);

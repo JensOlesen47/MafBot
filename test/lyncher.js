@@ -16,7 +16,7 @@ async function lyncherWins () {
     await test.in(test.users[2]);
     await test.in(test.users[3]);
     await test.in(test.users[4]);
-    await cmd.getPublicCommand('force-start').execute(test.channel, test.users[0]);
+    await cmd.getPublicCommand('go').execute(test.channel, test.users[0]);
     assert.ok(test.users.every(usr => !usr.messages.includes('Lyncher Target')));
 
     const lynchee = test.gameState.players.find(player => player.mafia.role.truename === 'Lyncher Target');
@@ -35,7 +35,7 @@ async function lyncherTransforms () {
     await test.in(test.users[2]);
     await test.in(test.users[3]);
     await test.in(test.users[4]);
-    await cmd.getPublicCommand('force-start').execute(test.channel, test.users[0]);
+    await cmd.getPublicCommand('go').execute(test.channel, test.users[0]);
 
     const lynchee = test.gameState.players.find(player => player.mafia.role.truename === 'Lyncher Target');
     const lyncher = test.gameState.players.find(player => player.mafia.role.name === 'Lyncher');

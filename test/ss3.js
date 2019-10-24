@@ -11,6 +11,7 @@ async function townWinsByLynchingSuperSaint () {
     await cmd.getPublicCommand('in').execute(test.channel, test.users[0]);
     await cmd.getPublicCommand('in').execute(test.channel, test.users[1]);
     await cmd.getPublicCommand('in').execute(test.channel, test.users[2]);
+    await cmd.getPublicCommand('go').execute(test.channel, test.users[0]);
 
     const supersaint = test.gameState.players.find(player => player.mafia.role.name === 'Super-Saint');
     const mafia = test.gameState.players.find(player => player.mafia.role.name === 'Mafioso');

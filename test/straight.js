@@ -10,7 +10,7 @@ const cmd = require('../build/cmd').Cmd;
     test.in(test.users[3]);
     test.in(test.users[4]);
     test.in(test.users[5]);
-    cmd.getPublicCommand('force-start').execute(test.channel, test.users[0]);
+    cmd.getPublicCommand('go').execute(test.channel, test.users[0]);
 
     const scum = test.gameState.players.filter(player => player.mafia.team.name === 'mafia');
     const town = test.gameState.players.filter(player => player.mafia.team.name === 'town');
