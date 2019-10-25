@@ -12,6 +12,13 @@ mafbot.on('ready', () => {
 	logger.info(`Logged in as: ${mafbot.user.username} - (${mafbot.user.id})`);
 });
 
+mafbot.on('error', (error) => {
+	logger.error(`ERR! ${error.name} ~~~ ${error.message}`);
+	if (error.stack) {
+		logger.error(error.stack);
+	}
+});
+
 mafbot.on('message', async function(message: Message) {
 	if (message.author.bot) {
 		return;
