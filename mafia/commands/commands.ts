@@ -42,7 +42,7 @@ export async function startGame (channel: TextChannel, user: GuildMember, args: 
     if (setupName === 'moderated') {
         state.moderator = user.user;
         channel.send(
-            `Starting a game of Mafia [moderated by ${user.displayName}]. Type "!in" to sign up.`
+            `Starting a game of Mafia [moderated by ${user.displayName}]. Type \`!in\` to sign up.`
         );
         setModeratorMessage(await user.send('Use `addrole [town|mafia|sk] "[rolename]" "[roletext]"` and `removerole "[rolename]"` to configure your setup.') as Message);
         Core.waitWithCheck(() => !state.isGameInSignups(), 10, 7200).then(async (isFulfilled) => {

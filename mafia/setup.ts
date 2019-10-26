@@ -15,11 +15,14 @@ export function setSetup (setupName: string) : void {
     currentSetup = getSetup(setupName);
 }
 
+// currently only supports moderated games, will hopefully be enhanced to support spoilers too
 export function getSetupAsEmbed () : RichEmbed {
     const size = players.length;
-    const embed = new RichEmbed().setTitle(`${size}p ${currentSetup.name}`);
+    const embed = new RichEmbed().setTitle(`${size}p ${currentSetup.name}`)
+        .setDescription('Use `addrole [town|mafia|sk] "[rolename]" "[roletext]"` and `removerole "[rolename]"` to configure your setup.' +
+            '\nIf there are more players than roles, the rest will be townies.');
     if (currentSetup.fixed) {
-        const fixedSetupRoleList = getFixedSetupRoleList().sort((a, b) => a.team.name > b.team.name ? 1 : -1);
+        const fixedSetupRoleList = currentSetup.fixedSetups.setups[0].setup.sort((a, b) => a.team.name > b.team.name ? 1 : -1);
         fixedSetupRoleList.forEach(player =>
             embed.addField(`${player.role.truename || player.role.name} (${player.team.name})`, player.role.roletext)
         );
