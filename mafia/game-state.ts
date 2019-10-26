@@ -1,11 +1,12 @@
 import {Core} from "../core/core";
 import actions = require('./commands/actions');
 import commands = require('./commands/commands');
-import {GuildMember, Role, TextChannel, User} from "discord.js";
+import {GuildMember, Message, Role, TextChannel, User} from "discord.js";
 import {Abilities} from "./libs/abilities.lib";
 import {Action} from "./commands/actions";
 import {MafiaPlayer} from "./libs/setups.lib";
 import {currentSetup, rolesOnly, setSetup} from "./setup";
+import {cloneDeep} from "lodash";
 
 export enum Status {NONE = '', SIGNUPS = 'signups', PROGRESS = 'in progress'}
 export enum Phase {DAY = 'day', NIGHT = 'night', DUSK = 'dusk'}
@@ -66,6 +67,7 @@ let gamePhase: GamePhase;
 let duskAwaitingPlayer: Player;
 
 export let moderator: User;
+export let moderatorSetupMessage: Message;
 export let players: Player[] = [];
 export let lastPlayedPlayers: Player[] = [];
 export let votes: Vote[] = [];
@@ -128,10 +130,14 @@ export async function advancePhase () : Promise<void> {
     await checkForOnPhase();
 }
 
+export function setModeratorMessage (message: Message) : void {
+    moderatorSetupMessage = message;
+}
+
 export async function startGame () : Promise<void> {
     channel.send(`${rolesOnly ? 'Roles have been sent out!' : 'The game is afoot!'}`);
     channel.send(`Players: ${players.map(player => Core.findUserMention(channel, player.displayName)).join(', ')}`);
-    lastPlayedPlayers = Object.assign([], players);
+    lastPlayedPlayers = cloneDeep(players);
     if (rolesOnly) {
         await endGame();
     } else {
@@ -275,6 +281,7 @@ export async function endGame () : Promise<void> {
     }
     players = [];
     moderator = null;
+    moderatorSetupMessage = null;
     votes = [];
     setSetup(null);
     gameStatus = Status.NONE;

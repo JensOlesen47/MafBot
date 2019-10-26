@@ -5,12 +5,26 @@ import {MafiaSetup, MafiaPlayer, getSetup} from "./libs/setups.lib";
 import {Factions} from "./libs/factions.lib";
 import {Core} from "../core/core";
 import {logger} from "../logger";
+import {RichEmbed} from "discord.js";
+import {moderator, players} from "./game-state";
 
 export let currentSetup: MafiaSetup;
 export let rolesOnly: boolean;
 
 export function setSetup (setupName: string) : void {
     currentSetup = getSetup(setupName);
+}
+
+export function getSetupAsEmbed () : RichEmbed {
+    const size = players.length;
+    const embed = new RichEmbed().setTitle(`${size}p ${currentSetup.name}`);
+    if (currentSetup.fixed) {
+        const fixedSetupRoleList = getFixedSetupRoleList().sort((a, b) => a.team.name > b.team.name ? 1 : -1);
+        fixedSetupRoleList.forEach(player =>
+            embed.addField(`${player.role.truename || player.role.name} (${player.team.name})`, player.role.roletext)
+        );
+    }
+    return embed;
 }
 
 export async function initializeSetup () : Promise<void> {

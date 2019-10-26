@@ -1,14 +1,14 @@
 import config = require('../libs/config.json');
 import setup = require('../setup');
 import state = require('../game-state');
-import {GuildMember, TextChannel, User} from "discord.js";
-import {Vote} from "../game-state";
+import {GuildMember, Message, TextChannel, User} from "discord.js";
+import {moderatorSetupMessage, Vote, setModeratorMessage} from "../game-state";
 import {MafiaPlayer, MafiaSetup, fetchAllSetups} from "../libs/setups.lib";
 import {Core} from "../../core/core";
 import {Permissions} from "../../core/permissions";
 import {MafiaRole, MafiaStatus} from "../libs/roles.lib";
 import {Factions} from "../libs/factions.lib";
-import {currentSetup} from "../setup";
+import {currentSetup, getSetupAsEmbed} from "../setup";
 
 export async function startGame (channel: TextChannel, user: GuildMember, args: string[]) : Promise<void> {
     if (state.isGameInProgress()) {
@@ -44,6 +44,7 @@ export async function startGame (channel: TextChannel, user: GuildMember, args: 
         channel.send(
             `Starting a game of Mafia [moderated by ${user.displayName}]. Type "!in" to sign up.`
         );
+        setModeratorMessage(await user.send('Use `addrole [town|mafia|sk] "[rolename]" "[roletext]"` and `removerole "[rolename]"` to configure your setup.') as Message);
         Core.waitWithCheck(() => !state.isGameInSignups(), 10, 7200).then(async (isFulfilled) => {
             if (!isFulfilled) {
                 channel.send(`Sorry ${user.displayName}, your moderated game timed out after two hours.`);
@@ -114,7 +115,7 @@ export async function players (channel: TextChannel) : Promise<void> {
 }
 
 export async function spoilers (channel: TextChannel, user: GuildMember) : Promise<void> {
-    if (!state.players.find(player => player.displayName === user.displayName && player.mafia.alive)) {
+    if (state.lastPlayedPlayers && !state.players.find(player => player.displayName === user.displayName && player.mafia.alive)) {
         const playerList = state.lastPlayedPlayers.map(player => `${player.displayName} - ${player.mafia.role.name} (${player.mafia.team.name})`);
         user.send(playerList.join(', '));
     }
@@ -204,7 +205,7 @@ export async function addRole (user: User, args: string[]) : Promise<void> {
     const mafiaTeam = Factions.get(team);
     const mafiaPlayer = new MafiaPlayer(mafiaRole, mafiaTeam);
     setup.currentSetup.fixedSetups.setups[0].setup.push(mafiaPlayer);
-    user.send(`Confirmed! Role #${setup.currentSetup.fixedSetups.setups[0].setup.length} is now ${mafiaRole.name} (${mafiaTeam.name})`);
+    setModeratorMessage(await moderatorSetupMessage.edit(getSetupAsEmbed()));
 }
 
 export async function removeRole(user: User, args: string[]) : Promise<void> {
@@ -212,15 +213,16 @@ export async function removeRole(user: User, args: string[]) : Promise<void> {
         return;
     }
 
-    const index = Number(args[0]);
+    const removeRoleName = args[0];
     const currentRoles = setup.currentSetup.fixedSetups.setups[0].setup;
-    if (isNaN(index) || index < 1 || index > currentRoles.length) {
-        user.send(`Please use the format \`removerole [1-${currentRoles.length}]\``);
+    const roleToRemove = currentRoles.find(role => role.role.name.toLowerCase() === removeRoleName.toLowerCase());
+    if (!roleToRemove) {
+        user.send('Please use the format `removerole "[rolename]"`');
         return;
     }
 
-    const removedRole = currentRoles.splice(index, 1)[0];
-    user.send(`Removed this role from your setup: ${removedRole.role.name} (${removedRole.team.name}).`);
+    currentRoles.splice(currentRoles.indexOf(roleToRemove), 1);
+    setModeratorMessage(await moderatorSetupMessage.edit(getSetupAsEmbed()));
 }
 
 export async function modkill(user: User, args: string[]) : Promise<void> {
