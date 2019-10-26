@@ -44,7 +44,7 @@ export async function startGame (channel: TextChannel, user: GuildMember, args: 
         channel.send(
             `Starting a game of Mafia [moderated by ${user.displayName}]. Type \`!in\` to sign up.`
         );
-        setModeratorMessage(await user.send('Use `addrole [town|mafia|sk] "[rolename]" "[roletext]"` and `removerole "[rolename]"` to configure your setup.') as Message);
+        setModeratorMessage(await user.send(getSetupAsEmbed()) as Message);
         Core.waitWithCheck(() => !state.isGameInSignups(), 10, 7200).then(async (isFulfilled) => {
             if (!isFulfilled) {
                 channel.send(`Sorry ${user.displayName}, your moderated game timed out after two hours.`);
