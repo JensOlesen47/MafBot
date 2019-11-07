@@ -21,6 +21,14 @@ export class Core {
         return array[this.randomNumber(array.length)];
     }
 
+    static getRandomArrayValueLogarithmically<T> (array: T[], base: number = 2) : T {
+        // index n is `base` times as likely to be selected as index n-1, etc.
+        const b = Math.pow(base, array.length) - 1;
+        const randomNumber = this.randomNumber(b) + 1;
+        const randomLogged = Math.floor(Math.log(randomNumber) / Math.log(base));
+        return array[randomLogged];
+    }
+
     static shuffleArray<T> (array: T[]) : T[] {
         let currentIndex = array.length, temporaryValue, randomIndex;
         while (0 !== currentIndex) {

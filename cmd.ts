@@ -18,6 +18,10 @@ export class Cmd {
                 return new PublicCommand(Dice.roll, Permissions.isAny);
             case 'slap':
                 return new PublicCommand(Silly.slap, Permissions.isAny);
+            case 'x':
+                return new PublicCommand(Silly.doubt, Permissions.isAny);
+            case 'f':
+                return new PublicCommand(Silly.respect, Permissions.isAny);
             case 'mute':
                 return new PublicCommand(Core.mute, Permissions.isHop);
             case 'unmute':
