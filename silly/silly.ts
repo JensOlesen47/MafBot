@@ -5,8 +5,7 @@ export class Silly {
     static async slap (channel: TextChannel, user: GuildMember, args: string[]) : Promise<void> {
         const weight = Core.randomNumber(100);
 
-        const animalIndex = Core.randomNumber(Silly.CREATURES.length);
-        const animal = Silly.CREATURES[animalIndex];
+        const animal = Core.getRandomArrayValueLogarithmically(Silly.CREATURES);
 
         const pings: string[] = [];
         if (args.length > 3 || args.some(arg => arg.includes('everyone') || arg.includes('here'))) {
