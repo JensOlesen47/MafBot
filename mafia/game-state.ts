@@ -3,7 +3,7 @@ import actions = require('./commands/actions');
 import commands = require('./commands/commands');
 import {GuildMember, Message, Role, TextChannel, User} from "discord.js";
 import {Abilities} from "./libs/abilities.lib";
-import {Action} from "./commands/actions";
+import {Action, checkForFullActionQueue} from "./commands/actions";
 import {MafiaPlayer} from "./libs/setups.lib";
 import {currentSetup, rolesOnly, setSetup} from "./setup";
 import {cloneDeep} from "lodash";
@@ -126,6 +126,7 @@ export async function advancePhase () : Promise<void> {
         gamePhase.phase = Phase.NIGHT;
         channel.send(`It is now ${gamePhase.toString()}. Send in your actions!`);
         await Core.mute(channel);
+        await checkForFullActionQueue();
     }
     await checkForOnPhase();
 }

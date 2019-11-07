@@ -135,7 +135,7 @@ function getAction (actioner: Player, args: string[], cmd: string) : Action {
     return action;
 }
 
-async function checkForFullActionQueue () : Promise<void> {
+export async function checkForFullActionQueue () : Promise<void> {
     if (state.isNight() && state.players.filter(player => player.mafia.alive && player.mafia.role.abilities.length > 0).length === actionQueue.length) {
         await state.advancePhase();
     }
