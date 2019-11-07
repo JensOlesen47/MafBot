@@ -51,8 +51,9 @@ export class Silly {
 
         if (!arg) {
             // see who the second-last poster was
-            const messages = await channel.fetchMessages({ around: channel.lastMessageID });
-            arg = messages.first().member.displayName;
+            const messages = await channel.fetchMessages({ limit: 2 });
+            const last = messages.array()[1];
+            arg = last.member.displayName;
         } else if (arg.includes('everyone') || arg.includes('here')) {
             await channel.send(`Wow ${user.displayName}, that's very edgy of you isn't it. I bet you think you're real clever.\n\nWell you're not.`);
             return;
