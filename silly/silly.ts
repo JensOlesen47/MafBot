@@ -118,9 +118,9 @@ export class Silly {
     ];
 
     private static RESPECTS = [
-        {msg: 'Dicks out, boys', emoji: '\:eggplant:'},
-        {msg: '1 like = 1 prayer', emoji: '\:heart:'},
-        {msg: 'So sad, I cry evrytiem', emoji: '\:cry:'},
-        {msg: 'Press F to pay respects', emoji: '\:regional_indicator_f:'}
+        {msg: 'Dicks out, boys', emoji: '🍆'},
+        {msg: '1 like = 1 prayer', emoji: '❤️'},
+        {msg: 'So sad, I cry evrytiem', emoji: '😢'},
+        {msg: 'Press F to pay respects', emoji: '🇫'}
     ];
 }
