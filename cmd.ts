@@ -6,12 +6,15 @@ import {Permissions} from "./core/permissions";
 
 import mafia = require('./mafia/commands/commands');
 import action = require('./mafia/commands/actions');
+import {Help} from "./core/help";
 
 export class Cmd {
     static getPublicCommand (cmd: string) : PublicCommand {
         switch (cmd) {
             case 'help':
-                return new PublicCommand(Core.help, Permissions.isAny);
+                return new PublicCommand(Help.help, Permissions.isAny);
+            case 'setups':
+                return new PublicCommand(Help.setups, Permissions.isAny);
             case 'ping':
                 return new PublicCommand(Core.ping, Permissions.isOp);
             case 'roll':
@@ -49,8 +52,6 @@ export class Cmd {
             case 'votecount':
             case 'vc':
                 return new PublicCommand(mafia.voteCount, Permissions.isPlayer);
-            case 'setups':
-                return new PublicCommand(mafia.listSetups, Permissions.isAny);
             case 'spoilers':
                 return new PublicCommand(mafia.spoilers, Permissions.isAny);
         }
