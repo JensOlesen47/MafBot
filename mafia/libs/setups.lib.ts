@@ -255,5 +255,19 @@ const Setups: Map<string, MafiaSetup> = new Map([
         new FixedSetupArray([
             new FixedSetup(8, ['fog_m/mafia', 'fog_m/mafia', 'fog_cm/town'], 't')
         ])
+    )],
+    ['451', new MafiaSetup(
+        '451',
+        '451 (10 players): Someone has a gun and isn\'t afraid to use it.',
+        false,
+        false,
+        false,
+        true,
+        Phase.DAY,
+        10,
+        10,
+        new FixedSetupArray([
+            new FixedSetup(10, ['m/mafia','m/mafia','m/mafia','m/mafia','dayvig/town'], 't')
+        ])
     )]
 ]);

@@ -235,6 +235,12 @@ export const Roles: Map<string, MafiaRole> = new Map([
         [Abilities.get('kill').hasShots(1)],
         new MafiaStatus()
     )],
+    ['dayvig', new MafiaRole(
+        'Dayvig',
+        'You have unlimited shots, try not to abuse it.',
+        [Abilities.get('kill').isDay()],
+        new MafiaStatus()
+    )],
     ['parity', new MafiaRole( // not implemented
         'Parity Cop',
         'You can inspect people, but you won\'t know what your results mean until you get a flip.',
