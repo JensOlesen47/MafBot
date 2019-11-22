@@ -12,7 +12,7 @@ export class Help {
             );
             return;
         }
-        const arg = args[0];
+        const arg = args.splice(0, 1)[0];
         if (arg === 'setups') {
             await Help.publicSetups(channel, user, args);
         } else if (arg === 'history') {
@@ -22,14 +22,14 @@ export class Help {
 
     static async publicSetups (channel: TextChannel, user: GuildMember, args: string[]) : Promise<void> {
         let numPlayers: number;
-        if (/\d{1,2}/.test(args[1])) {
-            numPlayers = Number(args[1]);
+        if (/^\d{1,2}$/.test(args[0])) {
+            numPlayers = Number(args[0]);
         }
         await Help.setups(channel, numPlayers);
     }
 
     static async setups (channel: PartialTextBasedChannelFields, numPlayers: number) : Promise<void> {
-        const embed = new RichEmbed().setTitle('Available setups');
+        const embed = new RichEmbed().setTitle(`Available setups${numPlayers ? ` for ${numPlayers} players` : ``}`);
         const setups = numPlayers
             ? fetchAllSetups(true, true).filter(setup => numPlayers >= setup.minplayers && numPlayers <= setup.maxplayers)
             : fetchAllSetups(true, true);
