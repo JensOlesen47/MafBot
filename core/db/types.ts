@@ -36,3 +36,9 @@ export interface History {
     won: boolean;
     death: string;
 }
+
+export interface Ranking {
+    userid: string;
+    wins: number;
+    losses: number;
+}

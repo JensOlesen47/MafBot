@@ -56,6 +56,8 @@ export class Cmd {
                 return new PublicCommand(mafia.publicHistory, Permissions.isAny);
             case 'spoilers':
                 return new PublicCommand(mafia.publicSpoilers, Permissions.isAny);
+            case 'top':
+                return new PublicCommand(Silly.top, Permissions.isAny);
         }
     }
 

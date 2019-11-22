@@ -1,5 +1,6 @@
-import {GuildMember, Message, TextChannel} from "discord.js";
+import {GuildMember, Message, RichEmbed, TextChannel} from "discord.js";
 import {Core} from "../core/core";
+import {top} from "../core/db/history";
 
 export class Silly {
     static async slap (channel: TextChannel, user: GuildMember, args: string[]) : Promise<void> {
@@ -69,6 +70,21 @@ export class Silly {
         const respectObj = Core.getRandomArrayValueLogarithmically(Silly.RESPECTS, 4);
         const reactable = await channel.send(respectObj.msg) as Message;
         reactable.react(respectObj.emoji);
+    }
+
+    static async top (channel: TextChannel, user: GuildMember, args: string[]) : Promise<void> {
+        const team = args[0];
+        if (team && !['town', 'mafia'].includes(team)) {
+            channel.send('Try `!top`, or `!top town`, or even `!top mafia`.');
+            return;
+        }
+
+        const rankings = await top(5, team);
+        const displayableRankings = rankings.map((rank, i) =>
+            `#${i + 1}: ${Core.findUserDisplayNameById(channel.guild.id, rank.userid)} [${rank.wins}W - ${rank.losses}L ~ ${Math.round(rank.wins / (rank.wins + rank.losses) * 100)}% WR]`
+        );
+        const embed = new RichEmbed().setTitle(`Top 5 ${team ? `${team} ` : ''}Players:`).setDescription(displayableRankings.join('\n'));
+        channel.send(embed);
     }
 
     private static CREATURES = [

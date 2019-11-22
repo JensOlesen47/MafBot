@@ -1,6 +1,6 @@
 import auth = require('../../auth.json');
 
-const { Pool } = require('pg');
+const { Pool, types } = require('pg');
 import {logger} from "../../logger";
 
 const postgres = new Pool({
@@ -11,6 +11,8 @@ const postgres = new Pool({
     connectionTimeoutMillis: 3000,
     max: 5
 });
+
+types.setTypeParser(20, val => parseInt(val));
 
 postgres.on('error', (err => {
     logger.error(`DATABASE ERR ${err.name} ~~~ ${err.message} ${err.stack}`);
