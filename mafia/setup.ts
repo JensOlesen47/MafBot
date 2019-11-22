@@ -6,10 +6,10 @@ import {Factions} from "./libs/factions.lib";
 import {Core} from "../core/core";
 import {logger} from "../logger";
 import {RichEmbed} from "discord.js";
-import {moderator, players} from "./game-state";
+import {players} from "./game-state";
 
 export let currentSetup: MafiaSetup;
-export let rolesOnly: boolean;
+export let video: boolean;
 
 export function setSetup (setupName: string) : void {
     currentSetup = getSetup(setupName);
@@ -23,9 +23,19 @@ export function getSetupAsEmbed () : RichEmbed {
             '\nIf there are more players than roles, the rest will be townies.');
     if (currentSetup.fixed) {
         const fixedSetupRoleList = currentSetup.fixedSetups.setups[0].setup.sort((a, b) => a.team.name > b.team.name ? 1 : -1);
-        fixedSetupRoleList.forEach(player =>
-            embed.addField(`${player.role.truename || player.role.name} (${player.team.name})`, player.role.roletext)
-        );
+        let lastTeam = '';
+        let teamMembers = [] as MafiaPlayer[];
+        for (const player of fixedSetupRoleList) {
+            if (!lastTeam) {
+                lastTeam = player.team.name;
+            } else if (lastTeam !== player.team.name) {
+                embed.addField(lastTeam, teamMembers.map(member => `**${member.role.truename || member.role.name}** - ${member.role.roletext}`).join('\n'));
+                teamMembers = [];
+                lastTeam = player.team.name;
+            }
+            teamMembers.push(player);
+        }
+        embed.addField(lastTeam, teamMembers.map(member => `**${member.role.truename || member.role.name} (${member.team.name})**\n${member.role.roletext}`).join('\n'));
     }
     return embed;
 }
