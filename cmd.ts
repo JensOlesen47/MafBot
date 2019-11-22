@@ -14,7 +14,7 @@ export class Cmd {
             case 'help':
                 return new PublicCommand(Help.help, Permissions.isAny);
             case 'setups':
-                return new PublicCommand(Help.setups, Permissions.isAny);
+                return new PublicCommand(Help.publicSetups, Permissions.isAny);
             case 'ping':
                 return new PublicCommand(Core.ping, Permissions.isOp);
             case 'roll':

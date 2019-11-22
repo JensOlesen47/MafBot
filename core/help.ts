@@ -1,4 +1,4 @@
-import {GuildMember, RichEmbed, TextChannel, User} from "discord.js";
+import {GuildMember, PartialTextBasedChannelFields, RichEmbed, TextChannel, User} from "discord.js";
 import {fetchAllSetups} from "../mafia/libs/setups.lib";
 
 export class Help {
@@ -14,18 +14,30 @@ export class Help {
         }
         const arg = args[0];
         if (arg === 'setups') {
-            await Help.setups(channel);
-            return;
+            await Help.publicSetups(channel, user, args);
+        } else if (arg === 'history') {
+            await Help.history(channel);
         }
     }
 
-    static async setups (channel: TextChannel) : Promise<void> {
+    static async publicSetups (channel: TextChannel, user: GuildMember, args: string[]) : Promise<void> {
+        let numPlayers: number;
+        if (/\d{1,2}/.test(args[1])) {
+            numPlayers = Number(args[1]);
+        }
+        await Help.setups(channel, numPlayers);
+    }
+
+    static async setups (channel: PartialTextBasedChannelFields, numPlayers: number) : Promise<void> {
         const embed = new RichEmbed().setTitle('Available setups');
-        fetchAllSetups(true, true).forEach(setup =>  embed.addField(setup.name, setup.helptext));
+        const setups = numPlayers
+            ? fetchAllSetups(true, true).filter(setup => numPlayers >= setup.minplayers && numPlayers <= setup.maxplayers)
+            : fetchAllSetups(true, true);
+        setups.forEach(setup =>  embed.addField(setup.name, setup.helptext));
         channel.send(embed);
     }
 
-    static async history (user: User) : Promise<void> {
+    static async history (channel: PartialTextBasedChannelFields) : Promise<void> {
         const embed = new RichEmbed().setTitle('History').setDescription('Returns details about past games. Calling this command with no arguments will return a summary of the last 25 games.')
             .addField('history summary', 'Gives a summary of the last 25 games played. This is the default option if you provide no arguments.')
             .addField('history last', 'Gives a detailed breakdown of the last game. This is the same as `!spoilers`.')
@@ -35,6 +47,6 @@ export class Help {
             .addField('history {[game ID]|last} winners [team]', 'Sets the winning team for a game record.')
             .addField('history {[game ID]|last} {username|displayName} {(l)ynched|(k)illed}{(d)ay|(n)ight}[number]', 'Sets the death status of a player in the specified game. For example, `history last "Clever Username" kn1` would tell me that the user Clever Username was killed night one in the last game.')
         ;
-        user.send(embed);
+        channel.send(embed);
     }
 }
