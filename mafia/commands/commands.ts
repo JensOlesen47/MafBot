@@ -9,10 +9,11 @@ import {Permissions} from "../../core/permissions";
 import {MafiaRole, MafiaStatus} from "../libs/roles.lib";
 import {Factions} from "../libs/factions.lib";
 import {currentSetup, getSetupAsEmbed} from "../setup";
-import {getHistory} from "../../core/db/history";
+import {getHistory, updateHistoryUserDeath, updateHistoryWinners} from "../../core/db/history";
 import {History} from "../../core/db/types";
 import moment = require("moment");
 import {Help} from "../../core/help";
+import {mafbot} from "../../bot";
 
 export async function startGame (channel: TextChannel, user: GuildMember, args: string[]) : Promise<void> {
     if (state.isGameInProgress()) {
@@ -82,9 +83,9 @@ export async function playerIn (channel: TextChannel, user: GuildMember) : Promi
         channel.send(`You are already signed up, ${user.displayName}.`);
         return;
     }
-    const BANNED_NAMES = ['none', 'nolynch', 'self', 'sky', 'unknown'];
-    if (BANNED_NAMES.includes(user.displayName)) {
-        channel.send(`You cannot join a game with that nick, ${user.displayName}.`);
+    const BANNED_NAMES = ['none', 'nolynch', 'self', 'sky', 'unknown', 'mafia', 'town', 'sk', 'assassin', 'lyncher', 'jester'];
+    if (BANNED_NAMES.includes(user.displayName.toLowerCase())) {
+        channel.send(`That's sooooooo funny. You're gonna mess stuff up if you join a game with that nickname, ${user.displayName}.`);
         return;
     }
     if (currentSetup.maxplayers && state.players.length >= currentSetup.maxplayers) {
@@ -135,26 +136,104 @@ export async function history (user: User, args: string[]) : Promise<void> {
     if (!args || args.length === 0) {
         args = ['summary'];
     }
-    const arg = args[0];
+    const arg1 = args.splice(0, 1)[0];
 
-    if (arg === 'last') {
-        const embed = await getFullHistoryEmbed(await getHistory(1), true);
-        user.send(embed);
-        return;
-    }
-    if (/\d+/.test(arg)) {
-        const embed = await getFullHistoryEmbed(await getHistory(1, Number(arg)), false);
-        user.send(embed);
-        return;
-    }
-    if (arg === 'summary') {
-        const embed = await getSummaryHistoryEmbed(await getHistory(25), 'Summary: last 25 games');
-        user.send(embed);
-        return;
-    }
-    const date = moment(arg, 'DD-MM-YYYY');
-    if (date.isValid()) {
+    if (args.length === 0) {
+        if (arg1 === 'last') {
+            const embed = await getFullHistoryEmbed(await getHistory(1), true);
+            user.send(embed);
+            return;
+        }
+        if (/^\d+$/.test(arg1)) {
+            const embed = await getFullHistoryEmbed(await getHistory(1, Number(arg1)), false);
+            user.send(embed);
+            return;
+        }
+        if (arg1 === 'summary') {
+            const embed = await getSummaryHistoryEmbed(await getHistory(25), 'Summary: last 25 games');
+            user.send(embed);
+            return;
+        }
+        const date = moment(arg1, 'DD-MM-YYYY');
+        if (date.isValid()) {
 
+        }
+    } else if ((arg1 === 'last' || /^\d+$/.test(arg1)) && args[1]) {
+        const gameId = arg1 === 'last' ? null : Number(arg1);
+
+        if (args[0] === 'winners') {
+            let winningTeam = args[1];
+            if (winningTeam === 't' || winningTeam === 'town') {
+                winningTeam = 'town';
+            } else if (winningTeam === 'm' || winningTeam === 'mafia') {
+                winningTeam = 'mafia';
+            } else if (!Factions.get(winningTeam)) {
+                user.send(`It looks like '${winningTeam}' isn't the name of a team. Is it spelled correctly?`);
+                return;
+            }
+            await updateHistoryWinners(winningTeam, gameId);
+            await user.send(`Change confirmed, ${winningTeam} won that game.`);
+            await history(user, [gameId ? String(gameId) : 'last']);
+            return;
+        }
+
+        let userId: string;
+        const gameRecord = await getHistory(1, gameId);
+        let userRecord: GuildMember;
+        let userHistory = gameRecord.find(record => record.username.toLowerCase() === args[0]);
+        if (!userHistory) {
+            userHistory = gameRecord.find(record => record.username.toLowerCase().startsWith(args[0]));
+        }
+        if (userHistory) {
+            userId = userHistory.userid;
+        } else {
+            const guildId = gameRecord[0].guildid;
+            const guild = mafbot.guilds.find(g => g.id === guildId);
+            userRecord = guild.members.find(member => member.displayName.toLowerCase() === args[0]);
+            if (!userRecord) {
+                userRecord = guild.members.find(member => member.displayName.toLowerCase().startsWith(args[0]));
+            }
+            if (userRecord) {
+                userId = userRecord.id;
+            } else {
+                user.send(`I couldn't find any user by the name of '${args[0]}' in the ${guild.name} server.`);
+                return;
+            }
+        }
+        if (gameRecord.find(record => record.userid === userId)) {
+            let unparsedDeath = args[1];
+            if (/^(lynched|l|killed|k)(day|d|night|n)\d+$/.test(unparsedDeath)) {
+                let death, phase, cycle;
+                if (unparsedDeath.startsWith('l')) {
+                    death = 'lynched';
+                    unparsedDeath = unparsedDeath.startsWith('lynched') ? unparsedDeath.substring(7) : unparsedDeath.substring(1);
+                } else if (unparsedDeath.startsWith('k')) {
+                    death = 'killed';
+                    unparsedDeath = unparsedDeath.startsWith('killed') ? unparsedDeath.substring(6) : unparsedDeath.substring(1);
+                }
+                if (unparsedDeath.startsWith('d')) {
+                    phase = 'day';
+                    unparsedDeath = unparsedDeath.startsWith('day') ? unparsedDeath.substring(3) : unparsedDeath.substring(1);
+                } else if (unparsedDeath.startsWith('n')) {
+                    phase = 'night';
+                    unparsedDeath = unparsedDeath.startsWith('night') ? unparsedDeath.substring(5) : unparsedDeath.substring(1);
+                }
+                cycle = unparsedDeath;
+                if (death && phase && cycle) {
+                    const parsedDeath = `${death} ${phase} ${cycle}`;
+                    await updateHistoryUserDeath(userId, parsedDeath, gameId);
+                    await user.send(`Change confirmed, ${userHistory ? userHistory.username : userRecord.displayName} was ${parsedDeath}.`);
+                    await history(user, [gameId ? String(gameId) : 'last']);
+                    return;
+                }
+            } else {
+                user.send(`You screwed up your death method string. It should be something like \`lynchedday1\` or \`kn2\`, but you sent '${args[1]}'.`);
+                return;
+            }
+        } else {
+            user.send(`It looks like ${userHistory ? userHistory.username : userRecord.displayName} didn't play in that game. If that's wrong then I give you permission to yell at Urist.`);
+            return;
+        }
     }
 
     await Help.history(user);

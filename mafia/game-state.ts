@@ -6,7 +6,7 @@ import {Abilities} from "./libs/abilities.lib";
 import {Action, checkForFullActionQueue} from "./commands/actions";
 import {MafiaPlayer} from "./libs/setups.lib";
 import {currentSetup, video, setSetup} from "./setup";
-import {addBasicHistory, getHistory, updateHistory} from "../core/db/history";
+import {addBasicHistory, getHistory, updateHistoryWinners} from "../core/db/history";
 
 export enum Status {NONE = '', SIGNUPS = 'signups', PROGRESS = 'in progress'}
 export enum Phase {DAY = 'day', NIGHT = 'night', DUSK = 'dusk'}
@@ -298,7 +298,7 @@ async function triggerEndGame (winningTeam: string, winningPlayers: string) : Pr
             .join(', ');
         channel.send(`Players: ${playerString}`);
         const lastHistory = await getHistory(1);
-        await updateHistory(lastHistory[0].id, winningTeam);
+        await updateHistoryWinners(winningTeam, lastHistory[0].id);
         await endGame();
     }
 }

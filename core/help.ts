@@ -26,13 +26,14 @@ export class Help {
     }
 
     static async history (user: User) : Promise<void> {
-        const embed = new RichEmbed().setTitle('History').setDescription('Returns details about past games. Calling this command with no arguments will return a summary of the games played over the past week.')
+        const embed = new RichEmbed().setTitle('History').setDescription('Returns details about past games. Calling this command with no arguments will return a summary of the last 25 games.')
             .addField('history summary', 'Gives a summary of the last 25 games played. This is the default option if you provide no arguments.')
             .addField('history last', 'Gives a detailed breakdown of the last game. This is the same as `!spoilers`.')
-            //.addField('history [DD-MM-YYYY]', 'e.g. 25-12-2019. Gives a summary of the games played around that date.')
+            //.addField('history [DD-MM-YYYY]', 'e.g. `history 25-12-2019`. Gives a summary of the games played around that date. For example, `history 25-12-2019` would get the games played on Dec 25th, 2019 as well as the 24th and 26th.')
+            //.addField('history {username|displayName}', 'Gives a summary of the last 25 games this user has played.')
             .addField('history [game ID]', 'Gives a detailed breakdown of the game with the specified id.')
-            //.addField('history [[game ID]/last] winners [team]', 'Sets the winning team for a game record.')
-            //.addField('history [username]', 'Gives a summary of the last 25 games this user has played.')
+            .addField('history {[game ID]|last} winners [team]', 'Sets the winning team for a game record.')
+            .addField('history {[game ID]|last} {username|displayName} {(l)ynched|(k)illed}{(d)ay|(n)ight}[number]', 'Sets the death status of a player in the specified game. For example, `history last "Clever Username" kn1` would tell me that the user Clever Username was killed night one in the last game.')
         ;
         user.send(embed);
     }

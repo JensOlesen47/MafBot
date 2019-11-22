@@ -25,7 +25,7 @@ mafbot.on('message', async function(message: Message) {
 		return;
 	}
 	const channel = message.channel;
-	const content = message.content;
+	const content = message.content.toLowerCase();
 
 	let args: string[];
 	let cmdArg: string;

@@ -25,9 +25,24 @@ export async function addBasicHistory (setup: MafiaSetup, players: Player[], gui
     await update(historyUpdate);
 }
 
-export async function updateHistory (gameHistoryId: number, winningTeam: string) : Promise<void> {
+export async function updateHistoryWinners (winningTeam: string, gameHistoryId?: number) : Promise<void> {
     const transaction = [] as string[];
-    transaction.push(`UPDATE game_history SET winningteam='${winningTeam}' WHERE id=${gameHistoryId}`);
-    transaction.push(`UPDATE user_history SET won=team='${winningTeam}' WHERE fkgamehistory=${gameHistoryId}`);
+    if (gameHistoryId) {
+        transaction.push(`UPDATE game_history SET winningteam='${winningTeam}' WHERE id=${gameHistoryId}`);
+        transaction.push(`UPDATE user_history SET won=team='${winningTeam}' WHERE fkgamehistory=${gameHistoryId}`);
+    } else {
+        const lastIdQuery = 'SELECT game_history.id FROM game_history ORDER BY game_history.id DESC LIMIT 1';
+        transaction.push(`UPDATE game_history SET winningteam='${winningTeam}' WHERE id IN (${lastIdQuery})`);
+        transaction.push(`UPDATE user_history SET won=team='${winningTeam}' WHERE fkgamehistory IN (${lastIdQuery})`);
+    }
     await transactionalUpdate(transaction);
+}
+
+export async function updateHistoryUserDeath (userId: string, death: string, gameHistoryId?: number) : Promise<void> {
+    const baseUpdate = `UPDATE user_history SET death='${death}' WHERE userid='${userId}' AND fkgamehistory`;
+    if (gameHistoryId) {
+        await update(`${baseUpdate}=${gameHistoryId}`);
+    } else {
+        await update(`${baseUpdate} IN (SELECT game_history.id FROM game_history ORDER BY game_history.id DESC LIMIT 1)`);
+    }
 }
