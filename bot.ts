@@ -5,11 +5,11 @@ import {DMChannel, Message, TextChannel} from "discord.js";
 import {Cmd} from "./cmd";
 import {logger} from "./logger";
 
-const mafbot = new discord.Client();
+export const mafbot = new discord.Client();
 
 mafbot.on('ready', () => {
-	logger.info(`Connected!`);
 	logger.info(`Logged in as: ${mafbot.user.username} - (${mafbot.user.id})`);
+	mafbot.fetchUser('135782754267693056', true).then(user => user.send('Ready!'));
 });
 
 mafbot.on('error', (error) => {
@@ -17,6 +17,7 @@ mafbot.on('error', (error) => {
 	if (error.stack) {
 		logger.error(error.stack);
 	}
+	mafbot.fetchUser('135782754267693056', true).then(user => user.send(`ERROR: ${error.name} ~~ ${error.message}\n${error.stack}`));
 });
 
 mafbot.on('message', async function(message: Message) {
