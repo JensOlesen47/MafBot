@@ -116,7 +116,7 @@ const Setups: Map<string, MafiaSetup> = new Map([
         'straight',
         'straight (3+ players): Only Townies, Cops, Doctors, Vigilantes, Roleblockers, Mafiosi, and Godfathers appear.',
         true,
-        false,
+        true,
         false,
         false,
         Phase.DAY,
@@ -268,6 +268,21 @@ const Setups: Map<string, MafiaSetup> = new Map([
         10,
         new FixedSetupArray([
             new FixedSetup(10, ['m/mafia','m/mafia','m/mafia','m/mafia','dayvig/town'], 't')
+        ])
+    )],
+    ['vig', new MafiaSetup(
+        'vig',
+        'vig (6 - 18 players): One vigilante and an appropriate number of mafia.',
+        false,
+        false,
+        false,
+        true,
+        Phase.DAY,
+        6,
+        18,
+        new FixedSetupArray([
+            new FixedSetup(6, ['m/mafia','m/mafia','v/town'], 't'),
+            new FixedSetup(12, ['m/mafia','m/mafia','m/mafia','v/town'], 't')
         ])
     )]
 ]);
