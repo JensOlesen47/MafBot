@@ -1,14 +1,18 @@
 import config = require('../libs/config.json');
 import setup = require('../setup');
 import state = require('../game-state');
-import {GuildMember, Message, TextChannel, User} from "discord.js";
+import {GuildMember, Message, RichEmbed, TextChannel, User} from "discord.js";
 import {moderatorSetupMessage, Vote, setModeratorMessage} from "../game-state";
-import {MafiaPlayer, MafiaSetup, fetchAllSetups} from "../libs/setups.lib";
+import {MafiaPlayer} from "../libs/setups.lib";
 import {Core} from "../../core/core";
 import {Permissions} from "../../core/permissions";
 import {MafiaRole, MafiaStatus} from "../libs/roles.lib";
 import {Factions} from "../libs/factions.lib";
 import {currentSetup, getSetupAsEmbed} from "../setup";
+import {getHistory} from "../../core/db/history";
+import {History} from "../../core/db/types";
+import moment = require("moment");
+import {Help} from "../../core/help";
 
 export async function startGame (channel: TextChannel, user: GuildMember, args: string[]) : Promise<void> {
     if (state.isGameInProgress()) {
@@ -30,7 +34,7 @@ export async function startGame (channel: TextChannel, user: GuildMember, args: 
         return;
     }
 
-    setup.rolesOnly = setup.currentSetup.unimplemented || (args[1] && args[1] === 'roles');
+    setup.video = setup.currentSetup.unimplemented || ['roles', 'vm'].includes(args[1]);
 
     const minplayers = setup.currentSetup.minplayers || config.minimum_players;
     const maxplayers = setup.currentSetup.maxplayers || config.maximum_players;
@@ -53,7 +57,7 @@ export async function startGame (channel: TextChannel, user: GuildMember, args: 
         });
     } else {
         channel.send(
-            `Starting a game of Mafia [${setupName} for ${allowedPlayerCount} players${setup.rolesOnly ? ', roles only' : ''}] in ${timer / 60} minutes. Type "!in" to sign up.`
+            `Starting a game of ${setup.video ? 'Video ' : ''}Mafia [${setupName} for ${allowedPlayerCount} players] in ${timer / 60} minutes. Type \`!in\` to sign up.`
         );
         Core.waitWithCheck(() => state.isGameInProgress() || state.isGameOver(), 5, 300).then(async (isFulfilled) => {
             if (isFulfilled) {
@@ -91,9 +95,10 @@ export async function playerIn (channel: TextChannel, user: GuildMember) : Promi
     await state.addPlayer(user);
     channel.send(`You are now signed up for the next game, ${user.displayName}.`);
     // problem with multiple people inning at once... it takes too long to init the setup... commenting this out til i figure out a fix
-    // if (currentSetup.maxplayers && state.players.length === currentSetup.maxplayers) {
-    //     await beginGame(channel);
-    // }
+    // but maybe it isn't a problem?? maybe i'll uncomment it anyway and see what happen????
+    if (currentSetup.maxplayers && state.players.length === currentSetup.maxplayers) {
+        await beginGame(channel);
+    }
 }
 
 export async function playerOut (channel: TextChannel, user: GuildMember) : Promise<void> {
@@ -111,14 +116,110 @@ export async function playerOut (channel: TextChannel, user: GuildMember) : Prom
 }
 
 export async function players (channel: TextChannel) : Promise<void> {
-    channel.send(`Players: ${state.players.map(player => Core.findUserMention(channel, player.displayName)).join(', ')}`);
+    channel.send(`Players (${state.players.length}): ${state.players.map(player => Core.findUserMention(channel, player.displayName)).join(', ')}`);
 }
 
-export async function spoilers (channel: TextChannel, user: GuildMember) : Promise<void> {
-    if (state.lastPlayedPlayers && !state.players.find(player => player.displayName === user.displayName && player.mafia.alive)) {
-        const playerList = state.lastPlayedPlayers.map(player => `${player.displayName} - ${player.mafia.role.name} (${player.mafia.team.name})`);
-        user.send(playerList.join(', '));
+export async function publicHistory (channel: TextChannel, user: GuildMember, args: string[]) : Promise<void> {
+    return await history(user.user, args);
+}
+
+export async function publicSpoilers (channel: TextChannel, user: GuildMember) : Promise<void> {
+    return await spoilers(user.user);
+}
+
+export async function spoilers (user: User) : Promise<void> {
+    return await history(user, ['last']);
+}
+
+export async function history (user: User, args: string[]) : Promise<void> {
+    if (!args || args.length === 0) {
+        args = ['summary'];
     }
+    const arg = args[0];
+
+    if (arg === 'last') {
+        const embed = await getFullHistoryEmbed(await getHistory(1), true);
+        user.send(embed);
+        return;
+    }
+    if (/\d+/.test(arg)) {
+        const embed = await getFullHistoryEmbed(await getHistory(1, Number(arg)), false);
+        user.send(embed);
+        return;
+    }
+    if (arg === 'summary') {
+        const embed = await getSummaryHistoryEmbed(await getHistory(25), 'Summary: last 25 games');
+        user.send(embed);
+        return;
+    }
+    const date = moment(arg, 'DD-MM-YYYY');
+    if (date.isValid()) {
+
+    }
+
+    await Help.history(user);
+}
+
+async function getSummaryHistoryEmbed (history: History[], title: string) : Promise<RichEmbed> {
+    let gameNum = 0;
+    let game = [] as History[];
+    let embed = new RichEmbed().setTitle(title);
+
+    for (const user_history of history) {
+        if (!gameNum) {
+            gameNum = user_history.id;
+        } else if (user_history.id !== gameNum) {
+            addField(embed, game);
+            game = [];
+            gameNum = user_history.id;
+        }
+        game.push(user_history);
+    }
+    addField(embed, game);
+
+    return embed;
+
+    function addField (embed: RichEmbed, game: History[]) : void {
+        const gameNumber = `Game ${game[0].id}`;
+        const timestamp = Core.getFormattedTime(game[0].timestamp);
+        const setupName = `${game.length}p ${game[0].setupname}`;
+        const winningTeam = game[0].winningteam ? ` - ${game[0].winningteam} win` : ``;
+        const setupTitle = `${gameNumber} (${timestamp})\n${setupName}${winningTeam}`;
+        const players = game
+            .sort((a, b) => a.team > b.team ? 1 : a.role === 'Townie' ? 1 : 0)
+            .map(player => `${Core.findUserDisplayNameById(player.guildid, player.userid) || player.username} (${player.team} ${player.role})`)
+            .join('\n');
+        embed.addField(setupTitle, players);
+    }
+}
+
+async function getFullHistoryEmbed (history: History[], last: boolean) : Promise<RichEmbed> {
+    history.sort((a, b) => a.team > b.team ? 1 : a.role === 'Townie' ? 1 : 0);
+
+    const timestamp = Core.getFormattedTime(history[0].timestamp);
+    const setupName = `${history.length}p ${history[0].setupname}`;
+    const gameNumber = `Game ${history[0].id}`;
+    const winningTeam = history[0].winningteam ? ` - ${history[0].winningteam} win` : ``;
+    const title = last
+        ? `Most Recent Game: ${gameNumber} (${timestamp})\n${setupName}${winningTeam}`
+        : `${gameNumber} (${timestamp})\n${setupName}${winningTeam}`;
+    const embed = new RichEmbed().setTitle(title);
+
+    let lastTeam = '';
+    let teamMembers = [] as string[];
+
+    for (const player of history) {
+        if (player.team !== lastTeam) {
+            if (lastTeam) {
+                embed.addField(lastTeam, teamMembers.join('\n'));
+            }
+            teamMembers = [];
+            lastTeam = player.team;
+        }
+        teamMembers.push(`${Core.findUserDisplayNameById(player.guildid, player.userid) || player.username} (${player.role}) - ${player.death ? player.death : player.won ? 'survived' : 'endgamed'}`);
+    }
+    embed.addField(lastTeam, teamMembers.join('\n'));
+    return embed;
 }
 
 export async function beginGame (channel: TextChannel) : Promise<void> {
@@ -167,25 +268,6 @@ export async function voteCount (channel: TextChannel) : Promise<void> {
         const voters = `${entry.voters.map(voter => voter.displayName).join(', ')}`;
         channel.send(`${votee} - ${voters}`);
     });
-}
-
-export async function listSetups (channel: TextChannel, user: GuildMember, args: string[]) : Promise<void> {
-    const arg = args[0];
-    let setups: MafiaSetup[] = [];
-
-    if (!Permissions.isHop(user) || !arg) {
-        setups = fetchAllSetups();
-    } else if (Permissions.isHop(user) && arg === 'hidden') {
-        setups = fetchAllSetups(true);
-    } else if (arg === 'unimplemented') {
-        setups = fetchAllSetups(false, true);
-    } else if (Permissions.isHop(user) && arg === 'all') {
-        setups = fetchAllSetups(true, true);
-    } else {
-        return;
-    }
-
-    channel.send(setups.map(i => i.name).sort((a, b) => a > b ? 1 : 0).join(', '));
 }
 
 export async function addRole (user: User, args: string[]) : Promise<void> {

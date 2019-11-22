@@ -52,8 +52,10 @@ export class Cmd {
             case 'votecount':
             case 'vc':
                 return new PublicCommand(mafia.voteCount, Permissions.isPlayer);
+            case 'history':
+                return new PublicCommand(mafia.publicHistory, Permissions.isAny);
             case 'spoilers':
-                return new PublicCommand(mafia.spoilers, Permissions.isAny);
+                return new PublicCommand(mafia.publicSpoilers, Permissions.isAny);
         }
     }
 
@@ -65,6 +67,10 @@ export class Cmd {
                 return new PrivateCommand(mafia.addRole);
             case 'removerole':
                 return new PrivateCommand(mafia.removeRole);
+            case 'history':
+                return new PrivateCommand(mafia.history);
+            case 'spoilers':
+                return new PrivateCommand(mafia.spoilers);
             default:
                 return new PrivateCommand(action.doAction);
         }

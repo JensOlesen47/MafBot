@@ -5,8 +5,8 @@ import {GuildMember, Message, Role, TextChannel, User} from "discord.js";
 import {Abilities} from "./libs/abilities.lib";
 import {Action, checkForFullActionQueue} from "./commands/actions";
 import {MafiaPlayer} from "./libs/setups.lib";
-import {currentSetup, rolesOnly, setSetup} from "./setup";
-import {cloneDeep} from "lodash";
+import {currentSetup, video, setSetup} from "./setup";
+import {addBasicHistory, getHistory, updateHistory} from "../core/db/history";
 
 export enum Status {NONE = '', SIGNUPS = 'signups', PROGRESS = 'in progress'}
 export enum Phase {DAY = 'day', NIGHT = 'night', DUSK = 'dusk'}
@@ -69,7 +69,6 @@ let duskAwaitingPlayer: Player;
 export let moderator: User;
 export let moderatorSetupMessage: Message;
 export let players: Player[] = [];
-export let lastPlayedPlayers: Player[] = [];
 export let votes: Vote[] = [];
 export let playerrole: Role;
 export let channel: TextChannel;
@@ -136,10 +135,10 @@ export function setModeratorMessage (message: Message) : void {
 }
 
 export async function startGame () : Promise<void> {
-    channel.send(`${rolesOnly ? 'Roles have been sent out!' : 'The game is afoot!'}`);
-    channel.send(`Players: ${players.map(player => Core.findUserMention(channel, player.displayName)).join(', ')}`);
-    lastPlayedPlayers = cloneDeep(players);
-    if (rolesOnly) {
+    channel.send(`${video ? 'Roles have been sent out!' : 'The game is afoot!'}`);
+    channel.send(`Players (${players.length}): ${players.map(player => Core.findUserMention(channel, player.displayName)).join(', ')}`);
+    await addBasicHistory(currentSetup, players, channel.guild.id, video);
+    if (video) {
         await endGame();
     } else {
         await setGameInProgress();
@@ -298,6 +297,8 @@ async function triggerEndGame (winningTeam: string, winningPlayers: string) : Pr
             .map(player => `${player.displayName} (${player.mafia.role.truename || player.mafia.role.name})`)
             .join(', ');
         channel.send(`Players: ${playerString}`);
+        const lastHistory = await getHistory(1);
+        await updateHistory(lastHistory[0].id, winningTeam);
         await endGame();
     }
 }

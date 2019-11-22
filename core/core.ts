@@ -1,4 +1,6 @@
 import {TextChannel} from "discord.js";
+import {mafbot} from "../bot";
+import * as moment from "moment";
 
 export class Core {
     static async ping (channel: TextChannel) : Promise<void> {
@@ -51,9 +53,19 @@ export class Core {
         channel.send(`\:construction: under construction \:construction:`);
     }
 
-    static findUserMention(channel: TextChannel, displayName: string) : string {
+    static findUserMention (channel: TextChannel, displayName: string) : string {
         const guildMember = channel.members.find(member => member.displayName.toLowerCase().includes(displayName.toLowerCase()));
         return guildMember && `<@${guildMember.user.id}>`;
+    }
+
+    static findUserDisplayNameById (guildId: string, userId: string) : string {
+        const guild = mafbot.guilds.find(g => g.id === guildId);
+        const guildMember = guild.members.find(member => member.id === userId);
+        return guildMember && guildMember.displayName;
+    }
+
+    static getFormattedTime (timestamp: string) : string {
+        return moment(timestamp).format('lll') + ' EST';
     }
 
     static async waitWithCheck (predicate: () => boolean = () => false, check: number = 2, seconds: number = 60) : Promise<boolean> {

@@ -31,6 +31,7 @@ module.exports.channel = {
     send: function (msg) { this.messages.push(msg) },
     overwritePermissions: () => true,
     guild: {
+        id: '420783655263141888',
         defaultRole: DEFAULT_ROLE,
         roles: [PLAYER_ROLE]
     },

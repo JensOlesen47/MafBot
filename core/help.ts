@@ -1,4 +1,4 @@
-import {GuildMember, RichEmbed, TextChannel} from "discord.js";
+import {GuildMember, RichEmbed, TextChannel, User} from "discord.js";
 import {fetchAllSetups} from "../mafia/libs/setups.lib";
 
 export class Help {
@@ -23,5 +23,17 @@ export class Help {
         const embed = new RichEmbed().setTitle('Available setups');
         fetchAllSetups(true, true).forEach(setup =>  embed.addField(setup.name, setup.helptext));
         channel.send(embed);
+    }
+
+    static async history (user: User) : Promise<void> {
+        const embed = new RichEmbed().setTitle('History').setDescription('Returns details about past games. Calling this command with no arguments will return a summary of the games played over the past week.')
+            .addField('history summary', 'Gives a summary of the last 25 games played. This is the default option if you provide no arguments.')
+            .addField('history last', 'Gives a detailed breakdown of the last game. This is the same as `!spoilers`.')
+            //.addField('history [DD-MM-YYYY]', 'e.g. 25-12-2019. Gives a summary of the games played around that date.')
+            .addField('history [game ID]', 'Gives a detailed breakdown of the game with the specified id.')
+            //.addField('history [[game ID]/last] winners [team]', 'Sets the winning team for a game record.')
+            //.addField('history [username]', 'Gives a summary of the last 25 games this user has played.')
+        ;
+        user.send(embed);
     }
 }
