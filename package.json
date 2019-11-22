@@ -1,18 +1,20 @@
 {
 	"name": "mafbot",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"description": "A chat mafia bot for Discord",
 	"main": "bot.ts",
-	"author": "Urist McMagma",
+	"author": "Jens Olesen",
 	"dependencies": {
+		"@types/lodash": "^4.14.144",
 		"@types/node": "^12.7.11",
 		"@types/pg": "^7.11.2",
+		"@types/winston": "^2.4.4",
 		"discord.js": "^11.4.2",
+		"lodash": "^4.17.10",
+		"moment": "^2.24.0",
 		"npm": "^6.4.1",
 		"pg": "^7.12.1",
-		"winston": "^3.1.0",
-		"lodash": "^4.17.10",
-		"@types/lodash": "^4.14.144"
+		"winston": "^3.1.0"
 	},
 	"devDependencies": {
 		"mocha": "^6.0.2"
