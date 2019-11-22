@@ -107,7 +107,8 @@ function getAction (actioner: Player, args: string[], cmd: string) : Action {
                 actioner.send(`You cannot target yourself with this ability.`);
             }
         } else {
-            const victim = state.players.find(user => user.displayName === arg);
+            const victim = state.players.find(user => user.displayName.toLowerCase() === arg.toLowerCase())
+                || state.players.find(user => user.displayName.toLowerCase().startsWith(arg.toLowerCase()));
             if (victim) {
                 if (allowableTargets.includes('unique') && victims.includes(victim)) {
                     actioner.send(`You cannot target the same player twice with this ability.`);
