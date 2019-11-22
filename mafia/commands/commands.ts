@@ -186,7 +186,7 @@ async function getSummaryHistoryEmbed (history: History[], title: string) : Prom
         const winningTeam = game[0].winningteam ? ` - ${game[0].winningteam} win` : ``;
         const setupTitle = `${gameNumber} (${timestamp})\n${setupName}${winningTeam}`;
         const players = game
-            .sort((a, b) => a.team > b.team ? 1 : a.role === 'Townie' ? 1 : 0)
+            .sort((a, b) => a.team > b.team ? 1 : a.team < b.team ? -1 : a.role > b.role ? 1 : -1)
             .map(player => `${Core.findUserDisplayNameById(player.guildid, player.userid) || player.username} (${player.team} ${player.role})`)
             .join('\n');
         embed.addField(setupTitle, players);
@@ -194,7 +194,7 @@ async function getSummaryHistoryEmbed (history: History[], title: string) : Prom
 }
 
 async function getFullHistoryEmbed (history: History[], last: boolean) : Promise<RichEmbed> {
-    history.sort((a, b) => a.team > b.team ? 1 : a.role === 'Townie' ? 1 : 0);
+    history.sort((a, b) => a.team > b.team ? 1 : a.team < b.team ? -1 : a.role > b.role ? 1 : -1);
 
     const timestamp = Core.getFormattedTime(history[0].timestamp);
     const setupName = `${history.length}p ${history[0].setupname}`;
