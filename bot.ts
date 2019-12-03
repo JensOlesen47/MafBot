@@ -20,6 +20,8 @@ mafbot.on('error', (error) => {
 	mafbot.fetchUser('135782754267693056', true).then(user => user.send(`ERROR: ${error.name} ~~ ${error.message}\n${error.stack}`));
 });
 
+mafbot.
+
 mafbot.on('message', async function(message: Message) {
 	if (message.author.bot) {
 		return;
