@@ -2,9 +2,9 @@ import {User} from "discord.js";
 import {query, queryOne, update} from "./database";
 import {Bug} from "./types";
 
-export async function addBug (comment: string, user: User) : Promise<number> {
+export async function addBug (comment: string, user: User) : Promise<{id: number}> {
     await update(`INSERT INTO bug (comment, reportedby, timestamp) VALUES ('${comment}', '${user.id}', LOCALTIMESTAMP(0))`);
-    return await queryOne<number>(`SELECT id FROM bug ORDER BY id DESC LIMIT 1`);
+    return await queryOne<{id: number}>(`SELECT id FROM bug ORDER BY id DESC LIMIT 1`);
 }
 
 export async function getBugs () : Promise<Bug[]> {

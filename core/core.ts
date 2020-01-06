@@ -14,7 +14,7 @@ export class Core {
         for (let bug of bugs) {
             const reporter = await mafbot.fetchUser(bug.reportedby, true);
             const formattedTime = Core.getFormattedTime(bug.timestamp);
-            embed.addField(`#${bug.id} - Reported by ${reporter} on ${formattedTime}`, bug.comment);
+            embed.addField(`#${bug.id} - Reported by ${reporter.username} on ${formattedTime}`, bug.comment);
         }
         user.send(embed);
     }
@@ -25,8 +25,8 @@ export class Core {
             return;
         }
         const comment = args.join(' ');
-        const id = await addBug(comment, user.user);
-        user.send(`Thanks for reporting this bug! Your bug's ID number is ${id}. Sleep soundly knowing that today, you have made a difference.`);
+        const bug = await addBug(comment, user.user);
+        user.send(`Thanks for reporting this bug! Your bug's ID number is ${bug.id}. Sleep soundly knowing that today, you have made a difference.`);
     }
 
     static async dismissBug (user: User, args: string[]) : Promise<void> {
@@ -96,7 +96,7 @@ export class Core {
     }
 
     static getFormattedTime (timestamp: string) : string {
-        return moment(timestamp).format('lll') + ' EST';
+        return moment(timestamp).format('ll');
     }
 
     static async waitWithCheck (predicate: () => boolean = () => false, check: number = 2, seconds: number = 60) : Promise<boolean> {
