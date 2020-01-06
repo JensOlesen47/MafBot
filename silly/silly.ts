@@ -1,6 +1,6 @@
 import {GuildMember, Message, RichEmbed, TextChannel} from "discord.js";
 import {Core} from "../core/core";
-import {top} from "../core/db/history";
+import {getHistoryForUser, top} from "../core/db/history";
 
 export class Silly {
     static async slap (channel: TextChannel, user: GuildMember, args: string[]) : Promise<void> {
@@ -85,6 +85,20 @@ export class Silly {
         );
         const embed = new RichEmbed().setTitle(`Top 5 ${team ? `${team} ` : ''}Players:`).setDescription(displayableRankings.join('\n'));
         channel.send(embed);
+    }
+
+    static async stats (channel: TextChannel, user: GuildMember) : Promise<void> {
+        const history = await getHistoryForUser(user.id);
+
+        const townGames = history.filter(game => game.team === 'town');
+        const townWins = townGames.filter(game => game.won === true).length;
+        const townLosses = townGames.filter(game => game.won === false).length;
+
+        const mafiaGames = history.filter(game => game.team === 'mafia');
+        const mafiaWins = mafiaGames.filter(game => game.won === true).length;
+        const mafiaLosses = mafiaGames.filter(game => game.won === false).length;
+
+        channel.send(`Here are your stats ${Core.findUserMention(channel, user.displayName)}:\nTOWN - ${townWins}W/${townLosses}L (${Math.round(townWins / (townWins + townLosses) * 100)}%)\nMAFIA - ${mafiaWins}W/${mafiaLosses}L (${Math.round(mafiaWins / (mafiaWins + mafiaLosses) * 100)}%)\nYou've rolled town in ${Math.round(townGames.length / history.length * 100)}% of your games.`);
     }
 
     private static CREATURES = [

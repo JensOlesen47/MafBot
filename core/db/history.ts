@@ -63,3 +63,10 @@ export async function updateHistoryUserDeath (userId: string, death: string, gam
         await update(`${baseUpdate} IN (SELECT game_history.id FROM game_history ORDER BY game_history.id DESC LIMIT 1)`);
     }
 }
+
+export async function getHistoryForUser (userId: string) : Promise<History[]> {
+    const selectCols = `SELECT game_history.id id, video, winningteam, timestamp, setup.name setupname, userid, guildid, username, role, team, won, death FROM game_history`;
+    const userHistoryQuery = ` INNER JOIN user_history ON fkgamehistory=game_history.id`;
+    const forThisUser = ` WHERE user_history.userid=${userId}`;
+    return await query<History>(selectCols + userHistoryQuery + forThisUser);
+}

@@ -58,6 +58,8 @@ export class Cmd {
                 return new PublicCommand(mafia.publicSpoilers, Permissions.isAny);
             case 'top':
                 return new PublicCommand(Silly.top, Permissions.isAny);
+            case 'stats':
+                return new PublicCommand(Silly.stats, Permissions.isAny);
             case 'bug':
                 return new PublicCommand(Core.reportBug, Permissions.isAny);
             case 'bugs':
