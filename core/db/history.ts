@@ -10,7 +10,8 @@ export async function getHistory (limit: number, gameHistoryId?: number) : Promi
     const gameHistoryCondition = gameHistoryId
         ? ` WHERE game_history.id=${gameHistoryId}`
         : ` WHERE game_history.id IN (SELECT game_history.id FROM game_history ORDER BY game_history.id DESC LIMIT ${limit})`;
-    return await query<History>(selectCols + setupQuery + userHistoryQuery + gameHistoryCondition);
+    const orderBy = ` ORDER BY id`;
+    return await query<History>(selectCols + setupQuery + userHistoryQuery + gameHistoryCondition + orderBy);
 }
 
 export async function top (limit: number, team?: string) : Promise<Ranking[]> {
