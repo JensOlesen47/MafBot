@@ -14,7 +14,7 @@ export class Core {
 
     static async bugs (user: User) : Promise<void> {
         const bugs = await getBugs();
-        const embed = new RichEmbed().setTitle('Currently open bugs');
+        const embed = new RichEmbed().setTitle('Known Bugs');
         for (let bug of bugs) {
             const reporter = await mafbot.fetchUser(bug.reportedby, true);
             const formattedTime = Core.getFormattedTime(bug.timestamp);
