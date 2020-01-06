@@ -58,11 +58,17 @@ export class Cmd {
                 return new PublicCommand(mafia.publicSpoilers, Permissions.isAny);
             case 'top':
                 return new PublicCommand(Silly.top, Permissions.isAny);
+            case 'bug':
+                return new PublicCommand(Core.reportBug, Permissions.isAny);
+            case 'bugs':
+                return new PublicCommand(Core.getBugs, Permissions.isAny);
         }
     }
 
     static getPrivateCommand (cmd: string) : PrivateCommand {
         switch (cmd) {
+            case 'debug':
+                return new PrivateCommand(Core.dismissBug);
             case 'modkill':
                 return new PrivateCommand(mafia.modkill);
             case 'addrole':

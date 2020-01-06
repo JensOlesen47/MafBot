@@ -42,3 +42,10 @@ export interface Ranking {
     wins: number;
     losses: number;
 }
+
+export interface Bug {
+    id: number;
+    comment: string;
+    reportedby: string;
+    timestamp: string;
+}

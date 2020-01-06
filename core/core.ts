@@ -1,10 +1,41 @@
-import {TextChannel} from "discord.js";
+import {GuildMember, RichEmbed, TextChannel, User} from "discord.js";
 import {mafbot} from "../bot";
 import * as moment from "moment";
+import {addBug, dismissBug, getBugs} from "./db/bug";
 
 export class Core {
     static async ping (channel: TextChannel) : Promise<void> {
         channel.send(`PONGOGONG`);
+    }
+
+    static async getBugs (channel: TextChannel, user: GuildMember) : Promise<void> {
+        const bugs = await getBugs();
+        const embed = new RichEmbed().setTitle('Currently open bugs');
+        for (let bug of bugs) {
+            const reporter = await mafbot.fetchUser(bug.reportedby, true);
+            const formattedTime = Core.getFormattedTime(bug.timestamp);
+            embed.addField(`#${bug.id} - Reported by ${reporter} on ${formattedTime}`, bug.comment);
+        }
+        user.send(embed);
+    }
+
+    static async reportBug (channel: TextChannel, user: GuildMember, args: string[]) : Promise<void> {
+        if (!args[0]) {
+            user.send(`If you've got a bug to report, please let me know what it is by using \`!bug [report]\`. Hopefully it's not regarding this command.`);
+            return;
+        }
+        const comment = args.join(' ');
+        const id = await addBug(comment, user.user);
+        user.send(`Thanks for reporting this bug! Your bug's ID number is ${id}. Sleep soundly knowing that today, you have made a difference.`);
+    }
+
+    static async dismissBug (user: User, args: string[]) : Promise<void> {
+        if (user.id !== '135782754267693056') {
+            user.send(`Only daddy can use this command.`);
+            return;
+        }
+        await dismissBug(args[0]);
+        user.send(`Bug dismissed.`);
     }
 
     static randomNumber (roof: number) : number {
