@@ -98,7 +98,7 @@ export class Silly {
         const mafiaWins = mafiaGames.filter(game => game.won).length;
         const mafiaLosses = mafiaGames.filter(game => !game.won).length;
 
-        history.sort((a, b) => a.setupname > b.setupname ? 0 : 1);
+        history.sort((a, b) => a.setupname > b.setupname ? -1 : 1);
         const setupScores = [] as {name: string, wins: number, records: number}[];
         let currentWins = 0;
         let currentSetup = '';
@@ -124,8 +124,8 @@ export class Silly {
         const townStats = `\nTOWN - ${townWins}W/${townLosses}L (${Math.round(townWins / (townWins + townLosses) * 100)}%)`;
         const mafiaStats = `\nMAFIA - ${mafiaWins}W/${mafiaLosses}L (${Math.round(mafiaWins / (mafiaWins + mafiaLosses) * 100)}%)`;
         const townRate = `\nYou've rolled town in ${Math.round(townGames.length / history.length * 100)}% of your games.`;
-        const bestSetup = `\nYour best setup seems to be ${bestScore.name}, you've got a ${Math.round(bestScore.wins / bestScore.records * 100)}% winrate over ${bestScore.records} games.`;
-        const worstSetup = `\nYou seem to struggle most with ${worstScore.name}, as you've only won ${Math.round(worstScore.wins / worstScore.records * 100)}% of the ${worstScore.records} times you've played it.`;
+        const bestSetup = `\nYour best setup appears to be \`${bestScore.name}\`; you've got a ${Math.round(bestScore.wins / bestScore.records * 100)}% winrate over ${bestScore.records} games.`;
+        const worstSetup = `\nYou seem to struggle most with \`${worstScore.name}\`, as you've lost ${Math.round((worstScore.records - worstScore.wins) / worstScore.records * 100)}% of the ${worstScore.records} times you've played it.`;
         channel.send(greeting + townStats + mafiaStats + townRate + bestSetup + worstSetup);
     }
 
