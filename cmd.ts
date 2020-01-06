@@ -61,12 +61,14 @@ export class Cmd {
             case 'bug':
                 return new PublicCommand(Core.reportBug, Permissions.isAny);
             case 'bugs':
-                return new PublicCommand(Core.getBugs, Permissions.isAny);
+                return new PublicCommand(Core.publicBugs, Permissions.isAny);
         }
     }
 
     static getPrivateCommand (cmd: string) : PrivateCommand {
         switch (cmd) {
+            case 'bugs':
+                return new PrivateCommand(Core.bugs);
             case 'debug':
                 return new PrivateCommand(Core.dismissBug);
             case 'modkill':

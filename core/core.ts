@@ -8,7 +8,11 @@ export class Core {
         channel.send(`PONGOGONG`);
     }
 
-    static async getBugs (channel: TextChannel, user: GuildMember) : Promise<void> {
+    static async publicBugs (channel: TextChannel, user: GuildMember) : Promise<void> {
+        await Core.bugs(user.user);
+    }
+
+    static async bugs (user: User) : Promise<void> {
         const bugs = await getBugs();
         const embed = new RichEmbed().setTitle('Currently open bugs');
         for (let bug of bugs) {

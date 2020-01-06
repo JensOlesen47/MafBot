@@ -295,7 +295,7 @@ async function getFullHistoryEmbed (history: History[], last: boolean) : Promise
             teamMembers = [];
             lastTeam = player.team;
         }
-        teamMembers.push(`${Core.findUserDisplayNameById(player.guildid, player.userid) || player.username} (${player.role}) - ${player.death ? player.death : player.won ? 'survived' : 'endgamed'}`);
+        teamMembers.push(`${Core.findUserDisplayNameById(player.guildid, player.userid) || player.username} (${player.role})${player.won !== null ? ` - ${player.death ? player.death : player.won ? 'survived' : 'endgamed'}` : ''}`);
     }
     embed.addField(lastTeam, teamMembers.join('\n'));
     return embed;
