@@ -68,6 +68,6 @@ export async function getHistoryForUser (userId: string) : Promise<History[]> {
     const selectCols = `SELECT game_history.id id, video, winningteam, timestamp, setup.name setupname, userid, guildid, username, role, team, won, death FROM game_history`;
     const setupQuery = ` INNER JOIN setup ON setup.id=game_history.fksetup`;
     const userHistoryQuery = ` INNER JOIN user_history ON fkgamehistory=game_history.id`;
-    const forThisUser = ` WHERE user_history.userid=${userId}`;
+    const forThisUser = ` WHERE user_history.userid='${userId}'`;
     return await query<History>(selectCols + setupQuery + userHistoryQuery + forThisUser);
 }
