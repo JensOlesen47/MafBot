@@ -88,15 +88,15 @@ export class Silly {
     }
 
     static async stats (channel: TextChannel, user: GuildMember, args: string[]) : Promise<void> {
-        let userId = user.id;
+        let statsUser = user;
         if (args[0]) {
-            const foundUserId = Core.findUserIdByPartialDisplayName(channel.guild.id, args[0]);
-            if (foundUserId) {
-                userId = foundUserId;
+            const foundUser = channel.members.find(member => member.displayName.toLowerCase() === args[0] || member.displayName.toLowerCase().startsWith(args[0]));
+            if (foundUser) {
+                statsUser = foundUser;
             }
         }
 
-        const history = (await getHistoryForUser(userId)).filter(game => game.won !== null);
+        const history = (await getHistoryForUser(statsUser.id)).filter(game => game.won !== null);
 
         const townGames = history.filter(game => game.team === 'town');
         const townWins = townGames.filter(game => game.won).length;
@@ -128,12 +128,15 @@ export class Silly {
         const bestScore = setupScores[setupScores.length - 1];
         const worstScore = setupScores[0];
 
-        const greeting = `Here are your stats ${Core.findUserMention(channel, user.displayName)}:`;
+        const sameUser = statsUser === user;
+        const greeting = sameUser
+            ? `Here are your stats ${Core.findUserMention(channel, user.displayName)}:`
+            : `Here are ${Core.findUserMention(channel, statsUser.displayName)}'s stats:`;
         const townStats = `\nTOWN - ${townWins}W/${townLosses}L (${Math.round(townWins / (townWins + townLosses) * 100)}%)`;
         const mafiaStats = `\nMAFIA - ${mafiaWins}W/${mafiaLosses}L (${Math.round(mafiaWins / (mafiaWins + mafiaLosses) * 100)}%)`;
-        const townRate = `\nYou've rolled town in ${Math.round(townGames.length / history.length * 100)}% of your games.`;
-        const bestSetup = `\nYour best setup appears to be \`${bestScore.name}\`; you've got a ${Math.round(bestScore.wins / bestScore.records * 100)}% winrate over ${bestScore.records} games.`;
-        const worstSetup = `\nYou seem to struggle most with \`${worstScore.name}\`, as you've lost ${Math.round((worstScore.records - worstScore.wins) / worstScore.records * 100)}% of the ${worstScore.records} times you've played it.`;
+        const townRate = `\n${sameUser ? 'You' : 'They'}'ve rolled town in ${Math.round(townGames.length / history.length * 100)}% of ${sameUser ? 'your' : 'their'} games.`;
+        const bestSetup = `\n${sameUser ? 'Your' : 'Their'} best setup appears to be \`${bestScore.name}\`; ${sameUser ? 'you' : 'they'}'ve got a ${Math.round(bestScore.wins / bestScore.records * 100)}% winrate over ${bestScore.records} games.`;
+        const worstSetup = `\n${sameUser ? 'You' : 'They'} seem to struggle most with \`${worstScore.name}\`, as ${sameUser ? 'you' : 'they'}'ve lost ${Math.round((worstScore.records - worstScore.wins) / worstScore.records * 100)}% of the ${worstScore.records} times ${sameUser ? 'you' : 'they'}'ve played it.`;
         channel.send(greeting + townStats + mafiaStats + townRate + bestSetup + worstSetup);
     }
 
