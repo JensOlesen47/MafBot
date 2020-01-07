@@ -87,8 +87,16 @@ export class Silly {
         channel.send(embed);
     }
 
-    static async stats (channel: TextChannel, user: GuildMember) : Promise<void> {
-        const history = (await getHistoryForUser(user.id)).filter(game => game.won !== null);
+    static async stats (channel: TextChannel, user: GuildMember, args: string[]) : Promise<void> {
+        let userId = user.id;
+        if (args[0]) {
+            const foundUserId = Core.findUserIdByPartialDisplayName(channel.guild.id, args[0]);
+            if (foundUserId) {
+                userId = foundUserId;
+            }
+        }
+
+        const history = (await getHistoryForUser(userId)).filter(game => game.won !== null);
 
         const townGames = history.filter(game => game.team === 'town');
         const townWins = townGames.filter(game => game.won).length;

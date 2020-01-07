@@ -99,6 +99,12 @@ export class Core {
         return guildMember && guildMember.displayName;
     }
 
+    static findUserIdByPartialDisplayName (guildId: string, displayName: string) : string {
+        const guild = mafbot.guilds.find(g => g.id === guildId);
+        const guildMember = guild.members.find(member => member.displayName.toLowerCase() === displayName || member.displayName.toLowerCase().startsWith(displayName));
+        return guildMember && guildMember.id;
+    }
+
     static getFormattedTime (timestamp: string) : string {
         return moment(timestamp).format('ll');
     }
