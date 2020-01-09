@@ -6,11 +6,12 @@ const headers = {'Content-Type':'application/x-www-form-urlencoded'};
 
 http.createServer((req, res) => {
     const htmlPage = getHtmlPage(req.url.substring(1));
+    res.writeHead(200, {'Content-Type': 'text/html'});
     if (!htmlPage) {
         res.write('U DONE FUCKED UP BOI');
         res.end();
+        return;
     }
-    res.writeHead(200, {'Content-Type': 'text/html'});
     res.write(htmlPage);
     res.end();
 }).listen(8080);
