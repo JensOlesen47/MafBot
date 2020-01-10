@@ -1,11 +1,15 @@
+import {readFileSync} from 'fs';
+
 const htmlPages = {
-    registrationConfirmed: `<p>Congrats, you are now registered with mafbot!</p>`,
-    vote: `<label for="votee" style="margin-right: 25px">Who do you want to vote for?</label><select id="votee" onchange="document.getElementById('voteeSpan').innerHTML = document.getElementById('votee').value"><option value="Urist">Urist</option><option value="StarV">StarV</option><option value="Ellibereth">Ellibereth</option></select><br/><br/>You are now voting for: <span id="voteeSpan"></span>`
-};
+    registrationConfirmed: './html/registration-confirmed.html',
+    vote: './html/vote.html'
+} as {[pageName: string]: string};
 
 export function getHtmlPage (urlSegment: string) : string {
-    const pageBody = htmlPages[urlSegment];
-    if (!pageBody) {
+    const filePath = htmlPages[urlSegment];
+    const pageBody = filePath && readFileSync(filePath, {encoding: 'UTF-8'});
+    const pageScript = filePath && readFileSync(filePath, {encoding: 'UTF-8'});
+    if (!pageBody || !pageScript) {
         return;
     }
 
@@ -15,6 +19,11 @@ export function getHtmlPage (urlSegment: string) : string {
     <head>
         <meta charset="UTF-8">
         <title>${urlSegment}</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+        <script type="application/javascript">${pageScript}</script>
     </head>
     <body>
         ${pageBody}
