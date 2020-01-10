@@ -1,8 +1,8 @@
 import {readFileSync} from 'fs';
 
 const htmlPages = {
-    registrationConfirmed: './html/registration-confirmed.html',
-    vote: './html/vote.html'
+    registrationConfirmed: '../../http/html/registration-confirmed.html',
+    vote: '../../http/html/vote.html'
 } as {[pageName: string]: string};
 
 export function getHtmlPage (urlSegment: string) : string {
