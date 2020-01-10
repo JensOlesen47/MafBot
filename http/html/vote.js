@@ -6,6 +6,7 @@ let formalledBy;
 
 const socket = new WebSocket('ws://18.223.209.141/');
 socket.addEventListener('message', message => {
+    console.log(`Got socket message: ${message}`);
     const json = JSON.parse(message.data);
     switch (json.path) {
         case 'user':

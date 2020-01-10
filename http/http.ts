@@ -24,6 +24,7 @@ let voters = [];
 
 socketServer.on('connection', socket => {
     socket.on('message', message => {
+        console.log(`message received: ${message}`);
         const json = JSON.parse(message);
         switch (json.path) {
             case 'login':
