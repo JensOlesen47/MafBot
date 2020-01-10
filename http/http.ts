@@ -29,11 +29,11 @@ socketServer.on('connection', socket => {
         switch (json.path) {
             case 'login':
                 users.push(json.username);
-                socket.send(JSON.stringify({ path: 'user', users: users }));
+                socketServer.clients.forEach(client => {console.log('sending login msg'); client.send(JSON.stringify({ path: 'user', users: users }))});
                 break;
             case 'logout':
                 users = users.filter(u => u !== json.username);
-                socket.send(JSON.stringify({ path: 'user', users: users }));
+                socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'user', users: users })));
                 break;
             case 'vote':
                 voters.push(json.username);
@@ -41,9 +41,9 @@ socketServer.on('connection', socket => {
             case 'formal':
                 formal = json.formal;
                 formalledBy = json.username;
-                socket.send(JSON.stringify({ path: 'formal', formal: formal, username: formalledBy }));
+                socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'formal', formal: formal, username: formalledBy })));
                 setTimeout(() => {
-                    socket.send(JSON.stringify({ path: 'reveal', votes: voters }));
+                    socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'reveal', votes: voters })));
                     voters = [];
                 }, 60000);
                 break;
