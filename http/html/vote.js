@@ -47,6 +47,8 @@ function submitFormal () {
 }
 
 function vote () {
+    document.getElementById('vote').hidden = true;
+    document.getElementById('thanksForVoting').hidden = false;
     const json = { path: 'vote', username: username };
     socket.send(JSON.stringify(json));
 }
@@ -83,6 +85,8 @@ function hideOthers (div) {
     document.getElementById('usernameDiv').hidden = true;
     document.getElementById('formalDiv').hidden = true;
     document.getElementById('voteDiv').hidden = true;
+    document.getElementById('vote').hidden = false;
+    document.getElementById('thanksForVoting').hidden = true;
 
     document.getElementById(div).hidden = false;
 }
