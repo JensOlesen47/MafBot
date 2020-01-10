@@ -56,15 +56,19 @@ function updateUsers (users) {
 }
 
 function doFormal (formal, user) {
-    formalledUser = formal;
-    document.getElementById('vote').value = `Vote for ${formalledUser}`;
     hideOthers('voteDiv');
+    console.log('got here');
+    formalledUser = formal;
+    formalledBy = user;
+    document.getElementById('vote').value = `Vote for ${formalledUser}`;
 
+    console.log('and here');
     let timeRemaining = 60;
     while (timeRemaining--) {
         document.getElementById('voteTimer').innerHTML = `${formalledBy} has formalled ${formalledUser}! Time remaining: ${timeRemaining}s`;
     }
 
+    console.log('done');
     hideOthers('formalDiv');
 }
 

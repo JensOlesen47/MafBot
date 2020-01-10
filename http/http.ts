@@ -29,7 +29,7 @@ socketServer.on('connection', socket => {
         switch (json.path) {
             case 'login':
                 users.push(json.username);
-                socketServer.clients.forEach(client => {console.log('sending login msg'); client.send(JSON.stringify({ path: 'user', users: users }))});
+                socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'user', users: users })));
                 break;
             case 'logout':
                 users = users.filter(u => u !== json.username);
