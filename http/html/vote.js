@@ -64,12 +64,15 @@ function doFormal (formal, user) {
 
     console.log('and here');
     let timeRemaining = 60;
-    while (timeRemaining--) {
-        document.getElementById('voteTimer').innerHTML = `${formalledBy} has formalled ${formalledUser}! Time remaining: ${timeRemaining}s`;
-    }
+    const timerInterval = setInterval(() => {
+        document.getElementById('voteTimer').innerHTML = `${formalledBy} has formalled ${formalledUser}! Time remaining: ${timeRemaining--}s`;
 
-    console.log('done');
-    hideOthers('formalDiv');
+        if (timeRemaining <= 0) {
+            console.log('done');
+            hideOthers('formalDiv');
+            clearInterval(timerInterval);
+        }
+    }, 1000);
 }
 
 function doReveal (votes) {
