@@ -6,7 +6,7 @@ let formalledBy;
 
 const socket = new WebSocket('ws://18.223.209.141/');
 socket.addEventListener('message', message => {
-    console.log(`Got socket message: ${message}`);
+    console.log(`Got socket message: ${message.data}`);
     const json = JSON.parse(message.data);
     switch (json.path) {
         case 'user':
@@ -38,6 +38,10 @@ function submitUsername () {
 }
 
 function submitFormal () {
+    const formalee = document.getElementById('formal').value;
+    if (!formalee) {
+        return;
+    }
     const json = { path: 'formal', username: username, formal: document.getElementById('formal').value };
     socket.send(JSON.stringify(json));
 }
@@ -48,7 +52,7 @@ function vote () {
 }
 
 function updateUsers (users) {
-    document.getElementById('formal').innerHTML = users.map(u => u !== username ? `<option value=${u}>u</option>` : ``);
+    document.getElementById('formal').innerHTML = users.map(u => u !== username ? `<option value=${u}>${u}</option>` : ``);
 }
 
 function doFormal (formal, user) {
