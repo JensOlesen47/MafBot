@@ -5,7 +5,7 @@ let formalledUser;
 let formalledBy;
 
 const socket = new WebSocket('ws://18.223.209.141/');
-socket.addEventListener('message', message => {
+socket.onmessage = function (message) {
     console.log(`Got socket message: ${message.data}`);
     const json = JSON.parse(message.data);
     switch (json.path) {
@@ -19,11 +19,11 @@ socket.addEventListener('message', message => {
             doReveal(json.votes);
             break;
     }
-});
-socket.addEventListener('close', event => {
-    const json = { path: 'logout', username: username };
-    socket.send(JSON.stringify(json));
-});
+};
+// socket.addEventListener('close', event => {
+//     const json = { path: 'logout', username: username };
+//     socket.send(JSON.stringify(json));
+// });
 
 function submitUsername () {
     username = document.getElementById('username').value;
