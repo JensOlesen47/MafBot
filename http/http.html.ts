@@ -1,14 +1,14 @@
 import {readFileSync} from 'fs';
 
 const htmlPages = {
-    registrationConfirmed: '../../http/html/registration-confirmed.html',
-    vote: '../../http/html/vote.html'
+    registrationConfirmed: '../../http/html/registration-confirmed',
+    vote: '../../http/html/vote'
 } as {[pageName: string]: string};
 
 export function getHtmlPage (urlSegment: string) : string {
     const filePath = htmlPages[urlSegment];
-    const pageBody = filePath && readFileSync(filePath, {encoding: 'UTF-8'});
-    const pageScript = filePath && readFileSync(filePath, {encoding: 'UTF-8'});
+    const pageBody = filePath && readFileSync(filePath + '.html', {encoding: 'UTF-8'});
+    const pageScript = filePath && readFileSync(filePath + '.js', {encoding: 'UTF-8'});
     if (!pageBody || !pageScript) {
         return;
     }
