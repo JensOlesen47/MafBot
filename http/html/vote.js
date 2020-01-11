@@ -20,10 +20,12 @@ socket.onmessage = function (message) {
             break;
     }
 };
-// socket.addEventListener('close', event => {
-//     const json = { path: 'logout', username: username };
-//     socket.send(JSON.stringify(json));
-// });
+
+window.addEventListener('unload', unload => {
+    const json = { path: 'logout', username: username };
+    socket.send(JSON.stringify(json));
+    socket.close();
+});
 
 function submitUsername () {
     username = document.getElementById('username').value;
@@ -59,18 +61,15 @@ function updateUsers (users) {
 
 function doFormal (formal, user) {
     hideOthers('voteDiv');
-    console.log('got here');
     formalledUser = formal;
     formalledBy = user;
     document.getElementById('vote').value = `Vote for ${formalledUser}`;
 
-    console.log('and here');
     let timeRemaining = 60;
     const timerInterval = setInterval(() => {
         document.getElementById('voteTimer').innerHTML = `${formalledBy} has formalled ${formalledUser}! Time remaining: ${timeRemaining--}s`;
 
         if (timeRemaining <= 0) {
-            console.log('done');
             hideOthers('formalDiv');
             clearInterval(timerInterval);
         }

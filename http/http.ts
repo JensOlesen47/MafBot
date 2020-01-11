@@ -45,7 +45,7 @@ socketServer.on('connection', socket => {
                 setTimeout(() => {
                     socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'reveal', votes: voters })));
                     voters = [];
-                }, 60000);
+                }, 65000);
                 break;
         }
     });
