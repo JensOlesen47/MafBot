@@ -88,7 +88,7 @@ export class Silly {
     }
 
     static async privateStats (user: User) : Promise<void> {
-        await this.stats(user, user.id, user.username, true);
+        await Silly.stats(user, user.id, user.username, true);
     }
 
     static async publicStats (channel: TextChannel, user: GuildMember, args: string[]) : Promise<void> {
@@ -99,7 +99,7 @@ export class Silly {
                 statsUser = foundUser;
             }
         }
-        await this.stats(channel, statsUser.id, Core.findUserMention(channel, statsUser.displayName), statsUser === user);
+        await Silly.stats(channel, statsUser.id, Core.findUserMention(channel, statsUser.displayName), statsUser === user);
     }
 
     private static async stats (channel: PartialTextBasedChannelFields, userId: string, username: string, sameUser: boolean) : Promise<void> {
