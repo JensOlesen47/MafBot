@@ -35,7 +35,7 @@ export async function startGame (channel: TextChannel, user: GuildMember, args: 
         return;
     }
 
-    setup.video = setup.currentSetup.unimplemented || ['roles', 'vm'].includes(args[1]);
+    setup.video = setup.currentSetup.unimplemented || ['roles', 'vm', 'video'].includes(args[1]);
 
     const minplayers = setup.currentSetup.minplayers || config.minimum_players;
     const maxplayers = setup.currentSetup.maxplayers || config.maximum_players;

@@ -1,6 +1,7 @@
 import {GuildMember, RichEmbed, TextChannel, User} from "discord.js";
 import {mafbot} from "../bot";
 import * as moment from "moment";
+import {escape} from "sqlstring";
 import {addBug, dismissBug, getBugs} from "./db/bug";
 
 export class Core {
@@ -28,7 +29,7 @@ export class Core {
             user.send(`If you've got a bug to report, please let me know what it is by using \`!bug [report]\`. Hopefully it's not regarding this command.`);
             return;
         }
-        const comment = args.join(' ');
+        const comment = escape(args.join(' '));
         const bug = await addBug(comment, user.user);
         user.send(`Thanks for reporting this bug! Your bug's ID number is ${bug.id}. Sleep soundly knowing that today, you have made a difference.`);
     }
