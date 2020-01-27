@@ -1,4 +1,4 @@
-import {GuildMember, Message, RichEmbed, TextChannel} from "discord.js";
+import {GuildMember, Message, PartialTextBasedChannelFields, RichEmbed, TextChannel, User} from "discord.js";
 import {Core} from "../core/core";
 import {getHistoryForUser, top} from "../core/db/history";
 
@@ -87,7 +87,11 @@ export class Silly {
         channel.send(embed);
     }
 
-    static async stats (channel: TextChannel, user: GuildMember, args: string[]) : Promise<void> {
+    static async privateStats (user: User) : Promise<void> {
+        await this.stats(user, user.id, user.username, true);
+    }
+
+    static async publicStats (channel: TextChannel, user: GuildMember, args: string[]) : Promise<void> {
         let statsUser = user;
         if (args[0]) {
             const foundUser = channel.members.find(member => member.displayName.toLowerCase() === args[0] || member.displayName.toLowerCase().startsWith(args[0]));
@@ -95,8 +99,11 @@ export class Silly {
                 statsUser = foundUser;
             }
         }
+        await this.stats(channel, statsUser.id, Core.findUserMention(channel, statsUser.displayName), statsUser === user);
+    }
 
-        const history = (await getHistoryForUser(statsUser.id)).filter(game => game.won !== null);
+    private static async stats (channel: PartialTextBasedChannelFields, userId: string, username: string, sameUser: boolean) : Promise<void> {
+        const history = (await getHistoryForUser(userId)).filter(game => game.won !== null);
 
         const townGames = history.filter(game => game.team === 'town');
         const townWins = townGames.filter(game => game.won).length;
@@ -128,10 +135,7 @@ export class Silly {
         const bestScore = setupScores[setupScores.length - 1];
         const worstScore = setupScores[0];
 
-        const sameUser = statsUser === user;
-        const greeting = sameUser
-            ? `Here are your stats ${Core.findUserMention(channel, user.displayName)}:`
-            : `Here are ${Core.findUserMention(channel, statsUser.displayName)}'s stats:`;
+        const greeting = sameUser ? `Here are your stats ${username}:` : `Here are ${username}'s stats:`;
         const townStats = `\nTOWN - ${townWins}W/${townLosses}L (${Math.round(townWins / (townWins + townLosses) * 100)}%)`;
         const mafiaStats = `\nMAFIA - ${mafiaWins}W/${mafiaLosses}L (${Math.round(mafiaWins / (mafiaWins + mafiaLosses) * 100)}%)`;
         const townRate = `\n${sameUser ? 'You' : 'They'}'ve rolled town in ${Math.round(townGames.length / history.length * 100)}% of ${sameUser ? 'your' : 'their'} games.`;

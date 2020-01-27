@@ -59,7 +59,7 @@ export class Cmd {
             case 'top':
                 return new PublicCommand(Silly.top, Permissions.isAny);
             case 'stats':
-                return new PublicCommand(Silly.stats, Permissions.isAny);
+                return new PublicCommand(Silly.publicStats, Permissions.isAny);
             case 'bug':
                 return new PublicCommand(Core.reportBug, Permissions.isAny);
             case 'bugs':
@@ -79,6 +79,8 @@ export class Cmd {
                 return new PrivateCommand(mafia.addRole);
             case 'removerole':
                 return new PrivateCommand(mafia.removeRole);
+            case 'stats':
+                return new PrivateCommand(Silly.privateStats);
             case 'history':
                 return new PrivateCommand(mafia.history);
             case 'spoilers':
