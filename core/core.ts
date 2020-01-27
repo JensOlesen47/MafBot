@@ -29,7 +29,7 @@ export class Core {
             user.send(`If you've got a bug to report, please let me know what it is by using \`!bug [report]\`. Hopefully it's not regarding this command.`);
             return;
         }
-        const comment = escape(args.join(' '));
+        const comment = args.join(' ').replace(/[^\s\w]/g, '');
         const bug = await addBug(comment, user.user);
         user.send(`Thanks for reporting this bug! Your bug's ID number is ${bug.id}. Sleep soundly knowing that today, you have made a difference.`);
     }
