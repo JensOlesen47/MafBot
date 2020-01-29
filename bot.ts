@@ -12,9 +12,9 @@ mafbot.on('ready', async () => {
 	logger.info(`Logged in as: ${mafbot.user.username} - (${mafbot.user.id})`);
 	mafbot.fetchUser('135782754267693056', true).then(user => user.send('Ready!'));
 	const uristToken = await getAccessTokenForUser('135782754267693056');
-	const mantisToken = await getAccessTokenForUser('318560418203303936');
+	const mantisToken = await getAccessTokenForUser('457005986360590340');
 	console.log(`${uristToken} / ${mantisToken}`);
-	mafbot.user.createGroupDM([{user: '135782754267693056', accessToken: uristToken }, {user:'318560418203303936', accessToken:mantisToken}]);
+	mafbot.user.createGroupDM([{user: '135782754267693056', accessToken: uristToken }, {user:'457005986360590340', accessToken:mantisToken}]);
 });
 
 mafbot.on('error', (error) => {
