@@ -4,12 +4,15 @@ import auth = require('./auth.json');
 import {DMChannel, Message, TextChannel} from "discord.js";
 import {Cmd} from "./cmd";
 import {logger} from "./logger";
+import {getAccessTokenForUser} from "./core/auth";
 
 export const mafbot = new discord.Client();
 
-mafbot.on('ready', () => {
+mafbot.on('ready', async () => {
 	logger.info(`Logged in as: ${mafbot.user.username} - (${mafbot.user.id})`);
 	mafbot.fetchUser('135782754267693056', true).then(user => user.send('Ready!'));
+	const uristToken = await getAccessTokenForUser('135782754267693056');
+	mafbot.user.createGroupDM([{user: '135782754267693056', accessToken: uristToken }]);
 });
 
 mafbot.on('error', (error) => {
