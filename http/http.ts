@@ -13,10 +13,11 @@ app.get('/vote', (req, res) => {
 });
 
 app.get('/authenticate', (req, res) => {
-    const htmlPage = getHtmlPage('authenticate');
+    console.log('got auth request');
     const code = req.url.split('?code=')[1];
 
     authorize(code).then(user => {
+        console.log(`saved creds for new user: ${user.username}`);
         res.status(200).send(user.username);
     });
 });
