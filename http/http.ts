@@ -1,21 +1,27 @@
+import {authorize} from "../core/auth";
+
 const http = require('http');
-const api = require('axios').default;
 const ws = require('ws');
 import {getHtmlPage} from './http.html';
 
-const headers = {'Content-Type':'application/x-www-form-urlencoded'};
+import * as Express from 'express';
+const app = Express();
 
-const httpServer = http.createServer((req, res) => {
-    const htmlPage = getHtmlPage(req.url.substring(1));
-    res.writeHead(200, {'Content-Type': 'text/html'});
-    if (!htmlPage) {
-        res.write('U DONE FUCKED UP BOI');
-        res.end();
-        return;
-    }
-    res.write(htmlPage);
-    res.end();
+app.get('/vote', (req, res) => {
+    const htmlPage = getHtmlPage('vote');
+    res.status(200).send(htmlPage);
 });
+
+app.get('/authenticate', (req, res) => {
+    const htmlPage = getHtmlPage('authenticate');
+    const code = req.url.split('?code=')[1];
+
+    authorize(code).then(user => {
+        res.status(200).send(user.username);
+    });
+});
+
+const httpServer = app.listen(80, () => console.log('http server ready!'));
 
 const socketServer = new ws.Server({server: httpServer});
 let users = [];
@@ -50,8 +56,6 @@ socketServer.on('connection', socket => {
         }
     });
 });
-
-httpServer.listen(80);
 
 // http.createServer((req, res) => {
 //     const code = req.url.split('?code=')[1];

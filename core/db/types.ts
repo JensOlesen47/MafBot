@@ -49,3 +49,10 @@ export interface Bug {
     reportedby: string;
     timestamp: string;
 }
+
+export interface UserToken {
+    userid: string;
+    accesstoken: string;
+    refreshtoken: string;
+    expiry: Date;
+}

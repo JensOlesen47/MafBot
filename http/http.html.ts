@@ -1,7 +1,7 @@
 import {readFileSync} from 'fs';
 
 const htmlPages = {
-    registrationConfirmed: './http/html/registration-confirmed',
+    authenticate: './http/html/registration-confirmed',
     vote: './http/html/vote'
 } as {[pageName: string]: string};
 
