@@ -16,10 +16,15 @@ app.get('/authenticate', (req, res) => {
     console.log('got auth request');
     const code = req.url.split('?code=')[1];
 
-    authorize(code).then(user => {
-        console.log(`saved creds for new user: ${user.username}`);
-        res.status(200).send(`Thanks for authenticating with MafBot, ${user.username}!`);
-    });
+    if (code) {
+        authorize(code).then(user => {
+            console.log(`saved creds for new user: ${user.username}`);
+            res.status(200).send(`Thanks for authenticating with MafBot, ${user.username}!`);
+        });
+    } else {
+        console.log(`user denied auth request`);
+        res.status(200).send(`That isn't very helpful, I kinda need you to auth with me to work properly.`);
+    }
 });
 
 const httpServer = app.listen(80, () => console.log('http server ready!'));
