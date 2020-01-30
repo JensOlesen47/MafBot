@@ -22,6 +22,6 @@ export async function getTokens (userIds: string[]) : Promise<UserToken[]> {
 }
 
 export async function deleteToken (userId: string) : Promise<void> {
-    const del = `DELETE FROM auth_token WHERE userid=${userId}`;
+    const del = `DELETE FROM auth_token WHERE userid='${userId}'`;
     await update(del);
 }
