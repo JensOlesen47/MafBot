@@ -6,6 +6,7 @@ import {Permissions} from "./core/permissions";
 
 import mafia = require('./mafia/commands/commands');
 import action = require('./mafia/commands/actions');
+import auth = require('./core/auth');
 import {Help} from "./core/help";
 
 export class Cmd {
@@ -55,7 +56,7 @@ export class Cmd {
             case 'history':
                 return new PublicCommand(mafia.publicHistory, Permissions.isAny);
             case 'spoilers':
-                return new PublicCommand(mafia.publicSpoilers, Permissions.isAny);
+                return new PublicCommand(mafia.spoilers, Permissions.isAny);
             case 'top':
                 return new PublicCommand(Silly.top, Permissions.isAny);
             case 'stats':
@@ -64,6 +65,10 @@ export class Cmd {
                 return new PublicCommand(Core.reportBug, Permissions.isAny);
             case 'bugs':
                 return new PublicCommand(Core.publicBugs, Permissions.isAny);
+            case 'auth':
+                return new PublicCommand(auth.publicAuthCmd, Permissions.isAny);
+            case 'deauth':
+                return new PublicCommand(auth.publicDeauthCmd, Permissions.isAny);
         }
     }
 
@@ -83,8 +88,10 @@ export class Cmd {
                 return new PrivateCommand(Silly.privateStats);
             case 'history':
                 return new PrivateCommand(mafia.history);
-            case 'spoilers':
-                return new PrivateCommand(mafia.spoilers);
+            case 'auth':
+                return new PrivateCommand(auth.privateAuthCmd);
+            case 'deauth':
+                return new PrivateCommand(auth.privateDeauthCmd);
             default:
                 return new PrivateCommand(action.doAction);
         }

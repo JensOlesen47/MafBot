@@ -14,6 +14,8 @@ import {History} from "../../core/db/types";
 import moment = require("moment");
 import {Help} from "../../core/help";
 import {mafbot} from "../../bot";
+import {addUserToGuild, cleanupGuilds} from "../private-chat";
+import {checkUserAuthorization, getAccessTokenForUser} from "../../core/auth";
 
 export async function startGame (channel: TextChannel, user: GuildMember, args: string[]) : Promise<void> {
     if (state.isGameInProgress()) {
@@ -95,6 +97,7 @@ export async function playerIn (channel: TextChannel, user: GuildMember) : Promi
 
     await state.addPlayer(user);
     channel.send(`You are now signed up for the next game, ${user.displayName}.`);
+    await checkUserAuthorization(user.user);
     // problem with multiple people inning at once... it takes too long to init the setup... commenting this out til i figure out a fix
     // but maybe it isn't a problem?? maybe i'll uncomment it anyway and see what happen????
     if (currentSetup.maxplayers && state.players.length === currentSetup.maxplayers) {
@@ -124,12 +127,13 @@ export async function publicHistory (channel: TextChannel, user: GuildMember, ar
     return await history(user.user, args);
 }
 
-export async function publicSpoilers (channel: TextChannel, user: GuildMember) : Promise<void> {
-    return await spoilers(user.user);
-}
-
-export async function spoilers (user: User) : Promise<void> {
-    return await history(user, ['last']);
+export async function spoilers (channel: TextChannel, user: GuildMember) : Promise<void> {
+    await history(user.user, ['last']);
+    const accessToken = await getAccessTokenForUser(user.id);
+    if (accessToken) {
+        mafbot.guilds.filter(guild => guild.name.startsWith('MafBot ~ '))
+            .forEach(guild => addUserToGuild(user.user, `${user.displayName} (Spectator)`, guild, accessToken));
+    }
 }
 
 export async function history (user: User, args: string[]) : Promise<void> {
@@ -308,6 +312,7 @@ export async function beginGame (channel: TextChannel) : Promise<void> {
             return;
         }
         state.channel = channel;
+        await cleanupGuilds();
         await setup.initializeSetup();
         await state.startGame();
     }
@@ -369,7 +374,7 @@ export async function addRole (user: User, args: string[]) : Promise<void> {
     setModeratorMessage(await moderatorSetupMessage.edit(getSetupAsEmbed()));
 }
 
-export async function removeRole(user: User, args: string[]) : Promise<void> {
+export async function removeRole (user: User, args: string[]) : Promise<void> {
     if (!isModerator(user)) {
         return;
     }
@@ -386,7 +391,7 @@ export async function removeRole(user: User, args: string[]) : Promise<void> {
     setModeratorMessage(await moderatorSetupMessage.edit(getSetupAsEmbed()));
 }
 
-export async function modkill(user: User, args: string[]) : Promise<void> {
+export async function modkill (user: User, args: string[]) : Promise<void> {
     if (!state.isGameInProgress()) {
         user.send(`I can't kill anybody while there are no games in progress.`);
         return;

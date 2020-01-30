@@ -1,7 +1,6 @@
 import {GuildMember, RichEmbed, TextChannel, User} from "discord.js";
 import {mafbot} from "../bot";
 import * as moment from "moment";
-import {escape} from "sqlstring";
 import {addBug, dismissBug, getBugs} from "./db/bug";
 
 export class Core {

@@ -1,6 +1,6 @@
 import {AxiosStatic} from "axios";
-import {getToken, setToken} from "./db/user-token";
-import {User} from "discord.js";
+import {deleteToken, getToken, setToken} from "./db/user-token";
+import {GuildMember, TextChannel, User} from "discord.js";
 import {UserToken} from "./db/types";
 
 const api: AxiosStatic = require('axios').default;
@@ -14,6 +14,41 @@ interface OAuthToken {
     scope: string;
 }
 
+export async function publicAuthCmd (channel: TextChannel, user: GuildMember) : Promise<void> {
+    await authCmd(user.user);
+}
+
+export async function privateAuthCmd (user: User) : Promise<void> {
+    await authCmd(user);
+}
+
+async function authCmd (user: User) : Promise<void> {
+    if (await checkUserAuthorization(user)) {
+        user.send(`Yepperoni you're authenticated already!\nIf you want me to forget about you forever, feel free to \`!deauth\`.`);
+    }
+}
+
+export async function publicDeauthCmd (channel: TextChannel, user: GuildMember) : Promise<void> {
+    await deauthCmd(user.user);
+}
+
+export async function privateDeauthCmd (user: User) : Promise<void> {
+    await deauthCmd(user);
+}
+
+async function deauthCmd (user: User) : Promise<void> {
+    user.send(`Alright, I'm getting rid of the authentication you gave me.`);
+    await deleteToken(user.id);
+}
+
+export async function checkUserAuthorization (user: User) : Promise<boolean> {
+    const token = await getAccessTokenForUser(user.id);
+    if (!token) {
+        user.send(`Hey there! I notice that you haven't clicked my button yet.\nPlease go to this link, it'll allow me to invite you to group chats!\nhttps://discordapp.com/api/oauth2/authorize?client_id=487077607427276810&redirect_uri=http%3A%2F%2F18.223.209.141%2Fauthenticate&response_type=code&scope=identify%20guilds.join`);
+    }
+    return !!token;
+}
+
 export async function authorize (authCode: string) : Promise<User> {
     const token = await fetchOAuthToken(authCode);
     const user = await fetchUserInfo(token.access_token);
@@ -25,7 +60,7 @@ export async function authorize (authCode: string) : Promise<User> {
 export async function getAccessTokenForUser (userId: string) : Promise<string> {
     let token = await getToken(userId);
     if (!token) {
-
+        return null;
     }
 
     let accessToken = token.accesstoken;

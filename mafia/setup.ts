@@ -7,6 +7,7 @@ import {Core} from "../core/core";
 import {logger} from "../logger";
 import {RichEmbed} from "discord.js";
 import {players} from "./game-state";
+import {createGuildForPlayers} from "./private-chat";
 
 export let currentSetup: MafiaSetup;
 export let video: boolean;
@@ -169,6 +170,15 @@ async function initSetup (roleList: MafiaPlayer[]) : Promise<void> {
         if (teammates.length > 0) {
             player.send(`Your ${player.mafia.team.name} budd${teammates.length > 1 ? 'ies' : 'y'}: ${teammates.map(mate => mate.displayName).join(', ')}`);
         }
+    }
+
+    const mafia = state.players.filter(player => player.mafia.team.name === 'mafia');
+    if (mafia.length >= 2) {
+        createGuildForPlayers(mafia, 'Mafia');
+    }
+    const masons = state.players.filter(player => player.mafia.role.name === 'Mason');
+    if (masons.length >= 2) {
+        createGuildForPlayers(masons, 'Mason');
     }
 }
 

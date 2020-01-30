@@ -15,3 +15,13 @@ export async function getToken (userId: string) : Promise<UserToken> {
     }
     return null;
 }
+
+export async function getTokens (userIds: string[]) : Promise<UserToken[]> {
+    const q = `SELECT * FROM auth_token WHERE userid IN ('${userIds.join(`','`)}')`;
+    return await query<UserToken>(q);
+}
+
+export async function deleteToken (userId: string) : Promise<void> {
+    const del = `DELETE FROM auth_token WHERE userid=${userId}`;
+    await update(del);
+}
