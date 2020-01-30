@@ -18,7 +18,7 @@ app.get('/authenticate', (req, res) => {
 
     authorize(code).then(user => {
         console.log(`saved creds for new user: ${user.username}`);
-        res.status(200).send(user.username);
+        res.status(200).send(`Thanks for authenticating with MafBot, ${user.username}!`);
     });
 });
 

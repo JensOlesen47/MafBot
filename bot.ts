@@ -13,10 +13,10 @@ mafbot.on('ready', async () => {
 	logger.info(`Logged in as: ${mafbot.user.username} - (${mafbot.user.id})`);
 	const papa = await mafbot.fetchUser('135782754267693056', true);
 	papa.send('Ready!');
-	const uristToken = await getAccessTokenForUser('135782754267693056');
-	const gu = await mafbot.user.createGuild('urist guild', 'us-east');
-	console.log(mafbot.guilds.map(g => `${g.id} - ${g.name}\n`));
-	await gu.addMember(papa, {accessToken: uristToken});
+	// const uristToken = await getAccessTokenForUser('135782754267693056');
+	// const gu = await mafbot.user.createGuild('urist guild', 'us-east');
+	// console.log(mafbot.guilds.map(g => `${g.id} - ${g.name}\n`));
+	// await gu.addMember(papa, {accessToken: uristToken});
 });
 
 mafbot.on('error', (error) => {
