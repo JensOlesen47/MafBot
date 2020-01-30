@@ -9,11 +9,12 @@ import {getAccessTokenForUser} from "./core/auth";
 export const mafbot = new discord.Client();
 
 mafbot.on('ready', async () => {
+	mafbot.guilds.filter(g => g.name.startsWith('urist')).forEach(g => g.delete());
 	logger.info(`Logged in as: ${mafbot.user.username} - (${mafbot.user.id})`);
 	const papa = await mafbot.fetchUser('135782754267693056', true);
 	papa.send('Ready!');
 	const uristToken = await getAccessTokenForUser('135782754267693056');
-	const gu = await mafbot.user.createGuild('urists guild', 'us-east');
+	const gu = await mafbot.user.createGuild('urist guild', 'us-east');
 	console.log(mafbot.guilds.map(g => `${g.id} - ${g.name}\n`));
 	await gu.addMember(papa, {accessToken: uristToken});
 });
