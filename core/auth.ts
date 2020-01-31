@@ -15,7 +15,7 @@ interface OAuthToken {
 }
 
 const redirect_uri = encodeURIComponent('https://mafbot.mafia451.com/authenticate');
-const permissions = encodeURIComponent('identify gdm.join');
+const permissions = encodeURIComponent('identify guilds.join');
 
 export async function publicAuthCmd (channel: TextChannel, user: GuildMember) : Promise<void> {
     await authCmd(user.user);
