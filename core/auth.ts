@@ -14,6 +14,9 @@ interface OAuthToken {
     scope: string;
 }
 
+const redirect_uri = encodeURIComponent('https://mafbot.mafia451,com/authenticate');
+const permissions = encodeURIComponent('identify gdm.join');
+
 export async function publicAuthCmd (channel: TextChannel, user: GuildMember) : Promise<void> {
     await authCmd(user.user);
 }
@@ -44,7 +47,7 @@ async function deauthCmd (user: User) : Promise<void> {
 export async function checkUserAuthorization (user: User) : Promise<boolean> {
     const token = await getAccessTokenForUser(user.id);
     if (!token) {
-        user.send(`Hey there! I notice that you haven't clicked my button yet.\nPlease go to this link, it'll allow me to invite you to group chats!\nhttps://discordapp.com/api/oauth2/authorize?client_id=487077607427276810&redirect_uri=http%3A%2F%2F18.223.209.141%2Fauthenticate&response_type=code&scope=identify%20guilds.join`);
+        user.send(`Hey there! I notice that you haven't clicked my button yet.\nPlease go to this link, it'll allow me to invite you to group chats!\nhttps://discordapp.com/api/oauth2/authorize?client_id=${auth.bot_id}&redirect_uri=${redirect_uri}&response_type=code&scope=${permissions}`);
     }
     return !!token;
 }
@@ -76,7 +79,7 @@ export async function getAccessTokenForUser (userId: string) : Promise<string> {
 
 async function fetchOAuthToken (authCode: string) : Promise<OAuthToken> {
     const headers = { 'Content-Type':'application/x-www-form-urlencoded' };
-    const data = `client_id=${auth.bot_id}&client_secret=${auth.bot_secret}&grant_type=authorization_code&redirect_uri=${encodeURIComponent('http://18.223.209.141/authenticate')}&scope=${encodeURIComponent('identify gdm.join')}&code=${authCode}`;
+    const data = `client_id=${auth.bot_id}&client_secret=${auth.bot_secret}&grant_type=authorization_code&redirect_uri=${redirect_uri}&scope=${permissions}&code=${authCode}`;
 
     const response = await api.post<OAuthToken>('https://discordapp.com/api/oauth2/token', data, { headers });
     return response.data;
@@ -84,7 +87,7 @@ async function fetchOAuthToken (authCode: string) : Promise<OAuthToken> {
 
 async function refreshOAuthToken (token: UserToken) : Promise<OAuthToken> {
     const headers = { 'Content-Type':'application/x-www-form-urlencoded' };
-    const data = `client_id=${auth.bot_id}&client_secret=${auth.bot_secret}&grant_type=refresh_token&refresh_token=${token.refreshtoken}&redirect_uri=${encodeURIComponent('http://18.223.209.141/authenticate')}&scope=${encodeURIComponent('identify gdm.join')}`
+    const data = `client_id=${auth.bot_id}&client_secret=${auth.bot_secret}&grant_type=refresh_token&refresh_token=${token.refreshtoken}&redirect_uri=${redirect_uri}&scope=${permissions}`;
 
     const response = await api.post<OAuthToken>('https://discordapp.com/api/oauth2/token', data, { headers });
     return response.data;
