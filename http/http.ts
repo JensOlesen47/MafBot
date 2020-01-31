@@ -36,7 +36,7 @@ app.get('/authenticate', (req, res) => {
 const httpsServer = https.createServer({ key, cert }, app).listen(443, () => console.log('http server ready!'));
 
 http.createServer(((req, res) => {
-    res.writeHead(301, { 'Location': `https://mafbot.mafia451.com/${req.url}` });
+    res.writeHead(301, { 'Location': `https://mafbot.mafia451.com${req.url}` });
     res.end();
 })).listen(80);
 
