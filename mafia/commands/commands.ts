@@ -16,6 +16,7 @@ import {Help} from "../../core/help";
 import {mafbot} from "../../bot";
 import {addUserToGuild, cleanupGuilds} from "../private-chat";
 import {checkUserAuthorization, getAccessTokenForUser} from "../../core/auth";
+import { getTokens } from '../../core/db/user-token.js';
 
 export async function startGame (channel: TextChannel, user: GuildMember, args: string[]) : Promise<void> {
     if (state.isGameInProgress()) {
@@ -309,6 +310,12 @@ export async function beginGame (channel: TextChannel) : Promise<void> {
     if (state.isGameInSignups()) {
         if (currentSetup.minplayers && state.players.length < currentSetup.minplayers) {
             channel.send(`You should probably wait for at least ${currentSetup.minplayers} to be signed up before trying to start the game.`);
+            return;
+        }
+        const userTokens = await getTokens(state.players.map(p => p.id));
+        if (userTokens.length < state.players.length) {
+            const unauthedPlayers = state.players.filter(player => userTokens.every(token => token.userid !== player.id));
+            channel.send(`I REALLY WANTED TO START THE GAME................................. BUT ${unauthedPlayers.map(p => Core.findUserMention(channel, p.displayName)).join(' AND ')} ${unauthedPlayers.length > 1 ? `HAVEN'T` : `HASN'T`} AUTHENTICATED YET. PERHAPS THEY NEED SOME ASSISTANCE????`);
             return;
         }
         state.channel = channel;
