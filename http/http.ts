@@ -1,6 +1,7 @@
 import {authorize} from "../core/auth";
 
 const https = require('https');
+const fs = require('fs');
 const ws = require('ws');
 import {getHtmlPage} from './http.html';
 
@@ -8,6 +9,8 @@ import * as Express from 'express';
 const app = Express();
 
 const certPath = '/etc/letsencrypt/live/mafbot.mafia451.com/';
+const cert = fs.readFileSync(`${certPath}fullchain.pem`, 'utf8');
+const key = fs.readFileSync(`${certPath}privkey.pem`, 'utf8');
 
 app.get('/vote', (req, res) => {
     const htmlPage = getHtmlPage('vote');
@@ -29,9 +32,7 @@ app.get('/authenticate', (req, res) => {
     }
 });
 
-const httpServer = https
-    .createServer({ key: certPath + 'privkey.pem', cert: certPath + 'fullchain.pem' }, app)
-    .listen(443, () => console.log('http server ready!'));
+const httpServer = https.createServer({ key, cert }, app).listen(443, () => console.log('http server ready!'));
 
 const socketServer = new ws.Server({server: httpServer});
 let users = [];
