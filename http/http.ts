@@ -13,6 +13,10 @@ const certPath = '/etc/letsencrypt/live/mafbot.mafia451.com/';
 const cert = fs.readFileSync(`${certPath}fullchain.pem`, 'utf8');
 const key = fs.readFileSync(`${certPath}privkey.pem`, 'utf8');
 
+app.get('/', (req, res) => {
+    res.status(200).send('yes this is the mafbot thank you for visiting goodbye');
+});
+
 app.get('/vote', (req, res) => {
     const htmlPage = getHtmlPage('vote');
     res.status(200).send(htmlPage);

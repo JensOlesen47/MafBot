@@ -16,7 +16,7 @@ import {Help} from "../../core/help";
 import {mafbot} from "../../bot";
 import {addUserToGuild, cleanupGuilds} from "../private-chat";
 import {checkUserAuthorization, getAccessTokenForUser} from "../../core/auth";
-import { getTokens } from '../../core/db/user-token.js';
+import { getTokens } from '../../core/db/user-token';
 
 export async function startGame (channel: TextChannel, user: GuildMember, args: string[]) : Promise<void> {
     if (state.isGameInProgress()) {
