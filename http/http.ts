@@ -1,5 +1,6 @@
 import {authorize} from "../core/auth";
 
+const http = require('http');
 const https = require('https');
 const fs = require('fs');
 const ws = require('ws');
@@ -32,9 +33,14 @@ app.get('/authenticate', (req, res) => {
     }
 });
 
-const httpServer = https.createServer({ key, cert }, app).listen(443, () => console.log('http server ready!'));
+const httpsServer = https.createServer({ key, cert }, app).listen(443, () => console.log('http server ready!'));
 
-const socketServer = new ws.Server({server: httpServer});
+http.createServer(((req, res) => {
+    res.writeHead(301, { 'Location': `https://mafbot.mafia451.com/${req.url}` });
+    res.end();
+})).listen(80);
+
+const socketServer = new ws.Server({server: httpsServer});
 let users = [];
 let formal, formalledBy;
 let voters = [];
