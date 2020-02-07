@@ -2,9 +2,11 @@ import {Guild, GuildMember, User} from "discord.js";
 import {mafbot} from "../bot";
 import {getTokens} from "../core/db/user-token";
 import {Player} from "./game-state";
+import {logger} from "../logger";
 
 export async function createGuildForPlayers (users: Player[], teamName: string) : Promise<void> {
     const userTokens = await getTokens(users.map(u => u.id));
+    logger.info(userTokens);
     if (userTokens.length !== users.length) {
         users.forEach(user => user.send(`I REALLY WANTED TO CREATE A GROUP CHAT FOR YOU BUT NO. ONE OF YOU ISN'T AUTHENTICATED. GOOD JOB. THANKS A LOT.`));
     } else {
@@ -17,6 +19,7 @@ export async function createGuildForPlayers (users: Player[], teamName: string) 
 }
 
 export async function addUserToGuild (user: User, nick: string, guild: Guild, accessToken: string) : Promise<GuildMember> {
+    logger.info(`adding ${nick} to ${guild.name}`);
     return await guild.addMember(user, { accessToken, nick });
 }
 
