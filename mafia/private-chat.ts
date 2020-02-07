@@ -6,20 +6,20 @@ import {logger} from "../logger";
 
 export async function createGuildForPlayers (users: Player[], teamName: string) : Promise<void> {
     const userTokens = await getTokens(users.map(u => u.id));
-    logger.info(JSON.stringify(userTokens));
     if (userTokens.length !== users.length) {
         users.forEach(user => user.send(`I REALLY WANTED TO CREATE A GROUP CHAT FOR YOU BUT NO. ONE OF YOU ISN'T AUTHENTICATED. GOOD JOB. THANKS A LOT.`));
     } else {
         const newGuild = await mafbot.user.createGuild(`MafBot ~ ${teamName} Chat`, 'us-east');
         for (let user of users) {
-            await addUserToGuild(user.user, user.displayName, newGuild, userTokens.find(token => token.userid).accesstoken);
+            const accessToken = userTokens.find(token => token.userid === user.id).accesstoken;
+            await addUserToGuild(user.user, user.displayName, newGuild, accessToken);
         }
         newGuild.defaultChannel.send(`Hey guys! Welcome to the ${teamName} chat.`);
     }
 }
 
 export async function addUserToGuild (user: User, nick: string, guild: Guild, accessToken: string) : Promise<GuildMember> {
-    logger.info(`adding ${nick} to ${guild.name} using token ${accessToken}`);
+    logger.info(`adding ${nick} to ${guild.name}`);
     return await guild.addMember(user, { accessToken, nick });
 }
 
