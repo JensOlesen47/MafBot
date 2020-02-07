@@ -12,6 +12,10 @@ export function getHtmlPage (fileName: string, args?: {[id: string]: string}) : 
 
     if (args) {
         for (let key of Object.keys(args)) {
+            console.log(key);
+            console.log(args[key]);
+            console.log(pageBody);
+            console.log(pageScript);
             pageBody.replace(`\$\{${key}\}`, args[key]);
             pageScript.replace(`\$\{${key}\}`, args[key]);
         }
