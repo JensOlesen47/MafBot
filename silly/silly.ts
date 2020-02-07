@@ -99,7 +99,7 @@ export class Silly {
                 statsUser = foundUser;
             }
         }
-        await Silly.stats(channel, statsUser.id, Core.findUserMention(channel, statsUser.displayName), statsUser === user);
+        await Silly.stats(channel, statsUser.id, statsUser.displayName, statsUser === user);
     }
 
     private static async stats (channel: PartialTextBasedChannelFields, userId: string, username: string, sameUser: boolean) : Promise<void> {
