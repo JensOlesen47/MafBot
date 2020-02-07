@@ -1,5 +1,4 @@
 import {existsSync, readFileSync} from 'fs';
-import {authScript} from "./auth";
 
 export function getHtmlPage (fileName: string, args?: {[id: string]: string}) : string {
     const filePath = `./http/html/${fileName}`;
