@@ -28,8 +28,9 @@ app.get('/authenticate', (req, res) => {
 
     if (code) {
         authorize(code).then(user => {
+            const htmlPage = getHtmlPage('registration-confirmed', {username: user.username, userId: user.id});
             console.log(`saved creds for new user: ${user.username}`);
-            res.status(200).send(`Thanks for authenticating with MafBot, ${user.username}!`);
+            res.status(200).send(htmlPage);
         });
     } else {
         console.log(`user denied auth request`);
