@@ -14,7 +14,6 @@ export async function createGuildForPlayers (users: Player[], teamName: string) 
             const accessToken = userTokens.find(token => token.userid === user.id).accesstoken;
             await addUserToGuild(user.user, user.displayName, newGuild, accessToken);
         }
-        newGuild.defaultChannel.send(`Hey guys! Welcome to the ${teamName} chat.`);
     }
 }
 
