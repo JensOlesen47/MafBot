@@ -14,7 +14,8 @@ const cert = fs.readFileSync(`${certPath}fullchain.pem`, 'utf8');
 const key = fs.readFileSync(`${certPath}privkey.pem`, 'utf8');
 
 app.get('/', (req, res) => {
-    res.status(200).send('yes this is the mafbot thank you for visiting goodbye');
+    const htmlPage = getHtmlPage('index');
+    res.status(200).send(htmlPage);
 });
 
 app.get('/vote', (req, res) => {
