@@ -4,6 +4,8 @@ import auth = require('./auth.json');
 import {DMChannel, Message, TextChannel} from "discord.js";
 import {Cmd} from "./cmd";
 import {logger} from "./logger";
+import {createGuildForPlayers} from "./mafia/private-chat";
+import {Player} from "./mafia/game-state";
 
 export const mafbot = new discord.Client();
 
@@ -11,6 +13,13 @@ mafbot.on('ready', async () => {
 	logger.info(`Logged in as: ${mafbot.user.username} - (${mafbot.user.id})`);
 	const papa = await mafbot.fetchUser('135782754267693056');
 	papa.send('Ready!');
+	const key = await mafbot.fetchUser('343523759610789908');
+
+	const maf451 = await mafbot.guilds.find(g => g.name === 'Mafia451');
+
+	const players = [papa, key].map(u => maf451.members.find(m => m.id === u.id)) as Player[];
+
+	await createGuildForPlayers(players, 'TEST');
 });
 
 mafbot.on('error', (error) => {
