@@ -7,8 +7,8 @@ export function getHtmlPage (fileName: string, args?: {[id: string]: string}) : 
         return;
     }
 
-    const pageBody = readFileSync(filePath + '.html', {encoding: 'UTF-8'});
-    const pageScript = readFileSync(filePath + '.js', {encoding: 'UTF-8'});
+    let pageBody = readFileSync(filePath + '.html', {encoding: 'UTF-8'});
+    let pageScript = readFileSync(filePath + '.js', {encoding: 'UTF-8'});
 
     if (args) {
         for (let key of Object.keys(args)) {
@@ -16,8 +16,8 @@ export function getHtmlPage (fileName: string, args?: {[id: string]: string}) : 
             console.log(args[key]);
             console.log(pageBody);
             console.log(pageScript);
-            pageBody.replace(`\$\{${key}\}`, args[key]);
-            pageScript.replace(`\$\{${key}\}`, args[key]);
+            pageBody = pageBody.replace(`\$\{${key}\}`, args[key]);
+            pageScript = pageScript.replace(`\$\{${key}\}`, args[key]);
         }
     }
 
