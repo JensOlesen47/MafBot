@@ -1,20 +1,19 @@
-import {readFileSync} from 'fs';
+import {existsSync, readFileSync} from 'fs';
 import {authScript} from "./auth";
 
 export function getHtmlPage (fileName: string, args?: {[id: string]: string}) : string {
     const filePath = `./http/html/${fileName}`;
 
-    const pageBody = filePath && readFileSync(filePath + '.html', {encoding: 'UTF-8'});
-    const pageScript = filePath && readFileSync(filePath + '.js', {encoding: 'UTF-8'});
-    if (!pageBody) {
+    if (!existsSync(filePath + '.html')) {
         return;
     }
 
+    const pageBody = readFileSync(filePath + '.html', {encoding: 'UTF-8'});
+    const pageScript = readFileSync(filePath + '.js', {encoding: 'UTF-8'});
+
     for (let key of Object.keys(args)) {
         pageBody.replace(`\$\{${key}\}`, args[key]);
-        if (pageScript) {
-            pageScript.replace(`\$\{${key}\}`, args[key]);
-        }
+        pageScript.replace(`\$\{${key}\}`, args[key]);
     }
 
     return `
