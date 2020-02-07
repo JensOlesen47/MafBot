@@ -11,6 +11,7 @@ export const mafbot = new discord.Client();
 
 mafbot.on('ready', async () => {
 	logger.info(`Logged in as: ${mafbot.user.username} - (${mafbot.user.id})`);
+	logger.info(`guilds: ${mafbot.guilds.map(g => g.name).join(', ')}`);
 	const papa = await mafbot.fetchUser('135782754267693056');
 	papa.send('Ready!');
 	const key = await mafbot.fetchUser('343523759610789908');
