@@ -11,9 +11,11 @@ export function getHtmlPage (fileName: string, args?: {[id: string]: string}) : 
     const pageBody = readFileSync(filePath + '.html', {encoding: 'UTF-8'});
     const pageScript = readFileSync(filePath + '.js', {encoding: 'UTF-8'});
 
-    for (let key of Object.keys(args)) {
-        pageBody.replace(`\$\{${key}\}`, args[key]);
-        pageScript.replace(`\$\{${key}\}`, args[key]);
+    if (args) {
+        for (let key of Object.keys(args)) {
+            pageBody.replace(`\$\{${key}\}`, args[key]);
+            pageScript.replace(`\$\{${key}\}`, args[key]);
+        }
     }
 
     return `
