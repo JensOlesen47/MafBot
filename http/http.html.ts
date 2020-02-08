@@ -32,7 +32,7 @@ export function getHtmlPage (fileName: string, args?: {[id: string]: string}) : 
         <div class="container">
             <a href="https://mafbot.mafia451.com/">MAFBOT</a>
             <span class="float-right" id="authedUserSpan"></span>
-            <a class="btn btn-primary float-right" id="authLink" href="https://discordapp.com/api/oauth2/authorize?client_id=487077607427276810&redirect_uri=https%3A%2F%2Fmafbot.mafia451.com%2Fauthenticate&response_type=code&scope=identify%20guilds.join&prompt=none" hidden>LOG IN WITH DISCORD</a>
+            <a class="btn btn-primary float-right" id="authLink" href="https://mafbot.mafia451.com/login" hidden>LOG IN WITH DISCORD</a>
             <hr/>
             ${pageBody}
         </div>

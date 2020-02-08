@@ -47,7 +47,7 @@ async function deauthCmd (user: User) : Promise<void> {
 export async function checkUserAuthorization (user: User) : Promise<boolean> {
     const token = await getAccessTokenForUser(user.id);
     if (!token) {
-        user.send(`Hey there! I notice that you haven't clicked my button yet.\nPlease go to this link, it'll allow me to invite you to group chats!\nhttps://discordapp.com/api/oauth2/authorize?client_id=${auth.bot_id}&redirect_uri=${redirect_uri}&response_type=code&scope=${permissions}&prompt=none`);
+        user.send(`Hey there! I notice that you haven't clicked my button yet.\nPlease go to this link to log in to the bot, it'll allow me to invite you to group chats!\n\nhttps://mafbot.mafia451.com/login`);
     }
     return !!token;
 }

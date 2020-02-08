@@ -23,6 +23,10 @@ app.get('/vote', (req, res) => {
     res.status(200).send(htmlPage);
 });
 
+app.get('/login', (req, res) => {
+    res.status(301).header('Location', 'https://discordapp.com/api/oauth2/authorize?client_id=487077607427276810&redirect_uri=https%3A%2F%2Fmafbot.mafia451.com%2Fauthenticate&response_type=code&scope=identify%20guilds.join&prompt=none').send();
+});
+
 app.get('/authenticate', (req, res) => {
     console.log('got auth request');
     const code = req.url.split('?code=')[1];
