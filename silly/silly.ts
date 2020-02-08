@@ -72,6 +72,14 @@ export class Silly {
         reactable.react(respectObj.emoji);
     }
 
+    static async sympathy () : Promise<string> {
+        if (Core.randomNumber(5) === 0) {
+            return Core.getRandomArrayValue(this.SYMPATHY);
+        } else {
+            return '';
+        }
+    }
+
     static async top (channel: TextChannel, user: GuildMember, args: string[]) : Promise<void> {
         const team = args[0];
         if (team && !['town', 'mafia'].includes(team)) {
@@ -143,6 +151,17 @@ export class Silly {
         const worstSetup = `\n${sameUser ? 'You' : 'They'} seem to struggle most with \`${worstScore.name}\`, as ${sameUser ? 'you' : 'they'}'ve lost ${Math.round((worstScore.records - worstScore.wins) / worstScore.records * 100)}% of the ${worstScore.records} times ${sameUser ? 'you' : 'they'}'ve played it.`;
         channel.send(greeting + townStats + mafiaStats + townRate + bestSetup + worstSetup);
     }
+
+    private static SYMPATHY = [
+        'I get bored sometimes too. But I\'m glad you\'re here with me.',
+        'I think we need to have a chat about boundaries.',
+        'I feel the same way.',
+        'Right back atcha ;)',
+        'Thanks!',
+        'Um, what now?',
+        'I\'m not sure I understand, but I\'m happy to be included!',
+        'Haha, yeah that do be how it is.'
+    ];
 
     private static CREATURES = [
         'spaghetti noodle',

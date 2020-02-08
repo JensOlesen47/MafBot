@@ -5,6 +5,7 @@ import {DMChannel, Message, TextChannel} from "discord.js";
 import {Cmd} from "./cmd";
 import {logger} from "./logger";
 import {cleanupGuilds} from "./mafia/private-chat";
+import {Silly} from "./silly/silly";
 
 export const mafbot = new discord.Client();
 
@@ -70,6 +71,13 @@ mafbot.on('message', async function(message: Message) {
 				channel.send(`${author.username}, that is not a valid command. Shame on you.`);
 			} else {
 				logger.debug(`Executing PRIVATE command ${cmdArg} [${args}] for user ${author.username}`);
+				if (args.length > 8) {
+					const sympathy = await Silly.sympathy();
+					if (sympathy) {
+						channel.send(sympathy);
+						return;
+					}
+				}
 				await privateCommand.execute(author, args, cmdArg);
 			}
 			break;
