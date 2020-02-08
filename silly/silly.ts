@@ -73,7 +73,7 @@ export class Silly {
     }
 
     static async sympathy () : Promise<string> {
-        if (Core.randomNumber(5) === 0) {
+        if (Core.randomNumber(4) === 0) {
             return Core.getRandomArrayValue(this.SYMPATHY);
         } else {
             return '';

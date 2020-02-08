@@ -71,7 +71,7 @@ mafbot.on('message', async function(message: Message) {
 				channel.send(`${author.username}, that is not a valid command. Shame on you.`);
 			} else {
 				logger.debug(`Executing PRIVATE command ${cmdArg} [${args}] for user ${author.username}`);
-				if (args.length > 8) {
+				if (args.length > 4) {
 					const sympathy = await Silly.sympathy();
 					if (sympathy) {
 						channel.send(sympathy);
