@@ -10,11 +10,16 @@
 <!--    <select id="formal"></select>-->
 <!--    <input id="formalSubmit" type="button" value="Submit" onclick="submitFormal()" class="btn btn-primary"/>-->
 <!--</div>-->
-<div id="revealDiv" class="row">
+<div class="row">
     <div class="col-12">
         <input id="revealBtn" type="button" class="btn btn-primary float-right ml-2" onclick="reveal()" value="Reveal" hidden/>
         <input id="clearBtn" type="button" class="btn btn-warning float-right" onclick="clearVotes()" value="Clear votes" hidden/>
     </div>
+</div>
+
+<br/>
+
+<div class="row">
     <div class="col-12">
         <span id="revealSpan"></span>
     </div>
@@ -22,7 +27,7 @@
 
 <br/>
 
-<div id="voteDiv" class="row">
+<div class="row">
     <div class="col-12 justify-content-center d-flex">
         <span id="thanksForVoting" hidden>Thank you for taking the time to vote. :)</span>
         <input id="voteBtn" type="button" class="btn btn-success" onclick="vote()" value="VOTE"/>
