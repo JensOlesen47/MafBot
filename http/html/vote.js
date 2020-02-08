@@ -15,7 +15,7 @@ const username = localStorage.getItem('discord_username');
 // let formalledUser;
 // let formalledBy;
 
-const socket = new WebSocket('ws://18.223.209.141/');
+const socket = new WebSocket('wss://18.223.209.141/');
 socket.onmessage = function (message) {
     console.log(`Got socket message: ${message.data}`);
     const json = JSON.parse(message.data);
