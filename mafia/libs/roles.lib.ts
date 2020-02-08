@@ -258,5 +258,17 @@ export const Roles: Map<string, MafiaRole> = new Map([
         'If you\'re lynched, you get to kill somebody. You lose this power if the combat medic or your partner use theirs.',
         [],
         new MafiaStatus()
+    )],
+    ['macho_cop', new MafiaRole( // not implemented
+        'Macho Cop',
+        'You can inspect another player at night, learning whether they are town or mafia. You are too cool for school and cannot be protected from night kills.',
+        [Abilities.get('inspect')],
+        new MafiaStatus()
+    )],
+    ['scared_doc', new MafiaRole( // not implemented
+        'Scared Doctor',
+        'You can save one person other than yourself each night. However, if you so much as hint that you\'re the doctor, you will lose your powers and won\'t be able to save anybody any more.',
+        [Abilities.get('protect')],
+        new MafiaStatus()
     )]
 ]);

@@ -284,5 +284,33 @@ const Setups: Map<string, MafiaSetup> = new Map([
             new FixedSetup(6, ['m/mafia','m/mafia','v/town'], 't'),
             new FixedSetup(12, ['m/mafia','m/mafia','m/mafia','v/town'], 't')
         ])
+    )],
+    ['bird7p', new MafiaSetup(
+        'bird7p',
+        'bird7p (7 players): A cop who\'s too cool to be protected and a doctor who won\'t claim, what will this wacky couple get themselves into next?',
+        false,
+        true,
+        false,
+        true,
+        Phase.DAY,
+        7,
+        7,
+        new FixedSetupArray([
+            new FixedSetup(7, ['m/mafia','m/mafia','macho_cop/town','scared_doc/town'], 't')
+        ])
+    )],
+    ['nypd', new MafiaSetup(
+        'nypd',
+        'nypd (9 players): Three cops, three goons, three VT. You\'ll think you\'re really living in nyc!',
+        false,
+        false,
+        false,
+        true,
+        Phase.DAY,
+        9,
+        9,
+        new FixedSetupArray([
+            new FixedSetup(9, ['m/mafia','m/mafia','m/mafia','c/town','c/town','c/town'], 't')
+        ])
     )]
 ]);
