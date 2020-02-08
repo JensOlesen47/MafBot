@@ -69,7 +69,7 @@ function vote () {
     socket.send(JSON.stringify(json));
 }
 
-function clear () {
+function clearVotes () {
     const json = { path: 'clear' };
     socket.send(JSON.stringify(json));
 }
