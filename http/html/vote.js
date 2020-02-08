@@ -63,7 +63,7 @@ window.addEventListener('unload', () => {
 // }
 
 function vote () {
-    document.getElementById('vote').hidden = true;
+    document.getElementById('voteBtn').hidden = true;
     document.getElementById('thanksForVoting').hidden = false;
     const json = { path: 'vote', username: username };
     socket.send(JSON.stringify(json));
@@ -101,7 +101,7 @@ function reveal () {
 // }
 
 function doReveal (votes) {
-    document.getElementById('reveal').innerHTML = `Last round's voters: ${votes.join(', ')}`;
+    document.getElementById('revealSpan').innerHTML = `Last round's voters: ${votes.join(', ')}`;
 
     doClear();
 }
