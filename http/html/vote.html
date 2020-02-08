@@ -1,22 +1,30 @@
-<div id="usernameDiv">
-    <label id="usernameLabel" for="username">Please enter your username so people know who to vote for</label>
-    <br/>
-    <input id="username" type="text"/>
-    <input id="usernameSubmit" type="button" value="Submit" onclick="submitUsername()" class="username btn btn-primary"/>
+<!--<div id="usernameDiv">-->
+<!--    <label id="usernameLabel" for="username">Please enter your username so people know who to vote for</label>-->
+<!--    <br/>-->
+<!--    <input id="username" type="text"/>-->
+<!--    <input id="usernameSubmit" type="button" value="Submit" onclick="submitUsername()" class="username btn btn-primary"/>-->
+<!--</div>-->
+<!--<div id="formalDiv">-->
+<!--    <label id="formalLabel" for="formal">Who do you want to formal?</label>-->
+<!--    <br/>-->
+<!--    <select id="formal"></select>-->
+<!--    <input id="formalSubmit" type="button" value="Submit" onclick="submitFormal()" class="btn btn-primary"/>-->
+<!--</div>-->
+<div id="revealDiv" class="row">
+    <div class="col-12 justify-content-center">
+        <span id="revealSpan"></span>
+        <input id="revealBtn" type="button" class="btn btn-primary float-right ml-2" onclick="reveal()" value="Reveal" hidden/>
+        <input id="clearBtn" type="button" class="btn btn-warning float-right" onclick="clear()" value="Clear votes" hidden/>
+    </div>
 </div>
-<div id="formalDiv">
-    <label id="formalLabel" for="formal">Who do you want to formal?</label>
-    <br/>
-    <select id="formal"></select>
-    <input id="formalSubmit" type="button" value="Submit" onclick="submitFormal()" class="btn btn-primary"/>
-</div>
-<div id="voteDiv">
-    <span id="voteTimer"></span>
-    <br/>
-    <span id="thanksForVoting">Thank you for taking the time to vote. :)</span>
-    <input id="vote" type="button" class="btn btn-primary" onclick="vote()"/>
-</div>
+
 <br/>
-<div id="revealDiv">
-    <span id="reveal"></span>
+
+<div id="voteDiv" class="row">
+    <div class="col-12 justify-content-center d-flex">
+        <span id="thanksForVoting" hidden>Thank you for taking the time to vote. :)</span>
+        <input id="voteBtn" type="button" class="btn btn-success" onclick="vote()" value="VOTE"/>
+    </div>
 </div>
+<!--    <span id="voteTimer"></span>-->
+<!--    <br/>-->

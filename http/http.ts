@@ -28,7 +28,6 @@ app.get('/login', (req, res) => {
 });
 
 app.get('/authenticate', (req, res) => {
-    console.log('got auth request');
     const code = req.url.split('?code=')[1];
 
     if (code) {
@@ -56,8 +55,8 @@ http.createServer(((req, res) => {
 })).listen(80);
 
 const socketServer = new ws.Server({server: httpsServer});
-let users = [];
-let formal, formalledBy;
+// let users = [];
+// let formal, formalledBy;
 let voters = [];
 
 socketServer.on('connection', socket => {
@@ -65,26 +64,34 @@ socketServer.on('connection', socket => {
         console.log(`message received: ${message}`);
         const json = JSON.parse(message);
         switch (json.path) {
-            case 'login':
-                users.push(json.username);
-                socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'user', users: users })));
-                break;
-            case 'logout':
-                users = users.filter(u => u !== json.username);
-                socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'user', users: users })));
-                break;
+            // case 'login':
+            //     users.push(json.username);
+            //     socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'user', users: users })));
+            //     break;
+            // case 'logout':
+            //     users = users.filter(u => u !== json.username);
+            //     socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'user', users: users })));
+            //     break;
             case 'vote':
                 voters.push(json.username);
                 break;
-            case 'formal':
-                formal = json.formal;
-                formalledBy = json.username;
-                socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'formal', formal: formal, username: formalledBy })));
-                setTimeout(() => {
-                    socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'reveal', votes: voters })));
-                    voters = [];
-                }, 65000);
+            case 'reveal':
+                socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'reveal', votes: voters })));
+                voters = [];
                 break;
+            case 'clear':
+                voters = [];
+                socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'clear' })));
+                break;
+            // case 'formal':
+            //     formal = json.formal;
+            //     formalledBy = json.username;
+            //     socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'formal', formal: formal, username: formalledBy })));
+            //     setTimeout(() => {
+            //         socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'reveal', votes: voters })));
+            //         voters = [];
+            //     }, 65000);
+            //     break;
         }
     });
 });
