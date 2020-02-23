@@ -29,6 +29,9 @@ socket.onmessage = function (message) {
         // case 'formal':
         //     doFormal(json.formal, json.username);
         //     break;
+        case 'players':
+            updateLivingPlayers(json.players);
+            break;
         case 'formal':
             doFormal(json.username);
             break;
