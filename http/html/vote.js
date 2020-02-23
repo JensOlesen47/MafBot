@@ -123,7 +123,7 @@ function updateLivingPlayers (players) {
         .join('\n');
 
     document.getElementById('formalMenu').innerHTML = players
-        .map(p => `<button id="formalPlayer_${p}" class="dropdown-item" onclick="formal(${p})">${p}</button>`)
+        .map(p => `<button id="formalPlayer_${p}" class="dropdown-item" onclick="formal('${p}')">${p}</button>`)
         .join('\n');
 }
 
