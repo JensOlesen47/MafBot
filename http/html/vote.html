@@ -12,12 +12,12 @@
 <!--</div>-->
 <div class="row">
     <div class="col-12">
-        <input id="revealBtn" type="button" class="btn btn-primary float-right ml-2" onclick="reveal()" value="Reveal" hidden/>
-        <input id="clearBtn" type="button" class="btn btn-warning float-right" onclick="clearVotes()" value="Clear votes" hidden/>
+        <button id="revealBtn" type="button" class="btn btn-primary float-right ml-2" onclick="reveal()" hidden>Reveal</button>
+        <button id="clearBtn" type="button" class="btn btn-warning float-right" onclick="clearVotes()" hidden>Clear Votes</button>
+        <button id="formalBtn" type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown">Formals</button>
+        <div id="formalMenu" class="dropdown-menu"></div>
     </div>
 </div>
-
-<br/>
 
 <div class="row">
     <div class="col-12">
@@ -31,6 +31,15 @@
     <div class="col-12 justify-content-center d-flex">
         <span id="thanksForVoting" hidden>Thank you for taking the time to vote. :)</span>
         <input id="voteBtn" type="button" class="btn btn-success" onclick="vote()" value="VOTE"/>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12 justify-content-center d-flex">
+        <h5>Living players</h5>
+        <span class="badge badge-secondary">Urist</span>
+        <span class="badge badge-secondary">Ellibereth</span>
+        <span class="badge badge-secondary">Keychain</span> 🙋‍♂️
     </div>
 </div>
 <!--    <span id="voteTimer"></span>-->

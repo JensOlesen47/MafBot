@@ -31,9 +31,11 @@ export function getHtmlPage (fileName: string, args?: {[id: string]: string}) : 
     </head>
     <body>
         <div class="container">
-            <a href="https://mafbot.mafia451.com/">MAFBOT</a>
-            <span class="float-right" id="authedUserSpan"></span>
-            <a class="btn btn-primary float-right" id="authLink" href="https://mafbot.mafia451.com/login" hidden>LOG IN WITH DISCORD</a>
+            <nav class="navbar navbar-dark bg-dark navbar-expand-sm mb-2">
+                <a class="navbar-brand" href="https://mafbot.mafia451.com/">MAFBOT</a>
+                <span class="navbar-text ml-auto" id="authedUserSpan"></span>
+                <a class="btn btn-primary" id="authLink" href="https://mafbot.mafia451.com/login" hidden>LOG IN WITH DISCORD</a>
+            </nav>
             <hr/>
             ${pageBody}
         </div>
