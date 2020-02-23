@@ -1,5 +1,9 @@
 // hideOthers('usernameDiv');
 
+const livingPlayers = ['Urist','StarV','Ellibereth','Keychain'];
+
+updateLivingPlayers(livingPlayers);
+
 const adminIds = ['135782754267693056', '127862334893850624', '343523759610789908', '339494032331767809'];
 
 const userid = localStorage.getItem('discord_id');
@@ -7,8 +11,7 @@ if (!userid) {
     window.location.assign('https://mafbot.mafia451.com/login');
 }
 if (adminIds.includes(userid)) {
-    document.getElementById('revealBtn').hidden = false;
-    document.getElementById('clearBtn').hidden = false;
+    document.getElementById('adminDiv').hidden = false;
 }
 
 const username = localStorage.getItem('discord_username');
@@ -100,15 +103,22 @@ function reveal () {
 //     }, 1000);
 // }
 
-function doReveal (votes) {
-    document.getElementById('revealSpan').innerHTML = `Last round's voters: ${votes.join(', ')}`;
+function updateLivingPlayers (players) {
+    document.getElementById('livingPlayersDiv').innerHTML = players
+        .map(p => `<div id="livingPlayer_${p}"><span class="badge badge-secondary">${p}</span><span id="vote_${p}" class="position-fixed ml-1" hidden>🙋‍♂</span></div>`)
+        .join('\n');
+}
 
+function doReveal (votes) {
     doClear();
+
+    votes.forEach(v => document.getElementById(`vote_${v}`).hidden = false);
 }
 
 function doClear () {
     document.getElementById('voteBtn').hidden = false;
     document.getElementById('thanksForVoting').hidden = true;
+    livingPlayers.forEach(p => document.getElementById(`vote_${p}`).hidden = true);
 }
 
 // function hideOthers (div) {

@@ -10,22 +10,15 @@
 <!--    <select id="formal"></select>-->
 <!--    <input id="formalSubmit" type="button" value="Submit" onclick="submitFormal()" class="btn btn-primary"/>-->
 <!--</div>-->
-<div class="row">
+<div id="adminDiv" class="row" hidden>
     <div class="col-12">
-        <button id="revealBtn" type="button" class="btn btn-primary float-right ml-2" onclick="reveal()" hidden>Reveal</button>
-        <button id="clearBtn" type="button" class="btn btn-warning float-right" onclick="clearVotes()" hidden>Clear Votes</button>
+        <button id="revealBtn" type="button" class="btn btn-primary float-right ml-2" onclick="reveal()">Reveal</button>
+        <button id="clearBtn" type="button" class="btn btn-warning float-right" onclick="clearVotes()">Clear Votes</button>
         <button id="formalBtn" type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown">Formals</button>
         <div id="formalMenu" class="dropdown-menu"></div>
+        <hr>
     </div>
 </div>
-
-<div class="row">
-    <div class="col-12">
-        <span id="revealSpan"></span>
-    </div>
-</div>
-
-<br/>
 
 <div class="row">
     <div class="col-12 justify-content-center d-flex">
@@ -35,11 +28,10 @@
 </div>
 
 <div class="row">
-    <div class="col-12 justify-content-center d-flex">
+    <div class="col-12">
+        <hr>
         <h5>Living players</h5>
-        <span class="badge badge-secondary">Urist</span>
-        <span class="badge badge-secondary">Ellibereth</span>
-        <span class="badge badge-secondary">Keychain</span> 🙋‍♂️
+        <div id="livingPlayersDiv" class="text-center"></div>
     </div>
 </div>
 <!--    <span id="voteTimer"></span>-->
