@@ -29,6 +29,9 @@ socket.onmessage = function (message) {
         // case 'formal':
         //     doFormal(json.formal, json.username);
         //     break;
+        case 'formal':
+            doFormal(json.username);
+            break;
         case 'reveal':
             doReveal(json.votes);
             break;
@@ -70,11 +73,20 @@ function vote () {
     voteButton.toggleAttribute('disabled', true);
     voteButton.setAttribute('class', 'btn btn-success');
 
+    const formalSpan = document.getElementById('formalSpan');
+    const formalledPlayer = formalSpan.innerHTML.replace(' is under formal!', '');
+    formalSpan.innerHTML = `You have voted for ${formalledPlayer}.`;
+
     const json = { path: 'vote', username: username };
     socket.send(JSON.stringify(json));
 }
 
-function clearVotes () {
+function formal (player) {
+    const json = { path: 'formal', username: player };
+    socket.send(JSON.stringify(json));
+}
+
+function clear () {
     const json = { path: 'clear' };
     socket.send(JSON.stringify(json));
 }
@@ -115,6 +127,13 @@ function updateLivingPlayers (players) {
         .join('\n');
 }
 
+function doFormal (player) {
+    const voteButton = document.getElementById('voteBtn');
+    voteButton.toggleAttribute('disabled', false);
+    voteButton.setAttribute('class', 'btn btn-info');
+    document.getElementById('formalSpan').innerHTML = `${player} is under formal!`;
+}
+
 function doReveal (votes) {
     doClear();
 
@@ -123,8 +142,9 @@ function doReveal (votes) {
 
 function doClear () {
     const voteButton = document.getElementById('voteBtn');
-    voteButton.toggleAttribute('disabled', false);
-    voteButton.setAttribute('class', 'btn btn-info');
+    voteButton.toggleAttribute('disabled', true);
+    voteButton.setAttribute('class', 'btn btn-secondary');
+    document.getElementById('formalSpan').innerHTML = 'Nobody is under formal at the moment.';
     livingPlayers.forEach(p => document.getElementById(`vote_${p}`).hidden = true);
 }
 

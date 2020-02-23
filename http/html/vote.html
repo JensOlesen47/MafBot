@@ -13,7 +13,7 @@
 <div id="adminDiv" class="row" hidden>
     <div class="col-12">
         <button id="revealBtn" type="button" class="btn btn-primary float-right ml-2" onclick="reveal()">Reveal</button>
-        <button id="clearBtn" type="button" class="btn btn-warning float-right" onclick="clearVotes()">Clear Votes</button>
+        <button id="clearBtn" type="button" class="btn btn-warning float-right" onclick="clear()">Clear</button>
         <button id="formalBtn" type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown">Formals</button>
         <div id="formalMenu" class="dropdown-menu"></div>
         <hr>
@@ -22,6 +22,7 @@
 
 <div class="row">
     <div class="col-12 justify-content-center d-flex">
+        <h5 id="formalSpan">Nobody is under formal at the moment.</h5>
         <button id="voteBtn" type="button" class="btn btn-info" onclick="vote()">VOTE</button>
     </div>
 </div>

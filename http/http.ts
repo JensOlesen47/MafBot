@@ -72,6 +72,10 @@ socketServer.on('connection', socket => {
             //     users = users.filter(u => u !== json.username);
             //     socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'user', users: users })));
             //     break;
+            case 'formal':
+                voters = [];
+                socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'formal', username: json.username })));
+                break;
             case 'vote':
                 voters.push(json.username);
                 break;
