@@ -66,8 +66,10 @@ window.addEventListener('unload', () => {
 // }
 
 function vote () {
-    document.getElementById('voteBtn').hidden = true;
-    document.getElementById('thanksForVoting').hidden = false;
+    const voteButton = document.getElementById('voteBtn');
+    voteButton.toggleAttribute('disabled', true);
+    voteButton.setAttribute('class', 'btn btn-success');
+
     const json = { path: 'vote', username: username };
     socket.send(JSON.stringify(json));
 }
@@ -105,7 +107,11 @@ function reveal () {
 
 function updateLivingPlayers (players) {
     document.getElementById('livingPlayersDiv').innerHTML = players
-        .map(p => `<div id="livingPlayer_${p}"><span class="badge badge-secondary">${p}</span><span id="vote_${p}" class="position-fixed ml-1" hidden>🙋‍♂</span></div>`)
+        .map(p => `<div id="livingPlayer_${p}"><span class="badge badge-secondary">${p}</span><span id="vote_${p}" class="position-fixed ml-1" hidden>🙋</span></div>`)
+        .join('\n');
+
+    document.getElementById('formalMenu').innerHTML = players
+        .map(p => `<button id="formalPlayer_${p}" class="dropdown-item" onclick="formal(${p})">${p}</button>`)
         .join('\n');
 }
 
@@ -116,8 +122,9 @@ function doReveal (votes) {
 }
 
 function doClear () {
-    document.getElementById('voteBtn').hidden = false;
-    document.getElementById('thanksForVoting').hidden = true;
+    const voteButton = document.getElementById('voteBtn');
+    voteButton.toggleAttribute('disabled', false);
+    voteButton.setAttribute('class', 'btn btn-info');
     livingPlayers.forEach(p => document.getElementById(`vote_${p}`).hidden = true);
 }
 
