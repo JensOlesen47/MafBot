@@ -71,6 +71,7 @@ window.addEventListener('unload', () => {
 function vote () {
     const voteButton = document.getElementById('voteBtn');
     voteButton.toggleAttribute('disabled', true);
+    voteButton.setAttribute('style', 'cursor: not-allowed');
     voteButton.setAttribute('class', 'btn btn-success');
 
     const formalSpan = document.getElementById('formalSpan');
@@ -86,7 +87,7 @@ function formal (player) {
     socket.send(JSON.stringify(json));
 }
 
-function clear () {
+function clearVotes () {
     const json = { path: 'clear' };
     socket.send(JSON.stringify(json));
 }
@@ -130,6 +131,7 @@ function updateLivingPlayers (players) {
 function doFormal (player) {
     const voteButton = document.getElementById('voteBtn');
     voteButton.toggleAttribute('disabled', false);
+    voteButton.removeAttribute('style');
     voteButton.setAttribute('class', 'btn btn-info');
     document.getElementById('formalSpan').innerHTML = `${player} is under formal!`;
 }
@@ -143,6 +145,7 @@ function doReveal (votes) {
 function doClear () {
     const voteButton = document.getElementById('voteBtn');
     voteButton.toggleAttribute('disabled', true);
+    voteButton.setAttribute('style', 'cursor: not-allowed');
     voteButton.setAttribute('class', 'btn btn-secondary');
     document.getElementById('formalSpan').innerHTML = 'Nobody is under formal at the moment.';
     livingPlayers.forEach(p => document.getElementById(`vote_${p}`).hidden = true);
