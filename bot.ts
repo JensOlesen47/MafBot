@@ -8,6 +8,7 @@ import {cleanupGuilds} from "./mafia/private-chat";
 import {Silly} from "./silly/silly";
 
 export const mafbot = new discord.Client();
+export const mafbotHttp = require('./http/http');
 
 mafbot.on('ready', async () => {
 	logger.info(`Logged in as: ${mafbot.user.username} - (${mafbot.user.id})`);
