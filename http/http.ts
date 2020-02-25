@@ -11,6 +11,7 @@ const favicon = require('serve-favicon');
 import {checkForLynch, getVotecount, Player, resetVotes} from "../mafia/game-state";
 import {vote} from "../mafia/commands/commands";
 import {TextChannel} from "discord.js";
+import {logger} from "../logger";
 const app = Express();
 
 const certPath = '/etc/letsencrypt/live/mafbot.mafia451.com/';
@@ -107,6 +108,10 @@ socketServer.on('connection', socket => {
                 break;
         }
     });
+});
+
+socketServer.on('error', (sock, err) => {
+    logger.error(err);
 });
 
 export function httpUpdateLivingPlayers (players: Player[]) : void {
