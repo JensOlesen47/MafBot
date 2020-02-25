@@ -23,6 +23,9 @@ export async function addUserToGuild (user: User, nick: string, guild: Guild, ac
 }
 
 export async function cleanupGuilds () : Promise<void> {
-    const promises = mafbot.guilds.filter(g => g.name.startsWith('MafBot ~ ')).map(g => g.delete());
+    const promises = mafbot.guilds.filter(g => g.name.startsWith('MafBot ~ ')).map(g => {
+        logger.info(`Deleting guild ${g.name}`);
+        return g.delete();
+    });
     await Promise.all(promises);
 }

@@ -6,7 +6,9 @@ import {Abilities} from "./libs/abilities.lib";
 import {Action, checkForFullActionQueue} from "./commands/actions";
 import {MafiaPlayer} from "./libs/setups.lib";
 import {currentSetup, video, setSetup} from "./setup";
-import {addBasicHistory, getHistory, updateHistoryWinners} from "../core/db/history";
+import {addBasicHistory, addLynchHistory, getHistory, updateHistoryWinners} from "../core/db/history";
+import {Config, RevealType} from "../core/config";
+import {httpUpdateLivingPlayers} from "../http/http";
 
 export enum Status {NONE = '', SIGNUPS = 'signups', PROGRESS = 'in progress'}
 export enum Phase {DAY = 'day', NIGHT = 'night', DUSK = 'dusk'}
@@ -113,7 +115,7 @@ export async function advancePhase () : Promise<void> {
     }
     resetVotes();
     duskAwaitingPlayer = null;
-    if (isNight() || currentSetup.nightless) {
+    if (isNight() || currentSetup.nightless || video) {
         if (isNight()) {
             await actions.resolveActions();
         }
@@ -138,10 +140,9 @@ export async function startGame () : Promise<void> {
     channel.send(`${video ? 'Roles have been sent out!' : 'The game is afoot!'}`);
     channel.send(`Players (${players.length}): ${players.map(player => Core.findUserMention(channel, player.displayName)).join(', ')}`);
     await addBasicHistory(currentSetup, players, channel.guild.id, video);
+    await setGameInProgress();
     if (video) {
-        await endGame();
-    } else {
-        await setGameInProgress();
+        httpUpdateLivingPlayers(players);
     }
 }
 
@@ -153,7 +154,7 @@ export function getVotecount () : Votecount {
     return new Votecount(votes);
 }
 
-function resetVotes () : void {
+export function resetVotes () : void {
     votes = [];
     players.forEach(player => votes.push(new Vote(player, '')));
 }
@@ -191,6 +192,7 @@ export async function lynchPlayer (user: string) : Promise<void> {
             await checkOnDeathTriggers(onrolelynch, deadRole, player);
         }
 
+        await addLynchHistory(lynchee, getVotecount(), gamePhase.number);
         await checkForEndgame();
         await advancePhase();
     }
@@ -223,6 +225,9 @@ export async function killPlayer (user: Player, killedString: string = 'was kill
     await playerDeath(user, killedString);
     await checkForOnRoleKill(user);
     await checkForEndgame();
+    if (isDay()) {
+        channel.send(`With ${players.filter(player => player.mafia.alive).length} left alive, it now takes ${getLynchThreshold()} to lynch.`);
+    }
 }
 
 async function checkForOnRoleKill (user: Player) : Promise<void> {
@@ -304,7 +309,7 @@ async function triggerEndGame (winningTeam: string, winningPlayers: string) : Pr
 }
 
 async function playerDeath (user: Player, killedString: string) : Promise<void> {
-    channel.send(`${user.displayName} ${killedString}! They were a ${user.mafia.role.name} (${user.mafia.team.name}).`);
+    channel.send(`${user.displayName} ${killedString}!${getRevealString(user.mafia)}`);
 
     const ghostAction = user.mafia.role.status.ghostaction;
     if (ghostAction) {
@@ -332,12 +337,26 @@ async function playerDeath (user: Player, killedString: string) : Promise<void> 
     console.log('removing player ' + user.displayName);
     await user.removeRole(playerrole);
     user.mafia.alive = false;
+    if (video) {
+        httpUpdateLivingPlayers(players.filter(p => p.mafia.alive));
+    }
 
     const deadRole = user.mafia.role.truename || user.mafia.role.name;
     const playersWithRoleDeathTrigger = players.filter(player => player.mafia.role.status.onroledeath && player.mafia.alive);
     for (const player of playersWithRoleDeathTrigger) {
         const onroledeath = player.mafia.role.status.onroledeath;
         await checkOnDeathTriggers(onroledeath, deadRole, player);
+    }
+}
+
+function getRevealString (playerRole: MafiaPlayer) : string {
+    switch (Config.reveals) {
+        case RevealType.FULL:
+            return ` They were a ${playerRole.role.name} (${playerRole.team.name}).`;
+        case RevealType.PARTIAL:
+            return ` They were ${playerRole.team.name}.`;
+        case RevealType.NONE:
+            return ``;
     }
 }
 

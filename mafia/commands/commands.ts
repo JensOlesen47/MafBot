@@ -8,7 +8,7 @@ import {Core} from "../../core/core";
 import {Permissions} from "../../core/permissions";
 import {MafiaRole, MafiaStatus} from "../libs/roles.lib";
 import {Factions} from "../libs/factions.lib";
-import {currentSetup, getSetupAsEmbed} from "../setup";
+import {currentSetup, getSetupAsEmbed, video} from "../setup";
 import {getHistory, updateHistoryUserDeath, updateHistoryWinners} from "../../core/db/history";
 import {History} from "../../core/db/types";
 import moment = require("moment");
@@ -344,7 +344,9 @@ export async function vote (channel: TextChannel, user: GuildMember, args: strin
         votee = votedPlayer ? votedPlayer.displayName : '';
     }
     state.votes.push(new Vote(user, votee));
-    await state.checkForLynch();
+    if (!video) {
+        await state.checkForLynch();
+    }
 }
 
 export async function unvote (channel: TextChannel, user: GuildMember) : Promise<void> {
@@ -403,10 +405,10 @@ export async function modkill (user: User, args: string[]) : Promise<void> {
         user.send(`I can't kill anybody while there are no games in progress.`);
         return;
     }
-    const member = state.channel.members.find(member => member.id === user.id);
-    if ((member && !Permissions.isHop(member)) && !isModerator(user)) {
-        return;
-    }
+    // const member = state.channel.members.find(member => member.id === user.id);
+    // if ((member && !Permissions.isHop(member)) && !isModerator(user)) {
+    //     return;
+    // }
 
     args.forEach(arg => {
         const player = state.players.find(player => player.displayName.toLowerCase().includes(arg.toLowerCase()));
