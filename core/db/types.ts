@@ -22,6 +22,24 @@ export interface UserHistory {
     death?: string;
 }
 
+export interface LynchHistory {
+    fkgamehistory: number;
+    phase: number;
+    userid: number;
+    team: string;
+    voterids: string;
+}
+
+export interface KillHistory {
+    fkgamehistory: number;
+    phase: number;
+    daykill: boolean;
+    userid: number;
+    team: string;
+    killerid: number;
+    killerteam: string;
+}
+
 export interface History {
     id: number;
     video: boolean;

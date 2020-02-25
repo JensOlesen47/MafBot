@@ -1,6 +1,6 @@
 import {MafiaSetup} from "../../mafia/libs/setups.lib";
 import {query, transactionalUpdate, update} from "./database";
-import {Player} from "../../mafia/game-state";
+import {Player, Votecount} from "../../mafia/game-state";
 import {History, Ranking} from "./types";
 
 export async function getHistory (limit: number, gameHistoryId?: number) : Promise<History[]> {
@@ -40,6 +40,15 @@ export async function addBasicHistory (setup: MafiaSetup, players: Player[], gui
     }
     const historyUpdate = userHistoryBaseUpdate + userHistoryValues.join(' UNION ALL ');
     await update(historyUpdate);
+}
+
+export async function addLynchHistory (lynchedPlayer: Player, votecount: Votecount, phaseNumber: number) : Promise<void> {
+    // eventually should store the game id somewhere and use it here instead of just taking the last value of the table..
+    const historyQuery = `SELECT game_history.id FROM game_history ORDER BY game_history.id DESC LIMIT 1`;
+    const voterIds = votecount.entries.find(e => e.votee === lynchedPlayer.displayName).voters.map(v => v.id).join(',');
+    const baseUpdate = `INSERT INTO lynch_history (fkgamehistory, phase, userid, team, voterids) VALUES `;
+    const updateValues = `((${historyQuery}), ${phaseNumber}, ${lynchedPlayer.id}, '${lynchedPlayer.mafia.team.name}', '${voterIds}')`;
+    await update(baseUpdate + updateValues);
 }
 
 export async function updateHistoryWinners (winningTeam: string, gameHistoryId?: number) : Promise<void> {
