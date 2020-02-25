@@ -75,7 +75,7 @@ socketServer.on('connection', socket => {
 
     socket.on('message', message => {
         console.log(`message received: ${message}`);
-        if (isGameInProgress()) {
+        if (!isGameInProgress()) {
             return;
         }
         const json = JSON.parse(message);
