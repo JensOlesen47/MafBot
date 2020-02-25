@@ -1,6 +1,4 @@
-// hideOthers('usernameDiv');
-
-const livingPlayers = ['Urist','StarV','Ellibereth','Keychain'];
+let livingPlayers = [];
 
 updateLivingPlayers(livingPlayers);
 
@@ -15,20 +13,12 @@ if (adminIds.includes(userid)) {
 }
 
 const username = localStorage.getItem('discord_username');
-// let formalledUser;
-// let formalledBy;
 
 const socket = new WebSocket('wss://mafbot.mafia451.com/');
 socket.onmessage = function (message) {
     console.log(`Got socket message: ${message.data}`);
     const json = JSON.parse(message.data);
     switch (json.path) {
-        // case 'user':
-        //     updateUsers(json.users);
-        //     break;
-        // case 'formal':
-        //     doFormal(json.formal, json.username);
-        //     break;
         case 'players':
             updateLivingPlayers(json.players);
             break;
@@ -45,31 +35,8 @@ socket.onmessage = function (message) {
 };
 
 window.addEventListener('unload', () => {
-    // const json = { path: 'logout', username: username };
-    // socket.send(JSON.stringify(json));
     socket.close();
 });
-
-// function submitUsername () {
-//     username = document.getElementById('username').value;
-//     if (!username) {
-//         return;
-//     }
-//
-//     hideOthers('formalDiv');
-//
-//     const json = { path: 'login', username: username };
-//     socket.send(JSON.stringify(json));
-// }
-
-// function submitFormal () {
-//     const formalee = document.getElementById('formal').value;
-//     if (!formalee) {
-//         return;
-//     }
-//     const json = { path: 'formal', username: username, formal: document.getElementById('formal').value };
-//     socket.send(JSON.stringify(json));
-// }
 
 function vote () {
     const voteButton = document.getElementById('voteBtn');
@@ -81,52 +48,36 @@ function vote () {
     const formalledPlayer = formalSpan.innerHTML.replace(' is under formal!', '');
     formalSpan.innerHTML = `You have voted for ${formalledPlayer}.`;
 
-    const json = { path: 'vote', username: username };
+    const json = { path: 'vote', userid };
     socket.send(JSON.stringify(json));
 }
 
 function formal (player) {
-    const json = { path: 'formal', username: player };
+    const json = { path: 'formal', userid, username: player };
     socket.send(JSON.stringify(json));
 }
 
 function clearVotes () {
-    const json = { path: 'clear' };
+    const json = { path: 'clear', userid };
     socket.send(JSON.stringify(json));
 }
 
 function reveal () {
-    const json = { path: 'reveal' };
+    const json = { path: 'reveal', userid };
     socket.send(JSON.stringify(json));
 }
 
-// function updateUsers (users) {
-//     document.getElementById('formal').innerHTML = users.map(u => u !== username ? `<option value=${u}>${u}</option>` : ``);
-// }
-
-// function doFormal (formal, user) {
-//     hideOthers('voteDiv');
-//     formalledUser = formal;
-//     formalledBy = user;
-//     document.getElementById('vote').value = `Vote for ${formalledUser}`;
-//
-//     let timeRemaining = 60;
-//     const timerInterval = setInterval(() => {
-//         document.getElementById('voteTimer').innerHTML = `${formalledBy} has formalled ${formalledUser}! Time remaining: ${timeRemaining--}s`;
-//
-//         if (timeRemaining <= 0) {
-//             hideOthers('formalDiv');
-//             clearInterval(timerInterval);
-//         }
-//     }, 1000);
-// }
-
 function updateLivingPlayers (players) {
-    document.getElementById('livingPlayersDiv').innerHTML = players
+    document.getElementById('voteBtn').hidden = !players.find(p => p.id === userid);
+    document.getElementById('formalSpan').innerHTML = `Looks like you're not involved in a game at the moment.`;
+
+    livingPlayers = players.map(p => p.name);
+
+    document.getElementById('livingPlayersDiv').innerHTML = livingPlayers
         .map(p => `<div id="livingPlayer_${p}"><span class="badge badge-secondary">${p}</span><span id="vote_${p}" class="position-fixed ml-1" hidden>🙋</span></div>`)
         .join('\n');
 
-    document.getElementById('formalMenu').innerHTML = players
+    document.getElementById('formalMenu').innerHTML = livingPlayers
         .map(p => `<button id="formalPlayer_${p}" class="dropdown-item" onclick="formal('${p}')">${p}</button>`)
         .join('\n');
 }
@@ -153,13 +104,3 @@ function doClear () {
     document.getElementById('formalSpan').innerHTML = 'Nobody is under formal at the moment.';
     livingPlayers.forEach(p => document.getElementById(`vote_${p}`).hidden = true);
 }
-
-// function hideOthers (div) {
-//     document.getElementById('usernameDiv').hidden = true;
-//     document.getElementById('formalDiv').hidden = true;
-//     document.getElementById('voteDiv').hidden = true;
-//     document.getElementById('vote').hidden = false;
-//     document.getElementById('thanksForVoting').hidden = true;
-//
-//     document.getElementById(div).hidden = false;
-// }
