@@ -8,7 +8,7 @@ import {getHtmlPage} from './http.html';
 
 import * as Express from 'express';
 const favicon = require('serve-favicon');
-import {checkForLynch, getVotecount, Player, resetVotes} from "../mafia/game-state";
+import {checkForLynch, getVotecount, isGameInProgress, Player, resetVotes} from "../mafia/game-state";
 import {vote} from "../mafia/commands/commands";
 import {TextChannel} from "discord.js";
 import {logger} from "../logger";
@@ -75,6 +75,9 @@ socketServer.on('connection', socket => {
 
     socket.on('message', message => {
         console.log(`message received: ${message}`);
+        if (isGameInProgress()) {
+            return;
+        }
         const json = JSON.parse(message);
         switch (json.path) {
             case 'vote':
