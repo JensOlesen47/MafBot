@@ -108,6 +108,10 @@ socketServer.on('connection', socket => {
                 break;
         }
     });
+
+    socket.on('error', (sock, err) => {
+        logger.error(err);
+    })
 });
 
 socketServer.on('error', (sock, err) => {
