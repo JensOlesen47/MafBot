@@ -7,6 +7,7 @@ const ws = require('ws');
 import {getHtmlPage} from './http.html';
 
 import * as Express from 'express';
+const favicon = require('serve-favicon');
 import {checkForLynch, getVotecount, Player, resetVotes} from "../mafia/game-state";
 import {vote} from "../mafia/commands/commands";
 import {TextChannel} from "discord.js";
@@ -18,7 +19,7 @@ const key = fs.readFileSync(`${certPath}privkey.pem`, 'utf8');
 
 const adminIds = ['135782754267693056', '127862334893850624', '343523759610789908', '339494032331767809'];
 
-app.use('/favicon.ico', Express.static('favicon.ico'));
+app.use(favicon(__dirname + '/favicon.ico'));
 
 app.get('/', (req, res) => {
     const htmlPage = getHtmlPage('index');
