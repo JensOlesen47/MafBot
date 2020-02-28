@@ -68,6 +68,8 @@ let livingPlayers = [] as Player[];
 let formal: string;
 
 socketServer.on('connection', (socket, req) => {
+    const ip = req.connection.remoteAddress;
+
     socket.send(JSON.stringify({ path: 'players', players: mapToSimplePlayers(livingPlayers) }));
     if (formal) {
         socket.send(JSON.stringify({ path: 'formal', username: formal }));
@@ -118,11 +120,9 @@ socketServer.on('connection', (socket, req) => {
         logger.error(err);
     });
 
-    socket.on('open', () => {
-        logger.debug(`Opened ws connection at ${req.connection.remoteAddress}`);
-    });
+    logger.debug(`Opened ws connection at ${ip}`);
     socket.on('close', () => {
-        logger.debug(`Closed ws connection at ${req.connection.remoteAddress}`);
+        logger.debug(`Closed ws connection at ${ip}`);
     });
 });
 
