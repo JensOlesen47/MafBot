@@ -74,7 +74,7 @@ socketServer.on('connection', socket => {
     }
 
     socket.on('message', message => {
-        console.log(`message received: ${message}`);
+        logger.silly(`message received: ${message}`);
         if (!isGameInProgress()) {
             return;
         }
@@ -88,6 +88,7 @@ socketServer.on('connection', socket => {
                 if (!adminIds.find(id => json.userid === id)) {
                     return;
                 }
+                resetVotes();
                 formal = json.username;
                 socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'formal', username: formal })));
                 break;

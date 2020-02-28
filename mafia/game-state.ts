@@ -288,6 +288,9 @@ export async function endGame () : Promise<void> {
     moderator = null;
     moderatorSetupMessage = null;
     votes = [];
+    if (video) {
+        httpUpdateLivingPlayers(players);
+    }
     setSetup(null);
     gameStatus = Status.NONE;
     gamePhase = null;
