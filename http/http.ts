@@ -74,18 +74,19 @@ socketServer.on('connection', socket => {
     }
 
     socket.on('message', message => {
-        logger.silly(`message received: ${message}`);
+        logger.silly(`websocket message received: ${message}`);
         if (!isGameInProgress()) {
+            logger.debug(`Ignoring websocket message: no game in progress`);
             return;
         }
         const json = JSON.parse(message);
         switch (json.path) {
             case 'vote':
-                const voter = livingPlayers.find(p => p.id === json.userid);
+                const voter = livingPlayers.find(p => p.id === json.from.userid);
                 vote({} as TextChannel, voter, [formal]);
                 break;
             case 'formal':
-                if (!adminIds.find(id => json.userid === id)) {
+                if (!adminIds.find(id => json.from.userid === id)) {
                     return;
                 }
                 resetVotes();
@@ -93,7 +94,7 @@ socketServer.on('connection', socket => {
                 socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'formal', username: formal })));
                 break;
             case 'reveal':
-                if (!adminIds.find(id => json.userid === id)) {
+                if (!adminIds.find(id => json.from.userid === id)) {
                     return;
                 }
                 formal = null;
@@ -103,7 +104,7 @@ socketServer.on('connection', socket => {
                 socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'reveal', votes: voters })));
                 break;
             case 'clear':
-                if (!adminIds.find(id => json.userid === id)) {
+                if (!adminIds.find(id => json.from.userid === id)) {
                     return;
                 }
                 formal = null;

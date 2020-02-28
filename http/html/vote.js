@@ -30,6 +30,11 @@ socket.onmessage = function (message) {
     }
 };
 
+function sendSocketMessage(json) {
+    json.from = { userid, username };
+    socket.send(JSON.stringify(json));
+}
+
 window.addEventListener('unload', () => {
     socket.close();
 });
@@ -44,23 +49,19 @@ function vote () {
     const formalledPlayer = formalSpan.innerHTML.replace(' is under formal!', '');
     formalSpan.innerHTML = `You have voted for ${formalledPlayer}.`;
 
-    const json = { path: 'vote', userid };
-    socket.send(JSON.stringify(json));
+    sendSocketMessage({ path: 'vote' });
 }
 
 function formal (player) {
-    const json = { path: 'formal', userid, username: player };
-    socket.send(JSON.stringify(json));
+    sendSocketMessage({ path: 'formal', username: player });
 }
 
 function clearVotes () {
-    const json = { path: 'clear', userid };
-    socket.send(JSON.stringify(json));
+    sendSocketMessage({ path: 'clear' });
 }
 
 function reveal () {
-    const json = { path: 'reveal', userid };
-    socket.send(JSON.stringify(json));
+    sendSocketMessage({ path: 'reveal' });
 }
 
 function updateLivingPlayers (players) {
