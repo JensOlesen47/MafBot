@@ -67,13 +67,13 @@ const socketServer = new ws.Server({server: httpsServer});
 let livingPlayers = [] as Player[];
 let formal: string;
 
-socketServer.on('connection', socket => {
+socketServer.on('connection', (socket, req) => {
     socket.send(JSON.stringify({ path: 'players', players: mapToSimplePlayers(livingPlayers) }));
     if (formal) {
         socket.send(JSON.stringify({ path: 'formal', username: formal }));
     }
 
-    socket.on('message', message => {
+    socket.on('message', (message) => {
         logger.silly(`websocket message received: ${message}`);
         if (!isGameInProgress()) {
             logger.debug(`Ignoring websocket message: no game in progress`);
@@ -114,12 +114,19 @@ socketServer.on('connection', socket => {
         }
     });
 
-    socket.on('error', (sock, err) => {
+    socket.on('error', (err) => {
         logger.error(err);
-    })
+    });
+
+    socket.on('open', () => {
+        logger.debug(`Opened ws connection at ${req.connection.remoteAddress}`);
+    });
+    socket.on('close', () => {
+        logger.debug(`Closed ws connection at ${req.connection.remoteAddress}`);
+    });
 });
 
-socketServer.on('error', (sock, err) => {
+socketServer.on('error', (err) => {
     logger.error(err);
 });
 
