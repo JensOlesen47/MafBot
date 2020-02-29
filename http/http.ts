@@ -137,6 +137,7 @@ socketServer.on('error', (err) => {
 });
 
 export function httpUpdateLivingPlayers (players: Player[]) : void {
+    logger.debug(`http-update for living players : ${players.map(p => p.displayName)}`);
     livingPlayers = players;
     const simplePlayers = mapToSimplePlayers(players);
     socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'players', players: simplePlayers })));

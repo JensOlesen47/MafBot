@@ -1,3 +1,5 @@
+let livingPlayers = [];
+
 const adminIds = ['135782754267693056', '127862334893850624', '343523759610789908', '339494032331767809'];
 
 const userid = localStorage.getItem('discord_id');
