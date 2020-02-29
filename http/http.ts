@@ -9,8 +9,8 @@ import {getHtmlPage} from './http.html';
 import * as Express from 'express';
 const favicon = require('serve-favicon');
 import {checkForLynch, getVotecount, isGameInProgress, Player, resetVotes} from "../mafia/game-state";
-import {vote} from "../mafia/commands/commands";
-import {TextChannel} from "discord.js";
+import {modkill, vote} from "../mafia/commands/commands";
+import {TextChannel, User} from "discord.js";
 import {logger} from "../logger";
 const app = Express();
 
@@ -18,7 +18,7 @@ const certPath = '/etc/letsencrypt/live/mafbot.mafia451.com/';
 const cert = fs.readFileSync(`${certPath}fullchain.pem`, 'utf8');
 const key = fs.readFileSync(`${certPath}privkey.pem`, 'utf8');
 
-const adminIds = ['135782754267693056', '127862334893850624', '343523759610789908', '339494032331767809'];
+
 
 app.use(favicon('./http/favicon.ico'));
 
@@ -88,7 +88,7 @@ socketServer.on('connection', (socket, req) => {
                 vote({} as TextChannel, voter, [formal]);
                 break;
             case 'formal':
-                if (!adminIds.find(id => json.from.userid === id)) {
+                if (!isAdmin(json.from.userid)) {
                     return;
                 }
                 resetVotes();
@@ -96,7 +96,7 @@ socketServer.on('connection', (socket, req) => {
                 socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'formal', username: formal })));
                 break;
             case 'reveal':
-                if (!adminIds.find(id => json.from.userid === id)) {
+                if (!isAdmin(json.from.userid)) {
                     return;
                 }
                 formal = null;
@@ -106,12 +106,18 @@ socketServer.on('connection', (socket, req) => {
                 socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'reveal', votes: voters })));
                 break;
             case 'clear':
-                if (!adminIds.find(id => json.from.userid === id)) {
+                if (!isAdmin(json.from.userid)) {
                     return;
                 }
                 formal = null;
                 resetVotes();
                 socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'clear' })));
+                break;
+            case 'modkill':
+                if (!isAdmin(json.from.userid)) {
+                    return;
+                }
+                modkill({} as User, [ json.username ]);
                 break;
         }
     });
@@ -138,6 +144,11 @@ export function httpUpdateLivingPlayers (players: Player[]) : void {
 
 function mapToSimplePlayers (players: Player[]) : SimplePlayer[] {
     return players.map(p => { return { id: p.id, name: p.displayName }});
+}
+
+function isAdmin (userId: string) : boolean {
+    const adminIds = ['135782754267693056', '127862334893850624', '343523759610789908', '339494032331767809'];
+    return adminIds.includes(userId);
 }
 
 class SimplePlayer {

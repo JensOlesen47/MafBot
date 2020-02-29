@@ -56,6 +56,12 @@ function formal (player) {
     sendSocketMessage({ path: 'formal', username: player });
 }
 
+function modkill (player) {
+    if (confirm(`Do you really want to MODKILL ${player}?`)) {
+        sendSocketMessage({ path: 'modkill', username: player });
+    }
+}
+
 function clearVotes () {
     sendSocketMessage({ path: 'clear' });
 }
@@ -76,6 +82,10 @@ function updateLivingPlayers (players) {
 
     document.getElementById('formalMenu').innerHTML = livingPlayers
         .map(p => `<button id="formalPlayer_${p}" class="dropdown-item" onclick="formal('${p}')">${p}</button>`)
+        .join('\n');
+
+    document.getElementById('modkillMenu').innerHTML = livingPlayers
+        .map(p => `<button id="modkillPlayer_${p}" class="dropdown-item" onclick="modkill('${p}')">${p}</button>`)
         .join('\n');
 }
 
