@@ -1,11 +1,15 @@
 <div id="adminDiv" class="row" hidden>
     <div class="col-12">
-        <button id="revealBtn" type="button" class="btn btn-primary float-right ml-2" onclick="reveal()">Reveal</button>
-        <button id="clearBtn" type="button" class="btn btn-warning float-right ml-2" onclick="clearVotes()">Clear</button>
-        <button id="modkillBtn" type="button" class="btn btn-danger float-right dropdown-toggle" data-toggle="dropdown">Modkill</button>
-        <div id="modkillMenu" class="dropdown-menu"></div>
-        <button id="formalBtn" type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown">Formal</button>
-        <div id="formalMenu" class="dropdown-menu"></div>
+        <button id="revealBtn" type="button" class="btn btn-primary float-right ml-1" onclick="reveal()">Reveal</button>
+        <button id="clearBtn" type="button" class="btn btn-warning float-right ml-1" onclick="clearVotes()">Clear</button>
+        <div class="btn-group float-right">
+            <button id="modkillBtn" type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown">Modkill</button>
+            <div id="modkillMenu" class="dropdown-menu"></div>
+        </div>
+        <div class="btn-group">
+            <button id="formalBtn" type="button" class="btn btn-outline-secondary dropdown-toggle mr-1" data-toggle="dropdown">Formal</button>
+            <div id="formalMenu" class="dropdown-menu"></div>
+        </div>
         <hr>
     </div>
 </div>
