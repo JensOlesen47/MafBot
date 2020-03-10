@@ -11,6 +11,14 @@ export async function getBugs () : Promise<Bug[]> {
     return await query<Bug>(`SELECT * FROM bug`);
 }
 
-export async function dismissBug (id: string) : Promise<void> {
+export async function getBug (id: number) : Promise<Bug> {
+    return await queryOne<Bug>(`SELECT * FROM bug WHERE id=${id}`);
+}
+
+export async function updateBug (id: number, comment: string) : Promise<void> {
+    await update(`UPDATE bug SET comment = comment || ' ... ${comment}' WHERE id=${id}`);
+}
+
+export async function dismissBug (id: number) : Promise<void> {
     await update(`DELETE FROM bug WHERE id=${id}`);
 }

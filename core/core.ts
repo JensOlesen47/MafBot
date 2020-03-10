@@ -1,7 +1,7 @@
 import {GuildMember, RichEmbed, TextChannel, User} from "discord.js";
 import {mafbot} from "../bot";
 import * as moment from "moment";
-import {addBug, dismissBug, getBugs} from "./db/bug";
+import {addBug, dismissBug, getBug, getBugs, updateBug} from "./db/bug";
 
 export class Core {
     static async ping (channel: TextChannel) : Promise<void> {
@@ -14,7 +14,7 @@ export class Core {
 
     static async bugs (user: User) : Promise<void> {
         const bugs = await getBugs();
-        let embed = new RichEmbed().setTitle('Known Bugs (pg 1)');
+        let embed = new RichEmbed().setTitle(`Known Bugs${bugs.length > 25 ? ' (pg 1)' : ''}`);
         for (let i = 0; i < bugs.length; i++) {
             const reporter = await mafbot.fetchUser(bugs[i].reportedby, true);
             const formattedTime = Core.getFormattedTime(bugs[i].timestamp);
@@ -32,6 +32,22 @@ export class Core {
             user.send(`If you've got a bug to report, please let me know what it is by using \`!bug [report]\`. Hopefully it's not regarding this command.`);
             return;
         }
+
+        if (!isNaN(Number(args[0]))) {
+            const existingBug = await getBug(Number(args[0]));
+            if (existingBug) {
+                if (existingBug.reportedby === user.id) {
+                    const commentToAppend = args.slice(1).join(' ').replace(/[^\s\w]/g, '');
+                    await updateBug(existingBug.id, commentToAppend);
+                    user.send(`Bug #${args[0]} has been updated with that additional info. Thanks buddy.`);
+                    return;
+                } else {
+                    user.send(`Bug #${args[0]} doesn't belong to you, buddy. You'll have to open a new one in your name!`);
+                    return;
+                }
+            }
+        }
+
         const comment = args.join(' ').replace(/[^\s\w]/g, '');
         const bug = await addBug(comment, user.user);
         user.send(`Thanks for reporting this bug! Your bug's ID number is ${bug.id}. Sleep soundly knowing that today, you have made a difference.`);
@@ -42,7 +58,7 @@ export class Core {
             user.send(`Only daddy can use this command.`);
             return;
         }
-        await dismissBug(args[0]);
+        await dismissBug(Number(args[0]));
         user.send(`Bug dismissed.`);
     }
 
