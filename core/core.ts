@@ -19,7 +19,7 @@ export class Core {
             const reporter = await mafbot.fetchUser(bugs[i].reportedby, true);
             const formattedTime = Core.getFormattedTime(bugs[i].timestamp);
             embed.addField(`#${bugs[i].id} - Reported by ${reporter.username} on ${formattedTime}`, bugs[i].comment);
-            if ((i + 1) / 25 === 0 && i !== bugs.length - 1) {
+            if ((i + 1) / 25 === 1 && i !== bugs.length - 1) {
                 user.send(embed);
                 embed = new RichEmbed().setTitle(`Known Bugs (pg ${(i + 1) / 25 + 1})`);
             }
