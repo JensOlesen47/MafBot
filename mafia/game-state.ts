@@ -156,7 +156,11 @@ export function getVotecount () : Votecount {
 
 export function resetVotes () : void {
     votes = [];
-    players.forEach(player => votes.push(new Vote(player, '')));
+    players.forEach(player => {
+        if (player.mafia.alive) {
+            votes.push(new Vote(player, ''));
+        }
+    });
 }
 
 export async function checkForLynch () : Promise<void> {
