@@ -14,11 +14,15 @@ export class Core {
 
     static async bugs (user: User) : Promise<void> {
         const bugs = await getBugs();
-        const embed = new RichEmbed().setTitle('Known Bugs');
-        for (let bug of bugs) {
-            const reporter = await mafbot.fetchUser(bug.reportedby, true);
-            const formattedTime = Core.getFormattedTime(bug.timestamp);
-            embed.addField(`#${bug.id} - Reported by ${reporter.username} on ${formattedTime}`, bug.comment);
+        let embed = new RichEmbed().setTitle('Known Bugs (pg 1)');
+        for (let i = 0; i < bugs.length; i++) {
+            const reporter = await mafbot.fetchUser(bugs[i].reportedby, true);
+            const formattedTime = Core.getFormattedTime(bugs[i].timestamp);
+            embed.addField(`#${bugs[i].id} - Reported by ${reporter.username} on ${formattedTime}`, bugs[i].comment);
+            if ((i + 1) / 25 === 0 && i !== bugs.length - 1) {
+                user.send(embed);
+                embed = new RichEmbed().setTitle(`Known Bugs (pg ${(i + 1) / 25 + 1})`);
+            }
         }
         user.send(embed);
     }
