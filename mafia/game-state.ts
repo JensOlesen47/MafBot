@@ -169,8 +169,13 @@ export async function checkForLynch () : Promise<void> {
     for (let entry of vc.entries) {
         if (entry.voters.length >= lynchThreshold && entry.votee) {
             await lynchPlayer(entry.votee);
-            break;
+            return;
         }
+    }
+    if (video) {
+        const formalledPlayerDisplayName = vc.entries.find(e => e.votee).votee;
+        const formalledPlayer = players.find(p => p.displayName === formalledPlayerDisplayName);
+        await addVoteHistory(formalledPlayer, getVotecount(), gamePhase.number, 2);
     }
 }
 
@@ -196,7 +201,7 @@ export async function lynchPlayer (user: string) : Promise<void> {
             await checkOnDeathTriggers(onrolelynch, deadRole, player);
         }
 
-        await addVoteHistory(lynchee, getVotecount(), gamePhase.number);
+        await addVoteHistory(lynchee, getVotecount(), gamePhase.number, video ? 2 : 1);
         await checkForEndgame();
         await advancePhase();
     }

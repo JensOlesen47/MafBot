@@ -2,6 +2,7 @@ import {MafiaSetup} from "../../mafia/libs/setups.lib";
 import {query, transactionalUpdate, update} from "./database";
 import {Player, Votecount} from "../../mafia/game-state";
 import {History, Ranking} from "./types";
+import {vote} from "../../mafia/commands/commands";
 
 export async function getHistory (limit: number, gameHistoryId?: number) : Promise<History[]> {
     const selectCols = `SELECT game_history.id id, video, winningteam, timestamp, setup.name setupname, userid, guildid, username, role, team, won, death FROM game_history`;
@@ -42,12 +43,13 @@ export async function addBasicHistory (setup: MafiaSetup, players: Player[], gui
     await update(historyUpdate);
 }
 
-export async function addVoteHistory (lynchedPlayer: Player, votecount: Votecount, phaseNumber: number) : Promise<void> {
+export async function addVoteHistory (votedPlayer: Player, votecount: Votecount, phaseNumber: number, voteFormat: number) : Promise<void> {
     // eventually should store the game id somewhere and use it here instead of just taking the last value of the table..
     const historyQuery = `SELECT game_history.id FROM game_history ORDER BY game_history.id DESC LIMIT 1`;
-    const voterIds = votecount.entries.find(e => e.votee === lynchedPlayer.displayName).voters.map(v => v.id).join(',');
-    const baseUpdate = `INSERT INTO vote_history (fkgamehistory, phase, userid, team, voterids) VALUES `;
-    const updateValues = `((${historyQuery}), ${phaseNumber}, '${lynchedPlayer.id}', '${lynchedPlayer.mafia.team.name}', '${voterIds}')`;
+    const voterIds = votecount.entries.find(e => e.votee === votedPlayer.displayName).voters.map(v => v.id).join(',');
+    const nonVoterIds = votecount.entries.filter(e => e.votee !== votedPlayer.displayName).flatMap(e => e.voters).map(v => v.id).join(',');
+    const baseUpdate = `INSERT INTO vote_history (fkgamehistory, phase, userid, team, voterids, nonvoterids, fkvoteformat) VALUES `;
+    const updateValues = `((${historyQuery}), ${phaseNumber}, '${votedPlayer.id}', '${votedPlayer.mafia.team.name}', '${voterIds}', '${nonVoterIds}', ${voteFormat})`;
     await update(baseUpdate + updateValues);
 }
 
