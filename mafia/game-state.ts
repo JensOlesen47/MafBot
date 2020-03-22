@@ -8,7 +8,7 @@ import {MafiaPlayer} from "./libs/setups.lib";
 import {currentSetup, video, setSetup} from "./setup";
 import {addBasicHistory, addVoteHistory, getHistory, updateHistoryWinners} from "../core/db/history";
 import {Config, RevealType} from "../core/config";
-import {httpUpdateLivingPlayers} from "../http/http";
+import {httpUpdateLivingPlayers, recordVoteHistory} from "../http/http";
 
 export enum Status {NONE = '', SIGNUPS = 'signups', PROGRESS = 'in progress'}
 export enum Phase {DAY = 'day', NIGHT = 'night', DUSK = 'dusk'}
@@ -52,7 +52,7 @@ export class Votecount {
         });
     }
 }
-class VotecountEntry {
+export class VotecountEntry {
     votee: string;
     voters: GuildMember[];
     constructor(votee: string, voter: GuildMember) {
@@ -169,13 +169,17 @@ export async function checkForLynch () : Promise<void> {
     for (let entry of vc.entries) {
         if (entry.voters.length >= lynchThreshold && entry.votee) {
             await lynchPlayer(entry.votee);
+            if (isGameInProgress()) {
+                recordVoteHistory(entry);
+            }
             return;
         }
     }
     if (video) {
-        const formalledPlayerDisplayName = vc.entries.find(e => e.votee).votee;
-        const formalledPlayer = players.find(p => p.displayName === formalledPlayerDisplayName);
-        await addVoteHistory(formalledPlayer, getVotecount(), gamePhase.number, 2);
+        const formal = vc.entries.find(e => e.votee);
+        const formalledPlayer = players.find(p => p.displayName === formal.votee);
+        await addVoteHistory(formalledPlayer, vc, gamePhase.number, 2);
+        recordVoteHistory(formal);
     }
 }
 
@@ -350,7 +354,7 @@ async function playerDeath (user: Player, killedString: string) : Promise<void> 
     await user.removeRole(playerrole);
     user.mafia.alive = false;
     if (video) {
-        httpUpdateLivingPlayers(players.filter(p => p.mafia.alive));
+        httpUpdateLivingPlayers(players);
     }
 
     const deadRole = user.mafia.role.truename || user.mafia.role.name;

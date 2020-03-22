@@ -8,7 +8,14 @@ import {getHtmlPage} from './http.html';
 
 import * as Express from 'express';
 const favicon = require('serve-favicon');
-import {checkForLynch, getVotecount, isGameInProgress, Player, resetVotes} from "../mafia/game-state";
+import {
+    checkForLynch,
+    getVotecount,
+    isGameInProgress,
+    Player,
+    resetVotes,
+    VotecountEntry
+} from "../mafia/game-state";
 import {modkill, vote} from "../mafia/commands/commands";
 import {TextChannel, User} from "discord.js";
 import {logger} from "../logger";
@@ -64,13 +71,15 @@ http.createServer(((req, res) => {
 })).listen(80);
 
 const socketServer = new ws.Server({server: httpsServer});
-let livingPlayers = [] as Player[];
+let players = [] as Player[];
 let formal: string;
+let formalHistory = [] as VotecountEntry[];
 
 socketServer.on('connection', (socket, req) => {
     const ip = req.connection.remoteAddress;
 
-    socket.send(JSON.stringify({ path: 'players', players: mapToSimplePlayers(livingPlayers) }));
+    socket.send(JSON.stringify({ path: 'players', players: players.map(mapToSimplePlayer) }));
+    socket.send(JSON.stringify({ path: 'history', formals: formalHistory.map(mapToSimpleFormal) }));
     if (formal) {
         socket.send(JSON.stringify({ path: 'formal', username: formal }));
     }
@@ -84,11 +93,11 @@ socketServer.on('connection', (socket, req) => {
         const json = JSON.parse(message);
         switch (json.path) {
             case 'vote':
-                const voter = livingPlayers.find(p => p.id === json.from.userid);
+                const voter = players.find(p => p.id === json.from.userid);
                 vote({} as TextChannel, voter, [formal]);
                 break;
             case 'formal':
-                if (!isAdmin(json.from.userid)) {
+                if (!isAdmin(json.from.userid) || formal) {
                     return;
                 }
                 resetVotes();
@@ -96,7 +105,7 @@ socketServer.on('connection', (socket, req) => {
                 socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'formal', username: formal })));
                 break;
             case 'reveal':
-                if (!isAdmin(json.from.userid)) {
+                if (!isAdmin(json.from.userid) || !formal) {
                     return;
                 }
                 formal = null;
@@ -136,15 +145,33 @@ socketServer.on('error', (err) => {
     logger.error(err);
 });
 
-export function httpUpdateLivingPlayers (players: Player[]) : void {
-    logger.debug(`http-update for living players : ${players.map(p => p.displayName)}`);
-    livingPlayers = players;
-    const simplePlayers = mapToSimplePlayers(players);
+export function httpUpdateLivingPlayers (playersUpate: Player[]) : void {
+    logger.debug(`http-update for living players : ${playersUpate.map(p => `${p.displayName} = ${p.mafia.alive}`)}`);
+    players = playersUpate;
+    const simplePlayers = playersUpate.map(mapToSimplePlayer);
     socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'players', players: simplePlayers })));
+
+    if (!players.length) {
+        formalHistory = [];
+        socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'history', formals: formalHistory.map(mapToSimpleFormal) })));
+    }
 }
 
-function mapToSimplePlayers (players: Player[]) : SimplePlayer[] {
-    return players.map(p => { return { id: p.id, name: p.displayName }});
+export function recordVoteHistory (votecountEntry: VotecountEntry) : void {
+    logger.debug(`recording formal on player : ${votecountEntry.votee}`);
+    formalHistory.push(votecountEntry);
+    socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'history', formals: formalHistory.map(mapToSimpleFormal) })));
+}
+
+function mapToSimplePlayer (player: Player) : SimplePlayer {
+    return { id: player.id, name: player.displayName, alive: player.mafia.alive, team: player.mafia.alive ? null : player.mafia.team.name };
+}
+
+function mapToSimpleFormal (votecountEntry: VotecountEntry) : SimpleVotecountEntry {
+    return {
+        votee: mapToSimplePlayer(players.find(p => p.displayName === votecountEntry.votee)),
+        voters: votecountEntry.voters.map(v => mapToSimplePlayer(players.find(p => v.id === p.id)))
+    }
 }
 
 function isAdmin (userId: string) : boolean {
@@ -155,4 +182,11 @@ function isAdmin (userId: string) : boolean {
 class SimplePlayer {
     id: string;
     name: string;
+    alive: boolean;
+    team: string;
+}
+
+class SimpleVotecountEntry {
+    votee: SimplePlayer;
+    voters: SimplePlayer[];
 }

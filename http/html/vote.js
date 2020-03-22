@@ -29,6 +29,9 @@ socket.onmessage = function (message) {
         case 'clear':
             doClear();
             break;
+        case 'history':
+            doHistory(json.formals);
+            break;
     }
 };
 
@@ -73,10 +76,16 @@ function reveal () {
 }
 
 function updateLivingPlayers (players) {
-    document.getElementById('voteBtn').hidden = !players.find(p => p.id === userid);
-    document.getElementById('formalSpan').innerHTML = `Looks like you're not involved in a game at the moment.`;
+    const userIsAliveInGame = players.find(p => p.id === userid && p.alive);
+    if (userIsAliveInGame) {
+        document.getElementById('voteBtn').hidden = false;
+        document.getElementById('formalSpan').innerHTML = `Nobody is under formal at the moment.`;
+    } else {
+        document.getElementById('voteBtn').hidden = true;
+        document.getElementById('formalSpan').innerHTML = `Looks like you're not involved in a game at the moment.`;
+    }
 
-    livingPlayers = players.map(p => p.name);
+    livingPlayers = players.filter(p => p.alive).map(p => p.name);
 
     document.getElementById('livingPlayersDiv').innerHTML = livingPlayers
         .map(p => `<div id="livingPlayer_${p}"><span class="badge badge-secondary">${p}</span><span id="vote_${p}" class="position-fixed ml-1" hidden>🙋</span></div>`)
@@ -112,4 +121,35 @@ function doClear () {
     voteButton.setAttribute('class', 'btn btn-secondary');
     document.getElementById('formalSpan').innerHTML = 'Nobody is under formal at the moment.';
     livingPlayers.forEach(p => document.getElementById(`vote_${p}`).hidden = true);
+}
+
+function doHistory (formals) {
+    const historyDiv = document.getElementById('historyDiv');
+    const historyCards = document.getElementById('historyCards');
+
+    if (!formals.length) {
+        historyDiv.hidden = true;
+        historyCards.innerHTML = '';
+    } else {
+        historyDiv.hidden = false;
+        historyCards.innerHTML = formals.map(buildFormalCard).join('\n');
+    }
+}
+
+function buildFormalCard (formal) {
+    return `<div class="card m-1"><div class="card-header text-center">${getBadge(formal.votee)}"</div><div class="card-body text-center">${formal.voters.map(getBadge).join('<br>')}</div></div>`;
+
+    function getBadge (player) {
+        let badgeClass;
+        if (player.alive) {
+            badgeClass = 'badge badge-secondary';
+        } else if (player.team === 'town') {
+            badgeClass = 'badge badge-success';
+        } else if (player.team === 'mafia') {
+            badgeClass = 'badge badge-danger';
+        } else {
+            badgeClass = 'badge badge-warning';
+        }
+        return `<span class="${badgeClass}">${player.name}</span>`;
+    }
 }
