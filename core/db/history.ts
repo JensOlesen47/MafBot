@@ -42,11 +42,11 @@ export async function addBasicHistory (setup: MafiaSetup, players: Player[], gui
     await update(historyUpdate);
 }
 
-export async function addLynchHistory (lynchedPlayer: Player, votecount: Votecount, phaseNumber: number) : Promise<void> {
+export async function addVoteHistory (lynchedPlayer: Player, votecount: Votecount, phaseNumber: number) : Promise<void> {
     // eventually should store the game id somewhere and use it here instead of just taking the last value of the table..
     const historyQuery = `SELECT game_history.id FROM game_history ORDER BY game_history.id DESC LIMIT 1`;
     const voterIds = votecount.entries.find(e => e.votee === lynchedPlayer.displayName).voters.map(v => v.id).join(',');
-    const baseUpdate = `INSERT INTO lynch_history (fkgamehistory, phase, userid, team, voterids) VALUES `;
+    const baseUpdate = `INSERT INTO vote_history (fkgamehistory, phase, userid, team, voterids) VALUES `;
     const updateValues = `((${historyQuery}), ${phaseNumber}, '${lynchedPlayer.id}', '${lynchedPlayer.mafia.team.name}', '${voterIds}')`;
     await update(baseUpdate + updateValues);
 }

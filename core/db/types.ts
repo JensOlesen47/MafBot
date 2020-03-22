@@ -3,6 +3,11 @@ export interface Setup {
     name: string;
 }
 
+export interface VoteFormat {
+    id: number;
+    name: string;
+}
+
 export interface GameHistory {
     id: number;
     video: boolean;
@@ -22,12 +27,14 @@ export interface UserHistory {
     death?: string;
 }
 
-export interface LynchHistory {
+export interface VoteHistory {
     fkgamehistory: number;
     phase: number;
     userid: number;
     team: string;
     voterids: string;
+    nonvoterids: string;
+    fkvoteformat: number;
 }
 
 export interface KillHistory {

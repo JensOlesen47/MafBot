@@ -6,7 +6,7 @@ import {Abilities} from "./libs/abilities.lib";
 import {Action, checkForFullActionQueue} from "./commands/actions";
 import {MafiaPlayer} from "./libs/setups.lib";
 import {currentSetup, video, setSetup} from "./setup";
-import {addBasicHistory, addLynchHistory, getHistory, updateHistoryWinners} from "../core/db/history";
+import {addBasicHistory, addVoteHistory, getHistory, updateHistoryWinners} from "../core/db/history";
 import {Config, RevealType} from "../core/config";
 import {httpUpdateLivingPlayers} from "../http/http";
 
@@ -196,7 +196,7 @@ export async function lynchPlayer (user: string) : Promise<void> {
             await checkOnDeathTriggers(onrolelynch, deadRole, player);
         }
 
-        await addLynchHistory(lynchee, getVotecount(), gamePhase.number);
+        await addVoteHistory(lynchee, getVotecount(), gamePhase.number);
         await checkForEndgame();
         await advancePhase();
     }
