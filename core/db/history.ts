@@ -47,7 +47,7 @@ export async function addLynchHistory (lynchedPlayer: Player, votecount: Votecou
     const historyQuery = `SELECT game_history.id FROM game_history ORDER BY game_history.id DESC LIMIT 1`;
     const voterIds = votecount.entries.find(e => e.votee === lynchedPlayer.displayName).voters.map(v => v.id).join(',');
     const baseUpdate = `INSERT INTO lynch_history (fkgamehistory, phase, userid, team, voterids) VALUES `;
-    const updateValues = `((${historyQuery}), ${phaseNumber}, ${lynchedPlayer.id}, '${lynchedPlayer.mafia.team.name}', '${voterIds}')`;
+    const updateValues = `((${historyQuery}), ${phaseNumber}, '${lynchedPlayer.id}', '${lynchedPlayer.mafia.team.name}', '${voterIds}')`;
     await update(baseUpdate + updateValues);
 }
 
