@@ -137,7 +137,7 @@ function doHistory (formals) {
 }
 
 function buildFormalCard (formal) {
-    return `<div class="card m-1"><div class="card-header text-center">${getBadge(formal.votee)}"</div><div class="card-body text-center">${formal.voters.map(getBadge).join('<br>')}</div></div>`;
+    return `<div class="card m-1"><div class="card-header text-center">${getBadge(formal.votee)}</div><div class="card-body text-center">${formal.voters.map(getBadge).join('<br>')}</div></div>`;
 
     function getBadge (player) {
         let badgeClass;

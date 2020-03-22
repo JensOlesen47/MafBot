@@ -86,6 +86,12 @@ export async function playerIn (channel: TextChannel, user: GuildMember) : Promi
         channel.send(`You are already signed up, ${user.displayName}.`);
         return;
     }
+    if (state.players.find(player => player.displayName.includes(user.displayName))) {
+        // issue with my lazy form of display name parsing...
+        const duplicateName = state.players.find(player => player.displayName.includes(user.displayName)).displayName;
+        channel.send(`I'm sorry, but your name is too similar to ${duplicateName}'s.\nIf this is shitty for you, please complain to Urist so he knows to fix it! Otherwise he won't bother!`);
+        return;
+    }
     const BANNED_NAMES = ['none', 'nolynch', 'self', 'sky', 'unknown', 'mafia', 'town', 'sk', 'assassin', 'lyncher', 'jester'];
     if (BANNED_NAMES.includes(user.displayName.toLowerCase())) {
         channel.send(`That's sooooooo funny. You're gonna mess stuff up if you join a game with that nickname, ${user.displayName}.`);
