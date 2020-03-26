@@ -90,7 +90,9 @@ function updateLivingPlayers (players) {
 
     livingPlayers = players.filter(p => p.alive).map(p => p.name);
 
-    document.getElementById('livingPlayersDiv').innerHTML = livingPlayers
+    document.getElementById('livingPlayersDiv').hidden = !livingPlayers.length;
+
+    document.getElementById('livingPlayers').innerHTML = livingPlayers
         .map(p => `<div id="livingPlayer_${p}"><span class="badge badge-secondary">${p}</span><span id="vote_${p}" class="position-fixed ml-1" hidden>🙋</span></div>`)
         .join('\n');
 
@@ -158,5 +160,6 @@ function buildFormalCard (formal) {
 }
 
 function doLog (logs) {
+    document.getElementById('logDiv').hidden = false;
     document.getElementById('logPre').innerHTML = logs;
 }
