@@ -160,6 +160,6 @@ function buildFormalCard (formal) {
 }
 
 function doLog (logs) {
-    document.getElementById('logDiv').hidden = false;
+    document.getElementById('logDiv').hidden = !logs.length;
     document.getElementById('logPre').innerHTML = logs;
 }
