@@ -167,7 +167,7 @@ export function recordVoteHistory (votecountEntry: VotecountEntry) : void {
 
 export function httpSendMessage (message: string) : void {
     logger.debug(`Sending message to http clients : ${message}`);
-    messages.push(message);
+    messages.unshift(message);
     socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'log', logs: messages.join('\n') })));
 }
 
