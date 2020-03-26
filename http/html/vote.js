@@ -32,6 +32,9 @@ socket.onmessage = function (message) {
         case 'history':
             doHistory(json.formals);
             break;
+        case 'log':
+            doLog(json.logs);
+            break;
     }
 };
 
@@ -152,4 +155,8 @@ function buildFormalCard (formal) {
         }
         return `<span class="${badgeClass}">${player.name}</span>`;
     }
+}
+
+function doLog (logs) {
+    document.getElementById('logPre').innerHTML = logs;
 }

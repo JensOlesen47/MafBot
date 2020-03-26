@@ -74,12 +74,14 @@ const socketServer = new ws.Server({server: httpsServer});
 let players = [] as Player[];
 let formal: string;
 let formalHistory = [] as VotecountEntry[];
+let messages = [] as string[];
 
 socketServer.on('connection', (socket, req) => {
     const ip = req.connection.remoteAddress;
 
     socket.send(JSON.stringify({ path: 'players', players: players.map(mapToSimplePlayer) }));
     socket.send(JSON.stringify({ path: 'history', formals: formalHistory.map(mapToSimpleFormal) }));
+    socket.send(JSON.stringify({ path: 'log', logs: messages.join('\n') }));
     if (formal) {
         socket.send(JSON.stringify({ path: 'formal', username: formal }));
     }
@@ -153,7 +155,7 @@ export function httpUpdateLivingPlayers (playersUpate: Player[]) : void {
 
     if (!players.length) {
         formalHistory = [];
-        socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'history', formals: formalHistory.map(mapToSimpleFormal) })));
+        messages = [];
     }
 }
 
@@ -161,6 +163,12 @@ export function recordVoteHistory (votecountEntry: VotecountEntry) : void {
     logger.debug(`recording formal on player : ${votecountEntry.votee}`);
     formalHistory.push(votecountEntry);
     socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'history', formals: formalHistory.map(mapToSimpleFormal) })));
+}
+
+export function httpSendMessage (message: string) : void {
+    logger.debug(`Sending message to http clients : ${message}`);
+    messages.push(message);
+    socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'log', logs: messages.join('\n') })));
 }
 
 function mapToSimplePlayer (player: Player) : SimplePlayer {

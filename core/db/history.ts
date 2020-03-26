@@ -2,7 +2,6 @@ import {MafiaSetup} from "../../mafia/libs/setups.lib";
 import {query, transactionalUpdate, update} from "./database";
 import {Player, Votecount} from "../../mafia/game-state";
 import {History, Ranking} from "./types";
-import {vote} from "../../mafia/commands/commands";
 
 export async function getHistory (limit: number, gameHistoryId?: number) : Promise<History[]> {
     const selectCols = `SELECT game_history.id id, video, winningteam, timestamp, setup.name setupname, userid, guildid, username, role, team, won, death FROM game_history`;

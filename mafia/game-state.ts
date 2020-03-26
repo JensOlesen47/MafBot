@@ -8,7 +8,7 @@ import {MafiaPlayer} from "./libs/setups.lib";
 import {currentSetup, video, setSetup} from "./setup";
 import {addBasicHistory, addVoteHistory, getHistory, updateHistoryWinners} from "../core/db/history";
 import {Config, RevealType} from "../core/config";
-import {httpUpdateLivingPlayers, recordVoteHistory} from "../http/http";
+import {httpSendMessage, httpUpdateLivingPlayers, recordVoteHistory} from "../http/http";
 
 export enum Status {NONE = '', SIGNUPS = 'signups', PROGRESS = 'in progress'}
 export enum Phase {DAY = 'day', NIGHT = 'night', DUSK = 'dusk'}
@@ -75,6 +75,10 @@ export let votes: Vote[] = [];
 export let playerrole: Role;
 export let channel: TextChannel;
 
+export async function sendMessage (msg: string) : Promise<void> {
+    video ? httpSendMessage(msg) : await channel.send(msg);
+}
+
 export function isGameInSignups () : boolean {
     return gameStatus === Status.SIGNUPS;
 }
@@ -121,11 +125,11 @@ export async function advancePhase () : Promise<void> {
         }
         gamePhase.phase = Phase.DAY;
         gamePhase.number += 1;
-        channel.send(`It is now ${gamePhase.toString()}. With ${players.filter(player => player.mafia.alive).length} alive, it takes ${getLynchThreshold()} to lynch.`);
+        sendMessage(`It is now ${gamePhase.toString()}. With ${players.filter(player => player.mafia.alive).length} alive, it takes ${getLynchThreshold()} to lynch.`);
         await Core.unmute(channel);
     } else {
         gamePhase.phase = Phase.NIGHT;
-        channel.send(`It is now ${gamePhase.toString()}. Send in your actions!`);
+        sendMessage(`It is now ${gamePhase.toString()}. Send in your actions!`);
         await Core.mute(channel);
         await checkForFullActionQueue();
     }
@@ -137,8 +141,7 @@ export function setModeratorMessage (message: Message) : void {
 }
 
 export async function startGame () : Promise<void> {
-    channel.send(`${video ? 'Roles have been sent out!' : 'The game is afoot!'}`);
-    channel.send(`Players (${players.length}): ${players.map(player => Core.findUserMention(channel, player.displayName)).join(', ')}`);
+    sendMessage(`The game is afoot!\nPlayers (${players.length}): ${players.map(player => Core.findUserMention(channel, player.displayName)).join(', ')}`);
     await addBasicHistory(currentSetup, players, channel.guild.id, video);
     await setGameInProgress();
     if (video) {
@@ -184,10 +187,12 @@ export async function checkForLynch () : Promise<void> {
 }
 
 export async function lynchPlayer (user: string) : Promise<void> {
-    await commands.voteCount(channel);
-    channel.send(`A majority vote has been achieved!`);
+    if (!video) {
+        await commands.voteCount(channel);
+    }
+    sendMessage(`A majority vote has been achieved!`);
     if (user === 'No Lynch') {
-        channel.send(`Nobody was lynched!`);
+        sendMessage(`Nobody was lynched!`);
         await advancePhase();
     } else {
         const lynchee = players.find(player => player.displayName === user);
@@ -239,7 +244,7 @@ export async function killPlayer (user: Player, killedString: string = 'was kill
     await checkForOnRoleKill(user);
     await checkForEndgame();
     if (isDay()) {
-        channel.send(`With ${players.filter(player => player.mafia.alive).length} left alive, it now takes ${getLynchThreshold()} to lynch.`);
+        sendMessage(`With ${players.filter(player => player.mafia.alive).length} left alive, it now takes ${getLynchThreshold()} to lynch.`);
     }
 }
 
@@ -312,12 +317,10 @@ export async function endGame () : Promise<void> {
 
 async function triggerEndGame (winningTeam: string, winningPlayers: string) : Promise<void> {
     if (isGameInProgress()) {
-        channel.send(`Game Over! The ${winningTeam} wins! \:tada:`);
-        channel.send(`Winners: ${winningPlayers}`);
         const playerString = players
             .map(player => `${player.displayName} (${player.mafia.role.truename || player.mafia.role.name})`)
             .join(', ');
-        channel.send(`Players: ${playerString}`);
+        sendMessage(`Game Over! The ${winningTeam} wins! \:tada:\nWinners: ${winningPlayers}\nPlayers: ${playerString}`);
         const lastHistory = await getHistory(1);
         await updateHistoryWinners(winningTeam, lastHistory[0].id);
         await endGame();
@@ -325,7 +328,7 @@ async function triggerEndGame (winningTeam: string, winningPlayers: string) : Pr
 }
 
 async function playerDeath (user: Player, killedString: string) : Promise<void> {
-    channel.send(`${user.displayName} ${killedString}!${getRevealString(user.mafia)}`);
+    sendMessage(`${user.displayName} ${killedString}!${getRevealString(user.mafia)}`);
 
     const ghostAction = user.mafia.role.status.ghostaction;
     if (ghostAction) {
@@ -342,10 +345,10 @@ async function playerDeath (user: Player, killedString: string) : Promise<void> 
         giveability.actioner = user;
         await actions.giveability(giveability);
 
-        channel.send(`Waiting for ${user.displayName} to submit a ${ghostAction}...`);
+        sendMessage(`Waiting for ${user.displayName} to submit a ${ghostAction}...`);
         const submitted = await Core.waitWithCheck(() => !isDusk());
         if (!submitted) {
-            channel.send(`Timed out while waiting for ${user.displayName} to get his poop in a group.`);
+            sendMessage(`Timed out while waiting for ${user.displayName} to get his poop in a group.`);
         }
         await checkForEndgame();
     }
