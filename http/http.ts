@@ -25,8 +25,6 @@ const certPath = '/etc/letsencrypt/live/mafbot.mafia451.com/';
 const cert = fs.readFileSync(`${certPath}fullchain.pem`, 'utf8');
 const key = fs.readFileSync(`${certPath}privkey.pem`, 'utf8');
 
-
-
 app.use(favicon('./http/favicon.ico'));
 
 app.get('/', (req, res) => {
@@ -172,7 +170,12 @@ export function httpSendMessage (message: string) : void {
 }
 
 function mapToSimplePlayer (player: Player) : SimplePlayer {
-    return { id: player.id, name: player.displayName, alive: player.mafia.alive, team: player.mafia.alive ? null : player.mafia.team.name };
+    return {
+        id: player.id,
+        name: player.displayName,
+        alive: player.mafia && player.mafia.alive,
+        team: player.mafia && player.mafia.alive ? null : player.mafia.team.name
+    };
 }
 
 function mapToSimpleFormal (votecountEntry: VotecountEntry) : SimpleVotecountEntry {
