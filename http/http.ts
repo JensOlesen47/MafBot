@@ -16,9 +16,10 @@ import {
     resetVotes,
     VotecountEntry
 } from "../mafia/game-state";
-import {modkill, vote} from "../mafia/commands/commands";
+import {modkill, playerIn, vote} from "../mafia/commands/commands";
 import {TextChannel, User} from "discord.js";
 import {logger} from "../logger";
+import {mafbot} from "../bot";
 const app = Express();
 
 const certPath = '/etc/letsencrypt/live/mafbot.mafia451.com/';
@@ -95,6 +96,13 @@ socketServer.on('connection', (socket, req) => {
             case 'vote':
                 const voter = players.find(p => p.id === json.from.userid);
                 vote({} as TextChannel, voter, [formal]);
+                break;
+            case 'in':
+                mafbot.fetchUser(json.from.userid, true).then(user => {
+                    const channel = { send: msg => httpSendMessage(msg) } as TextChannel;
+                    const guildMember = mafbot.guilds.find(g => g.id === channel.guild.id).member(user);
+                    playerIn(channel, guildMember);
+                });
                 break;
             case 'formal':
                 if (!isAdmin(json.from.userid) || formal) {
