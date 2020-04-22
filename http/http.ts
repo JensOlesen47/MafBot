@@ -25,6 +25,7 @@ const app = Express();
 const certPath = '/etc/letsencrypt/live/mafbot.mafia451.com/';
 const cert = fs.readFileSync(`${certPath}fullchain.pem`, 'utf8');
 const key = fs.readFileSync(`${certPath}privkey.pem`, 'utf8');
+app.use(Express.static(__dirname + '/static', { dotfiles: 'allow' }));
 
 app.use(favicon('./http/favicon.ico'));
 

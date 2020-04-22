@@ -1,0 +1,1 @@
+When meeting a cert challenge, place the challenge file in this directory.
