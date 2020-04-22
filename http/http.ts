@@ -58,10 +58,10 @@ app.get('/authenticate', (req, res) => {
     }
 });
 
-// app.get('*', (req, res) => {
-//     const htmlPage = getHtmlPage('not-found');
-//     res.status(200).send(htmlPage);
-// });
+app.get('*', (req, res) => {
+    const htmlPage = getHtmlPage('not-found');
+    res.status(200).send(htmlPage);
+});
 
 const httpsServer = https.createServer({ key, cert }, app).listen(443, () => console.log('http server ready!'));
 
