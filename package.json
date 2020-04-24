@@ -4,6 +4,9 @@
 	"description": "A chat mafia bot for Discord",
 	"main": "mafbot.ts",
 	"author": "Jens Olesen",
+	"scripts": {
+		"start": "node ./build/mafbot.js"
+	},
 	"dependencies": {
 		"@types/express": "^4.17.2",
 		"@types/lodash": "^4.14.144",
