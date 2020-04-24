@@ -16,10 +16,10 @@ import {
     resetVotes,
     VotecountEntry
 } from "../mafia/game-state";
-import {modkill, playerIn, vote} from "../mafia/commands/commands";
+import {beginGame, modkill, playerIn, vote} from "../mafia/commands/commands";
 import {TextChannel, User} from "discord.js";
 import {logger} from "../logger";
-import {mafbot} from "../bot";
+import {mafbot} from "../bot/bot";
 const app = Express();
 
 const certPath = '/etc/letsencrypt/live/mafbot.mafia451.com/';
@@ -50,6 +50,7 @@ app.get('/authenticate', (req, res) => {
         authorize(code).then(user => {
             const htmlPage = getHtmlPage('registration-confirmed', {username: user.username, userId: user.id});
             console.log(`saved creds for new user: ${user.username}`);
+            beginGame({ send: () => {} } as TextChannel);
             res.status(200).send(htmlPage);
         });
     } else {

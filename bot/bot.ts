@@ -1,14 +1,13 @@
 import discord = require('discord.js');
-import auth = require('./auth.json');
+import auth = require('../auth.json');
 
 import {DMChannel, Message, TextChannel} from "discord.js";
 import {Cmd} from "./cmd";
-import {logger} from "./logger";
-import {cleanupGuilds} from "./mafia/private-chat";
-import {Silly} from "./silly/silly";
+import {logger} from "../logger";
+import {cleanupGuilds} from "../mafia/private-chat";
+import {Silly} from "../silly/silly";
 
 export const mafbot = new discord.Client();
-export const mafbotHttp = require('./http/http');
 
 mafbot.on('ready', async () => {
 	logger.info(`Logged in as: ${mafbot.user.username} - (${mafbot.user.id})`);

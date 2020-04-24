@@ -5,7 +5,6 @@ import {GuildMember, Message, RichEmbed, TextChannel, User} from "discord.js";
 import {moderatorSetupMessage, Vote, setModeratorMessage} from "../game-state";
 import {MafiaPlayer} from "../libs/setups.lib";
 import {Core} from "../../core/core";
-import {Permissions} from "../../core/permissions";
 import {MafiaRole, MafiaStatus} from "../libs/roles.lib";
 import {Factions} from "../libs/factions.lib";
 import {currentSetup, getSetupAsEmbed, video} from "../setup";
@@ -13,7 +12,7 @@ import {getHistory, updateHistoryUserDeath, updateHistoryWinners} from "../../co
 import {History} from "../../core/db/types";
 import moment = require("moment");
 import {Help} from "../../core/help";
-import {mafbot} from "../../bot";
+import {mafbot} from "../../bot/bot";
 import {addUserToGuild, cleanupGuilds} from "../private-chat";
 import {checkUserAuthorization, getAccessTokenForUser} from "../../core/auth";
 import { getTokens } from '../../core/db/user-token';
@@ -26,7 +25,6 @@ export async function startGame (channel: TextChannel, user: GuildMember, args: 
         channel.send(`Signups are already in progress!`);
         return;
     }
-    await state.setGameInSignups();
 
     if (!args[0]) {
         args[0] = `straight`;
@@ -37,8 +35,11 @@ export async function startGame (channel: TextChannel, user: GuildMember, args: 
         channel.send(`Sorry ${user.displayName}, ${args[0]} is not a valid setup.`);
         return;
     }
+    await state.setGameInSignups();
 
-    setup.video = setup.currentSetup.unimplemented || ['roles', 'vm', 'video'].includes(args[1]);
+    state.channel = channel;
+    setup.video = setup.currentSetup.unimplemented || ['roles', 'vm', 'video'].some(i => args.includes(i));
+    setup.testGame = args.includes('test');
 
     const minplayers = setup.currentSetup.minplayers || config.minimum_players;
     const maxplayers = setup.currentSetup.maxplayers || config.maximum_players;
@@ -61,7 +62,7 @@ export async function startGame (channel: TextChannel, user: GuildMember, args: 
         });
     } else {
         channel.send(
-            `Starting a game of ${setup.video ? 'Video ' : ''}Mafia [${setupName} for ${allowedPlayerCount} players] in ${timer / 60} minutes. Type \`!in\` to sign up.`
+            `Starting a ${setup.testGame ? 'TEST ' : ''}game of ${setup.video ? 'Video ' : ''}Mafia [${setupName} for ${allowedPlayerCount} players] in ${timer / 60} minutes. Type \`!in\` to sign up.`
         );
         Core.waitWithCheck(() => state.isGameInProgress() || state.isGameOver(), 5, 300).then(async (isFulfilled) => {
             if (isFulfilled) {
@@ -77,7 +78,7 @@ export async function startGame (channel: TextChannel, user: GuildMember, args: 
     }
 }
 
-export async function playerIn (channel: TextChannel, user: GuildMember) : Promise<void> {
+export async function playerIn (channel: TextChannel, user: GuildMember, args?: string[]) : Promise<void> {
     if (!state.isGameInSignups()) {
         channel.send(`Signups are not in progress, ${user.displayName}.`);
         return;
@@ -101,6 +102,9 @@ export async function playerIn (channel: TextChannel, user: GuildMember) : Promi
         channel.send(`Sorry ${user.displayName}, the game is full!`);
         return;
     }
+    // if (setup.testGame && /^\d+$/.test(args[1])) {
+    //
+    // }
 
     await state.addPlayer(user);
     channel.send(`You are now signed up for the next game, ${user.displayName}.`);
@@ -324,7 +328,6 @@ export async function beginGame (channel: TextChannel) : Promise<void> {
             channel.send(`I REALLY WANTED TO START THE GAME................................. BUT ${unauthedPlayers.map(p => Core.findUserMention(channel, p.displayName)).join(' AND ')} ${unauthedPlayers.length > 1 ? `HAVEN'T` : `HASN'T`} AUTHENTICATED YET. PERHAPS THEY NEED SOME ASSISTANCE????`);
             return;
         }
-        state.channel = channel;
         await cleanupGuilds();
         await setup.initializeSetup();
         await state.startGame();

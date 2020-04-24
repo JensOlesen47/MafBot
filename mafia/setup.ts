@@ -11,6 +11,7 @@ import {createGuildForPlayers} from "./private-chat";
 
 export let currentSetup: MafiaSetup;
 export let video: boolean;
+export let testGame: boolean;
 
 export function setSetup (setupName: string) : void {
     currentSetup = getSetup(setupName);

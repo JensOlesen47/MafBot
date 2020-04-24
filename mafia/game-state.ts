@@ -141,7 +141,7 @@ export function setModeratorMessage (message: Message) : void {
 }
 
 export async function startGame () : Promise<void> {
-    sendMessage(`The game is afoot!\nPlayers (${players.length}): ${players.map(player => Core.findUserMention(channel, player.displayName)).join(', ')}`);
+    sendMessage(`The game is afoot!\nPlayers (${players.length}): ${players.map(player => video ? player.displayName : Core.findUserMention(channel, player.displayName)).join(', ')}`);
     await addBasicHistory(currentSetup, players, channel.guild.id, video);
     await setGameInProgress();
     if (video) {
@@ -171,10 +171,7 @@ export async function checkForLynch () : Promise<void> {
     const lynchThreshold = getLynchThreshold();
     for (let entry of vc.entries) {
         if (entry.voters.length >= lynchThreshold && entry.votee) {
-            await lynchPlayer(entry.votee);
-            if (isGameInProgress()) {
-                recordVoteHistory(entry);
-            }
+            await lynchPlayer(entry, entry.votee);
             return;
         }
     }
@@ -186,22 +183,26 @@ export async function checkForLynch () : Promise<void> {
     }
 }
 
-export async function lynchPlayer (user: string) : Promise<void> {
+export async function lynchPlayer (fullVotecount: VotecountEntry, lyncheeName: string) : Promise<void> {
     if (!video) {
         await commands.voteCount(channel);
     }
     sendMessage(`A majority vote has been achieved!`);
-    if (user === 'No Lynch') {
+    if (lyncheeName === 'No Lynch') {
         sendMessage(`Nobody was lynched!`);
         await advancePhase();
     } else {
-        const lynchee = players.find(player => player.displayName === user);
+        const lynchee = players.find(player => player.displayName === lyncheeName);
         await playerDeath(lynchee, 'has been lynched');
 
-        const onLynch = lynchee.mafia.role.status.onlynch;
-        if (onLynch) {
-            await onLynchSwitch(onLynch, lynchee);
+        await addVoteHistory(lynchee, getVotecount(), gamePhase.number, video ? 2 : 1);
+        if (video) {
+            recordVoteHistory(fullVotecount);
         }
+
+        await checkForOnRoleDeath(lynchee);
+        await checkForOnLynch(lynchee);
+        await checkForGhostAction(lynchee);
 
         const deadRole = lynchee.mafia.role.truename || lynchee.mafia.role.name;
         const playersWithRoleLynchTrigger = players.filter(player => player.mafia.role.status.onrolelynch);
@@ -210,13 +211,13 @@ export async function lynchPlayer (user: string) : Promise<void> {
             await checkOnDeathTriggers(onrolelynch, deadRole, player);
         }
 
-        await addVoteHistory(lynchee, getVotecount(), gamePhase.number, video ? 2 : 1);
         await checkForEndgame();
         await advancePhase();
     }
 }
 
-async function onLynchSwitch (onLynch: string, lynchee: GuildMember) : Promise<void> {
+async function checkForOnLynch (lynchee: Player) : Promise<void> {
+    const onLynch = lynchee.mafia.role.status.onlynch;
     if (onLynch === 'supersaint') {
         const votecount = getVotecount();
         const voters = votecount.entries.find(entry => entry.votee === lynchee.displayName).voters;
@@ -241,7 +242,10 @@ export async function removePlayer (user: GuildMember) : Promise<void> {
 
 export async function killPlayer (user: Player, killedString: string = 'was killed') : Promise<void> {
     await playerDeath(user, killedString);
+
     await checkForOnRoleKill(user);
+    await checkForOnRoleDeath(user);
+
     await checkForEndgame();
     if (isDay()) {
         sendMessage(`With ${players.filter(player => player.mafia.alive).length} left alive, it now takes ${getLynchThreshold()} to lynch.`);
@@ -327,9 +331,7 @@ async function triggerEndGame (winningTeam: string, winningPlayers: string) : Pr
     }
 }
 
-async function playerDeath (user: Player, killedString: string) : Promise<void> {
-    sendMessage(`${user.displayName} ${killedString}!${getRevealString(user.mafia)}`);
-
+async function checkForGhostAction(user: Player) {
     const ghostAction = user.mafia.role.status.ghostaction;
     if (ghostAction) {
         gamePhase.phase = Phase.DUSK;
@@ -352,19 +354,16 @@ async function playerDeath (user: Player, killedString: string) : Promise<void> 
         }
         await checkForEndgame();
     }
+}
+
+async function playerDeath (user: Player, killedString: string) : Promise<void> {
+    sendMessage(`${user.displayName} ${killedString}!${getRevealString(user.mafia)}`);
 
     console.log('removing player ' + user.displayName);
     await user.removeRole(playerrole);
     user.mafia.alive = false;
     if (video) {
         httpUpdateLivingPlayers(players);
-    }
-
-    const deadRole = user.mafia.role.truename || user.mafia.role.name;
-    const playersWithRoleDeathTrigger = players.filter(player => player.mafia.role.status.onroledeath && player.mafia.alive);
-    for (const player of playersWithRoleDeathTrigger) {
-        const onroledeath = player.mafia.role.status.onroledeath;
-        await checkOnDeathTriggers(onroledeath, deadRole, player);
     }
 }
 
@@ -376,6 +375,15 @@ function getRevealString (playerRole: MafiaPlayer) : string {
             return ` They were ${playerRole.team.name}.`;
         case RevealType.NONE:
             return ``;
+    }
+}
+
+async function checkForOnRoleDeath (user: Player) : Promise<void> {
+    const deadRole = user.mafia.role.truename || user.mafia.role.name;
+    const playersWithRoleDeathTrigger = players.filter(player => player.mafia.role.status.onroledeath && player.mafia.alive);
+    for (const player of playersWithRoleDeathTrigger) {
+        const onroledeath = player.mafia.role.status.onroledeath;
+        await checkOnDeathTriggers(onroledeath, deadRole, player);
     }
 }
 

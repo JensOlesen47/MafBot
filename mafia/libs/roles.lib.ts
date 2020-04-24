@@ -191,13 +191,13 @@ export const Roles: Map<string, MafiaRole> = new Map([
         'Vengeful Townie',
         'You\'re a special kind of VT. If you are lynched on day one, you will be able to shoot somebody.',
         [],
-        new MafiaStatus().setOnrolelynch('Godfather:win').setOnphase('day 2:action:transform #@').setTransform('t/town').setGhostaction('kill')
+        new MafiaStatus().setOnrolelynch('Godfather:win').setOnphase('day 2:action:transform+silent #@').setTransform('t/town').setGhostaction('kill')
     )],
     ['venge_m', new MafiaRole(
         'Goon',
         'If your godfather is lynched, you lose the game.',
         [],
-        new MafiaStatus()
+        new MafiaStatus().setOnphase('day 2:action:transform+silent #@').setTransform('m/mafia').setGhostaction('kill')
     )],
     ['venge_gf', new MafiaRole(
         'Godfather',

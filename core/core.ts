@@ -1,5 +1,5 @@
 import {GuildMember, RichEmbed, TextChannel, User} from "discord.js";
-import {mafbot} from "../bot";
+import {mafbot} from "../bot/bot";
 import * as moment from "moment";
 import {addBug, dismissBug, getBug, getBugs, updateBug} from "./db/bug";
 

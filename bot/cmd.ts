@@ -1,13 +1,13 @@
 import {GuildMember, TextChannel, User} from "discord.js";
-import {Core} from "./core/core";
-import {Dice} from "./dice/dice";
-import {Silly} from "./silly/silly";
-import {Permissions} from "./core/permissions";
+import {Core} from "../core/core";
+import {Dice} from "../dice/dice";
+import {Silly} from "../silly/silly";
+import {Permissions} from "../core/permissions";
 
-import mafia = require('./mafia/commands/commands');
-import action = require('./mafia/commands/actions');
-import auth = require('./core/auth');
-import {Help} from "./core/help";
+import mafia = require('../mafia/commands/commands');
+import action = require('../mafia/commands/actions');
+import auth = require('../core/auth');
+import {Help} from "../core/help";
 
 export class Cmd {
     static getPublicCommand (cmd: string) : PublicCommand {

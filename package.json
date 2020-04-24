@@ -2,7 +2,7 @@
 	"name": "mafbot",
 	"version": "0.2.0",
 	"description": "A chat mafia bot for Discord",
-	"main": "bot.ts",
+	"main": "mafbot.ts",
 	"author": "Jens Olesen",
 	"dependencies": {
 		"@types/express": "^4.17.2",

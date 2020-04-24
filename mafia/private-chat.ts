@@ -1,5 +1,5 @@
 import {Guild, GuildMember, User} from "discord.js";
-import {mafbot} from "../bot";
+import {mafbot} from "../bot/bot";
 import {getTokens} from "../core/db/user-token";
 import {Player} from "./game-state";
 import {logger} from "../logger";

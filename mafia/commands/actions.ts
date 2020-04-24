@@ -10,6 +10,7 @@ export class Action extends MafiaAbility {
     victims: Player[];
     actioner?: Player;
     status?: string;
+    templates?: string[];
 }
 
 let actionQueue: Action[] = [];
@@ -166,9 +167,13 @@ export async function deduceActionFromRole (status: string, player: Player) : Pr
             }
         });
 
-        const mafiaAbility = Abilities.get(actionName) as Action;
+        const splitAction = actionName.split('+');
+        const mafiaAbility = Abilities.get(splitAction.shift()) as Action;
         mafiaAbility.victims = victims;
         mafiaAbility.actioner = player;
+        if (splitAction.length > 0) {
+            mafiaAbility.templates = splitAction;
+        }
         return async () : Promise<void> => await actionFnList.get(actionName)(mafiaAbility);
     }
     return async () : Promise<void> => {};
@@ -243,7 +248,9 @@ export async function transform (action: Action) : Promise<void> {
         if (transformTo.length > 1) {
             victim.mafia.team = Factions.get(transformTo[1]);
         }
-        victim.send(`You have a new role. You are now a ${victim.mafia.role.name} (${victim.mafia.team.name}).`);
+        if (!action.templates.includes('silent')) {
+            victim.send(`You have a new role. You are now a ${victim.mafia.role.name} (${victim.mafia.team.name}).`);
+        }
     });
 }
 
