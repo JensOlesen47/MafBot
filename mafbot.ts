@@ -37,7 +37,5 @@ function stopProcesses () {
 }
 
 function compile () {
-    execSync('git pull && tsc', { cwd: __dirname });
+    execSync('git pull && tsc');
 }
-
-

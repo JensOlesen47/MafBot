@@ -9,7 +9,7 @@ Compile the project by running `tsc` in the project root directory.
 
 #### Adding commands
 
-You should first modify [commands.ts](/mafia/commands/commands.ts). Then you can add the command to [cmd.ts](/cmd.ts) as a public/private command.
+You should first modify [commands.ts](/mafia/commands/commands.ts). Then you can add the command to [cmd.ts](/bot/cmd.ts) as a public/private command.
 
 #### Adding roles / setups
 
