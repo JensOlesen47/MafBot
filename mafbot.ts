@@ -9,10 +9,11 @@ const webhookApi = Express();
 compile();
 startProcesses();
 
-webhookApi.post('/redeploy', () => {
+webhookApi.post('/redeploy', (req, res) => {
     stopProcesses();
     compile();
     startProcesses();
+    res.status(201).send();
 });
 Http.createServer(webhookApi).listen(8081);
 
