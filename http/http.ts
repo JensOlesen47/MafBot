@@ -64,12 +64,12 @@ app.get('*', (req, res) => {
     res.status(200).send(htmlPage);
 });
 
-const httpsServer = https.createServer({ key, cert }, app).listen(443, () => console.log('http server ready!'));
+const httpsServer = https.createServer({ key, cert }, app).listen(8443, () => console.log('http server ready!'));
 
 http.createServer(((req, res) => {
     res.writeHead(301, { 'Location': `https://mafbot.mafia451.com${req.url}` });
     res.end();
-})).listen(80);
+})).listen(8080);
 
 const socketServer = new ws.Server({server: httpsServer});
 let players = [] as Player[];
