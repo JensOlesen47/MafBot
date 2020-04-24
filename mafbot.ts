@@ -17,8 +17,8 @@ webhookApi.post('/redeploy', () => {
 Http.createServer(webhookApi).listen(8080);
 
 function startProcesses () {
-    botProcess = fork('./bot/bot.js');
-    httpProcess = fork('./http/http.js');
+    botProcess = fork(__dirname + '/bot/bot.js');
+    httpProcess = fork(__dirname + '/http/http.js');
 
     botProcess.on('error', (error) => {
         console.log('bot process stopped due to error');
