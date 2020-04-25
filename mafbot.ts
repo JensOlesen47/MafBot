@@ -10,8 +10,8 @@ compile();
 startProcesses();
 
 webhookApi.post('/redeploy', (req, res) => {
-    stopProcesses();
     compile();
+    stopProcesses();
     startProcesses();
     res.status(201).send();
 });
