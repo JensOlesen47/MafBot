@@ -13,3 +13,7 @@ build/
 
 backup**
 mafbot-stats**
+
+**/.well-known/**
+
+!README.md
