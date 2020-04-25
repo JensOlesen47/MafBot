@@ -1,6 +1,9 @@
 # MafBot
 Join our Discord server to play! https://discord.gg/DUEFa9s
 
+Start the bot by running `npm start`. The bot runs on ports 8080, 8081 & 8443, so make sure those are free.
+If you want normal people to see your page, make sure that you have port 80 redirected to 8080 and port 443 to 8443 (see https://stackoverflow.com/a/40697538).
+
 #### Using Typescript
 Typescript is essentially object-oriented JavaScript.
 For this project, it's necessary to install npm and node. I won't go into how to do that here.
