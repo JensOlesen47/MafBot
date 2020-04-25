@@ -14,6 +14,6 @@ build/
 backup**
 mafbot-stats**
 
-**/.well-known/**
+**/http/static/**
 
 !README.md
