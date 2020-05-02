@@ -1,4 +1,5 @@
 let livingPlayers = [];
+let timerInterval;
 
 const adminIds = ['135782754267693056', '127862334893850624', '343523759610789908', '339494032331767809'];
 
@@ -111,6 +112,14 @@ function doFormal (player) {
     voteButton.removeAttribute('style');
     voteButton.setAttribute('class', 'btn btn-info');
     document.getElementById('formalSpan').innerHTML = `${player} is under formal!`;
+    document.getElementById('formalTimer').innerHTML = `1:00`;
+    document.getElementById('formalTimer').hidden = false;
+    let timer = 60;
+    timerInterval = setInterval(() => document.getElementById('formalTimer').innerHTML = `${--timer}`, 1000);
+    setTimeout(() => {
+        document.getElementById('formalTimer').hidden = true;
+        if (timerInterval) clearInterval(timerInterval);
+    }, 60000);
 }
 
 function doReveal (votes) {
@@ -124,7 +133,11 @@ function doClear () {
     voteButton.toggleAttribute('disabled', true);
     voteButton.setAttribute('style', 'cursor: not-allowed');
     voteButton.setAttribute('class', 'btn btn-secondary');
+
     document.getElementById('formalSpan').innerHTML = 'Nobody is under formal at the moment.';
+    document.getElementById('formalTimer').hidden = true;
+    if (timerInterval) clearInterval(timerInterval);
+
     livingPlayers.forEach(p => document.getElementById(`vote_${p}`).hidden = true);
 }
 
