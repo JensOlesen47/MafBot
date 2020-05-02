@@ -16,7 +16,7 @@ import {
     resetVotes,
     VotecountEntry
 } from "../mafia/game-state";
-import {beginGame, modkill, playerIn, vote} from "../mafia/commands/commands";
+import {beginGame, modkill, playerIn, unvote, vote} from "../mafia/commands/commands";
 import {TextChannel, User} from "discord.js";
 import {logger} from "../logger";
 import {mafbot} from "../bot/bot";
@@ -98,6 +98,10 @@ socketServer.on('connection', (socket, req) => {
             case 'vote':
                 const voter = players.find(p => p.id === json.from.userid);
                 vote({} as TextChannel, voter, [formal]);
+                break;
+            case 'unvote':
+                const unvoter = players.find(p => p.id === json.from.userid);
+                unvote({} as TextChannel, unvoter);
                 break;
             case 'in':
                 mafbot.fetchUser(json.from.userid, true).then(user => {

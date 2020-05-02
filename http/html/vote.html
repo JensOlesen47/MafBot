@@ -22,7 +22,10 @@
     <div class="col-12 text-center">
         <h5 id="formalSpan">Nobody is under formal at the moment.</h5>
         <h5 style="color:red" id="formalTimer" hidden></h5>
-        <button id="voteBtn" type="button" class="btn btn-secondary" onclick="vote()" disabled style="cursor: not-allowed">VOTE</button>
+        <div class="custom-control custom-switch">
+            <label class="custom-control-label" for="voteBtn">VOTE</label>
+            <input id="voteBtn" type="checkbox" class="custom-control-input" onchange="vote()">
+        </div>
     </div>
 </div>
 
