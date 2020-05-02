@@ -84,10 +84,8 @@ function reveal () {
 function updateLivingPlayers (players) {
     const userIsAliveInGame = players.find(p => p.id === userid && p.alive);
     if (userIsAliveInGame) {
-        document.getElementById('voteBtn').hidden = false;
         document.getElementById('formalSpan').innerHTML = `Nobody is under formal at the moment.`;
     } else {
-        document.getElementById('voteBtn').hidden = true;
         document.getElementById('formalSpan').innerHTML = `Looks like you're not involved in a game at the moment.`;
     }
 
@@ -109,10 +107,8 @@ function updateLivingPlayers (players) {
 }
 
 function doFormal (player) {
-    const voteButton = document.getElementById('voteBtn');
-    voteButton.toggleAttribute('disabled', false);
-    voteButton.removeAttribute('style');
-    voteButton.setAttribute('class', 'btn btn-info');
+    document.getElementById('voteDiv').hidden = false;
+    document.getElementById('voteBtn').checked = false;
     document.getElementById('formalSpan').innerHTML = `${player} is under formal!`;
     document.getElementById('formalTimer').innerHTML = `1:00`;
     document.getElementById('formalTimer').hidden = false;
@@ -131,10 +127,8 @@ function doReveal (votes) {
 }
 
 function doClear () {
-    const voteButton = document.getElementById('voteBtn');
-    voteButton.toggleAttribute('disabled', true);
-    voteButton.setAttribute('style', 'cursor: not-allowed');
-    voteButton.setAttribute('class', 'btn btn-secondary');
+    document.getElementById('voteDiv').hidden = true;
+    document.getElementById('voteBtn').checked = false;
 
     document.getElementById('formalSpan').innerHTML = 'Nobody is under formal at the moment.';
     document.getElementById('formalTimer').hidden = true;
