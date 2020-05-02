@@ -115,11 +115,11 @@ function doFormal (player) {
     document.getElementById('formalTimer').innerHTML = `1:00`;
     document.getElementById('formalTimer').hidden = false;
     let timer = 60;
-    timerInterval = setInterval(() => document.getElementById('formalTimer').innerHTML = `${--timer}`, 1000);
-    setTimeout(() => {
-        document.getElementById('formalTimer').hidden = true;
-        if (timerInterval) clearInterval(timerInterval);
-    }, 60000);
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+        document.getElementById('formalTimer').innerHTML = `0:${--timer}`;
+        if (!timer && timerInterval) clearInterval(timerInterval);
+    }, 1000);
 }
 
 function doReveal (votes) {
