@@ -50,7 +50,7 @@ window.addEventListener('unload', () => {
 
 function vote () {
     const voteButton = document.getElementById('voteBtn');
-    if (!voteButton.checked) {
+    if (voteButton.checked) {
         const formalSpan = document.getElementById('formalSpan');
         const formalledPlayer = formalSpan.innerHTML.replace(' is under formal!', '');
         formalSpan.innerHTML = `You have voted for ${formalledPlayer}.`;
