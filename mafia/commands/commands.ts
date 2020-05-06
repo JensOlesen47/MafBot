@@ -7,7 +7,7 @@ import {MafiaPlayer} from "../libs/setups.lib";
 import {Core} from "../../core/core";
 import {MafiaRole, MafiaStatus} from "../libs/roles.lib";
 import {Factions} from "../libs/factions.lib";
-import {currentSetup, getSetupAsEmbed, video} from "../setup";
+import {currentSetup, getSetupAsEmbed, testGame, video} from "../setup";
 import {getHistory, updateHistoryUserDeath, updateHistoryWinners} from "../../core/db/history";
 import {History} from "../../core/db/types";
 import moment = require("moment");
@@ -39,7 +39,7 @@ export async function startGame (channel: TextChannel, user: GuildMember, args: 
 
     state.channel = channel;
     setup.video = setup.currentSetup.unimplemented || ['roles', 'vm', 'video'].some(i => args.includes(i));
-    setup.testGame = args.includes('test');
+    setup.testGame = ['test', 'unranked', 'unrated'].some(i => args.includes(i));
 
     const minplayers = setup.currentSetup.minplayers || config.minimum_players;
     const maxplayers = setup.currentSetup.maxplayers || config.maximum_players;
@@ -62,7 +62,7 @@ export async function startGame (channel: TextChannel, user: GuildMember, args: 
         });
     } else {
         channel.send(
-            `Starting a ${setup.testGame ? 'TEST ' : ''}game of ${setup.video ? 'Video ' : ''}Mafia [${setupName} for ${allowedPlayerCount} players] in ${timer / 60} minutes. Type \`!in\` to sign up.`
+            `Starting a${setup.testGame ? 'n unrated' : ''} game of ${setup.video ? 'Video ' : ''}Mafia [${setupName} for ${allowedPlayerCount} players] in ${timer / 60} minutes. Type \`!in\` to sign up.`
         );
         Core.waitWithCheck(() => state.isGameInProgress() || state.isGameOver(), 5, 300).then(async (isFulfilled) => {
             if (isFulfilled) {
@@ -102,9 +102,6 @@ export async function playerIn (channel: TextChannel, user: GuildMember, args?: 
         channel.send(`Sorry ${user.displayName}, the game is full!`);
         return;
     }
-    // if (setup.testGame && /^\d+$/.test(args[1])) {
-    //
-    // }
 
     await state.addPlayer(user);
     channel.send(`You are now signed up for the next game, ${user.displayName}.`);

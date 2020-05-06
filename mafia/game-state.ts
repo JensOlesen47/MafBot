@@ -5,8 +5,14 @@ import {GuildMember, Message, Role, TextChannel, User} from "discord.js";
 import {Abilities} from "./libs/abilities.lib";
 import {Action, checkForFullActionQueue} from "./commands/actions";
 import {MafiaPlayer} from "./libs/setups.lib";
-import {currentSetup, video, setSetup} from "./setup";
-import {addBasicHistory, addVoteHistory, getHistory, updateHistoryWinners} from "../core/db/history";
+import {currentSetup, video, setSetup, testGame} from "./setup";
+import {
+    addBasicHistory,
+    addVoteHistory,
+    getHistory,
+    updateHistoryUserDeath,
+    updateHistoryWinners
+} from "../core/db/history";
 import {Config, RevealType} from "../core/config";
 import {httpSendMessage, httpUpdateLivingPlayers, recordVoteHistory} from "../http/http";
 
@@ -142,7 +148,9 @@ export function setModeratorMessage (message: Message) : void {
 
 export async function startGame () : Promise<void> {
     sendMessage(`The game is afoot!\nPlayers (${players.length}): ${players.map(player => video ? player.displayName : Core.findUserMention(channel, player.displayName)).join(', ')}`);
-    await addBasicHistory(currentSetup, players, channel.guild.id, video);
+    if (!testGame) {
+        await addBasicHistory(currentSetup, players, channel.guild.id, video);
+    }
     await setGameInProgress();
     if (video) {
         httpUpdateLivingPlayers(players);
@@ -178,7 +186,9 @@ export async function checkForLynch () : Promise<void> {
     if (video) {
         const formal = vc.entries.find(e => e.votee);
         const formalledPlayer = players.find(p => p.displayName === formal.votee);
-        await addVoteHistory(formalledPlayer, vc, gamePhase.number, 2);
+        if (!testGame) {
+            await addVoteHistory(formalledPlayer, vc, gamePhase.number, 2);
+        }
         recordVoteHistory(formal);
     }
 }
@@ -195,7 +205,10 @@ export async function lynchPlayer (fullVotecount: VotecountEntry, lyncheeName: s
         const lynchee = players.find(player => player.displayName === lyncheeName);
         await playerDeath(lynchee, 'has been lynched');
 
-        await addVoteHistory(lynchee, getVotecount(), gamePhase.number, video ? 2 : 1);
+        if (!testGame) {
+            await addVoteHistory(lynchee, getVotecount(), gamePhase.number, video ? 2 : 1);
+            await updateHistoryUserDeath(lynchee.id, `lynched ${gamePhase.toString()}`);
+        }
         if (video) {
             recordVoteHistory(fullVotecount);
         }
@@ -245,6 +258,10 @@ export async function killPlayer (user: Player, killedString: string = 'was kill
 
     await checkForOnRoleKill(user);
     await checkForOnRoleDeath(user);
+
+    if (!testGame) {
+        await updateHistoryUserDeath(user.id, `killed ${gamePhase.toString()}`);
+    }
 
     await checkForEndgame();
     if (isDay()) {
@@ -326,7 +343,9 @@ async function triggerEndGame (winningTeam: string, winningPlayers: string) : Pr
             .join(', ');
         sendMessage(`Game Over! The ${winningTeam} wins! \:tada:\nWinners: ${winningPlayers}\nPlayers: ${playerString}`);
         const lastHistory = await getHistory(1);
-        await updateHistoryWinners(winningTeam, lastHistory[0].id);
+        if (!testGame) {
+            await updateHistoryWinners(winningTeam, lastHistory[0].id);
+        }
         await endGame();
     }
 }
