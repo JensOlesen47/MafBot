@@ -3,17 +3,27 @@ import {ChildProcess, fork, execSync} from "child_process";
 import * as Express from 'express';
 import * as Http from "http";
 
-let botProcess, httpProcess: ChildProcess;
+let botProcess: ChildProcess, httpProcess: ChildProcess, currentBranch = 'master';
 const webhookApi = Express();
 
 compile();
 startProcesses();
 
 webhookApi.post('/redeploy', (req, res) => {
+    logger.debug('received redeploy req from ' + req.ip);
+    res.status(201).send();
+
+    // ignore github requests that are not for the current branch
+    if (req.body.ref && req.body.ref !== `refs/heads/${currentBranch}`) return;
+
+    if (req.body.branch) {
+        currentBranch = req.body.branch;
+        checkout(currentBranch);
+    }
+
     compile();
     stopProcesses();
     startProcesses();
-    res.status(201).send();
 });
 Http.createServer(webhookApi).listen(8081);
 
@@ -39,4 +49,8 @@ function stopProcesses () {
 
 function compile () {
     execSync('git pull && tsc');
+}
+
+function checkout (branchName: string) {
+    execSync(`git checkout ${branchName}`);
 }
