@@ -18,14 +18,11 @@ mafbot.on('ready', async () => {
 	const papa = await mafbot.fetchUser('135782754267693056');
 	papa.send('Ready!');
 
-	const branchName = execSync('git rev-parse --abbrev-ref HEAD').toString();
+	const branchName = execSync('git rev-parse --abbrev-ref HEAD').toString().trim();
 	let nickname = 'Mafbot';
-	console.log(branchName);
-	console.log(branchName === 'master');
 	if (branchName !== 'master') {
 		nickname += ' (dev mode)';
 	}
-	console.log(nickname);
 	mafbot.guilds.forEach(g => g.member(mafbot.user).setNickname(nickname));
 });
 
