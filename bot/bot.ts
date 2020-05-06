@@ -6,6 +6,7 @@ import {Cmd} from "./cmd";
 import {logger} from "../logger";
 import {cleanupGuilds} from "../mafia/private-chat";
 import {Silly} from "../silly/silly";
+import {execSync} from "child_process";
 
 export const mafbot = new discord.Client();
 
@@ -13,8 +14,16 @@ mafbot.on('ready', async () => {
 	logger.info(`Logged in as: ${mafbot.user.username} - (${mafbot.user.id})`);
 	logger.info(`guilds: ${mafbot.guilds.map(g => g.name).join(', ')}`);
 	cleanupGuilds();
+
 	const papa = await mafbot.fetchUser('135782754267693056');
 	papa.send('Ready!');
+
+	const branchName = execSync('git rev-parse --abbrev-ref HEAD').toString();
+	let nickname = 'Mafbot';
+	if (branchName !== 'master') {
+		nickname += ' (dev mode)';
+	}
+	mafbot.guilds.forEach(g => g.member(mafbot.user).setNickname(nickname));
 });
 
 mafbot.on('error', (error) => {
