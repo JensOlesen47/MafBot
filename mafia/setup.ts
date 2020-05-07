@@ -160,7 +160,9 @@ async function initSetup (roleList: MafiaPlayer[]) : Promise<void> {
             player.mafia.role.roletext = player.mafia.role.roletext.replace('BUDDY1', player.mafia.role.buddy.displayName);
         }
         player.send(`You are a ${player.mafia.role.name} (${player.mafia.team.name}). ${player.mafia.role.roletext} ${player.mafia.team.wintext}`);
-        player.send(`Actions: ${actionString}`);
+        if (!currentSetup.unimplemented) {
+            player.send(`Actions: ${actionString}`);
+        }
 
         let teammates = [];
         if (player.mafia.team.openteam) {
