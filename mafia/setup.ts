@@ -1,6 +1,6 @@
 import state = require('./game-state');
 import actions = require('./commands/actions');
-import {MafiaRole, Roles} from "./libs/roles.lib";
+import {filterRoles, getRole, MafiaRole} from "./libs/roles.lib";
 import {MafiaSetup, MafiaPlayer, getSetup} from "./libs/setups.lib";
 import {Factions} from "./libs/factions.lib";
 import {Core} from "../core/core";
@@ -62,9 +62,9 @@ async function initializeRandomSetup () : Promise<void> {
     const numScum = Math.random() >= 0.5 ? maxScum[numPlayers - 3] : minScum[numPlayers - 3];
 
     let possibleTownRoles = getPossibleRoles('town');
-    possibleTownRoles.splice(possibleTownRoles.indexOf(Roles.get('t')));
+    possibleTownRoles.splice(possibleTownRoles.indexOf(getRole('t')));
     let possibleMafiaRoles = getPossibleRoles('mafia');
-    possibleMafiaRoles.splice(possibleMafiaRoles.indexOf(Roles.get('m')));
+    possibleMafiaRoles.splice(possibleMafiaRoles.indexOf(getRole('m')));
 
     const selectedRoles = selectRoles(numPlayers, numScum, possibleTownRoles, possibleMafiaRoles);
 
@@ -72,7 +72,7 @@ async function initializeRandomSetup () : Promise<void> {
 }
 
 function getPossibleRoles (team: string) : MafiaRole[] {
-    return Core.filterMap(Roles, role => {
+    return filterRoles(role => {
         if (role.teams.length) {
             const roleTeam = role.teams.find(str => str.startsWith(team));
             return roleTeam && currentSetup.basic ? role.basic : true;
@@ -94,7 +94,7 @@ function selectRoles (numPlayers: number, numScum: number, possibleTownRoles: Ma
 
             roleList.push(new MafiaPlayer(randomRole, townFaction));
         } else {
-            roleList.push(new MafiaPlayer(Roles.get('t'), townFaction));
+            roleList.push(new MafiaPlayer(getRole('t'), townFaction));
         }
     }
 
@@ -106,7 +106,7 @@ function selectRoles (numPlayers: number, numScum: number, possibleTownRoles: Ma
             mafiaPower += randomRole.power;
             roleList.push(new MafiaPlayer(randomRole, mafiaFaction));
         } else {
-            roleList.push(new MafiaPlayer(Roles.get('m'), mafiaFaction));
+            roleList.push(new MafiaPlayer(getRole('m'), mafiaFaction));
         }
     }
 

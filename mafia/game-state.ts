@@ -125,7 +125,7 @@ export async function advancePhase () : Promise<void> {
     }
     resetVotes();
     duskAwaitingPlayer = null;
-    if (isNight() || currentSetup.nightless || video) {
+    if (isNight() || currentSetup.nightless || currentSetup.unimplemented) {
         if (isNight()) {
             await actions.resolveActions();
         }

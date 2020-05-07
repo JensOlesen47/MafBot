@@ -2,7 +2,7 @@ import state = require('../game-state');
 import {Player} from "../game-state";
 import {User} from "discord.js";
 import {MafiaAbility, Abilities} from "../libs/abilities.lib";
-import {Roles} from "../libs/roles.lib";
+import {getRole} from "../libs/roles.lib";
 import {Factions} from "../libs/factions.lib";
 import {Core} from "../../core/core";
 
@@ -158,7 +158,7 @@ export async function deduceActionFromRole (status: string, player: Player) : Pr
                     victims = victims.concat(state.players);
                     break;
                 default:
-                    const targetedRole = Roles.get(target);
+                    const targetedRole = getRole(target);
                     const targetedPlayers = state.players.filter(
                         i => (i.mafia.role.truename || i.mafia.role.name) === targetedRole.name && i.id !== player.id
                     );
@@ -244,7 +244,7 @@ export async function setbuddy (action: Action) : Promise<void> {
 export async function transform (action: Action) : Promise<void> {
     const transformTo = action.actioner.mafia.role.status.transform.split('/');
     action.victims.forEach(victim => {
-        victim.mafia.role = Roles.get(transformTo[0]);
+        victim.mafia.role = getRole(transformTo[0]);
         if (transformTo.length > 1) {
             victim.mafia.team = Factions.get(transformTo[1]);
         }

@@ -1,5 +1,7 @@
 import {GuildMember} from "discord.js";
 import {Abilities, MafiaAbility} from "./abilities.lib";
+import { cloneDeep } from "lodash";
+import { Core } from "../../core/core";
 
 export class MafiaStatus {
     onstart?: string;
@@ -82,7 +84,15 @@ export class MafiaRole {
     }
 }
 
-export const Roles: Map<string, MafiaRole> = new Map([
+export function getRole (key: string) : MafiaRole {
+    return cloneDeep(Roles.get(key));
+}
+
+export function filterRoles (callback: (role: MafiaRole) => boolean) : MafiaRole[] {
+    return Core.filterMap(Roles, callback);
+}
+
+const Roles: Map<string, MafiaRole> = new Map([
     ['t', new MafiaRole(
         'Townie',
         'You have nothing but your vote.',

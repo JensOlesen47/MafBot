@@ -1,5 +1,5 @@
 import {Phase} from "../game-state";
-import {MafiaRole, Roles} from "./roles.lib";
+import {getRole, MafiaRole} from "./roles.lib";
 import {Factions, MafiaTeam} from "./factions.lib";
 import {cloneDeep} from "lodash";
 import {Core} from "../../core/core";
@@ -59,7 +59,7 @@ class FixedSetup {
 
     private static toPlayer(code: string) : MafiaPlayer {
         const roleAndTeam = code.split('/');
-        const mafiaRole = Roles.get(roleAndTeam[0]);
+        const mafiaRole = getRole(roleAndTeam[0]);
         const mafiaTeam = Factions.get(roleAndTeam[1] || 'town');
         return new MafiaPlayer(mafiaRole, mafiaTeam);
     }
@@ -218,7 +218,7 @@ const Setups: Map<string, MafiaSetup> = new Map([
         'kidswithguns',
         'kidswithguns (8 players): A fixed setup with a couple of killing roles. Don\'t get shot!',
         false,
-        false,
+        true,
         false,
         true,
         Phase.DAY,
@@ -244,7 +244,7 @@ const Setups: Map<string, MafiaSetup> = new Map([
     )],
     ['fogofwar', new MafiaSetup(
         'fogofwar',
-        'fogofwar (8 players): A fixed setup with two mafia and a combat medic. Only one person gets a power role!',
+        'fogofwar (8 players): A fixed setup with two mafia bombs and a combat medic. Only one person gets a power role!',
         false,
         true,
         false,
