@@ -2,6 +2,7 @@ import {AxiosStatic} from "axios";
 import {deleteToken, getToken, setToken} from "./db/user-token";
 import {GuildMember, TextChannel, User} from "discord.js";
 import {UserToken} from "./db/types";
+import {isTestUser} from "../mafia/libs/test-users.lib";
 
 const api: AxiosStatic = require('axios').default;
 const auth = require('../auth.json');
@@ -45,7 +46,7 @@ async function deauthCmd (user: User) : Promise<void> {
 }
 
 export async function checkUserAuthorization (user: User) : Promise<boolean> {
-    const token = await getAccessTokenForUser(user.id);
+    const token = await getAccessTokenForUser(user);
     if (!token) {
         user.send(`Hey there! I notice that you haven't clicked my button yet.\nPlease go to this link to log in to the bot, it'll allow me to invite you to group chats!\n\nhttps://mafbot.mafia451.com/login`);
     }
@@ -60,8 +61,9 @@ export async function authorize (authCode: string) : Promise<User> {
     return user;
 }
 
-export async function getAccessTokenForUser (userId: string) : Promise<string> {
-    if (Number(userId) < 100) { // i.e they are a test user
+export async function getAccessTokenForUser (user: User) : Promise<string> {
+    const userId = user.id;
+    if (isTestUser(user)) {
         return userId;
     }
 

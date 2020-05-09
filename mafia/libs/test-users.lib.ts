@@ -16,6 +16,10 @@ const testUsers = [
     {
         id: '4',
         username: 'Diamond'
+    },
+    {
+        id: '5',
+        username: 'Emerald'
     }
 ] as User[];
 
@@ -35,4 +39,8 @@ export function getTestUser (index: number, parentUser: User) : GuildMember {
         removeRole: (role, reason) => null,
         send: send
     } as GuildMember;
+}
+
+export function isTestUser(user: User) : boolean {
+    return Number(user.id) < 100;
 }

@@ -1,8 +1,9 @@
-import {Guild, GuildMember, User} from "discord.js";
+import {Guild, User} from "discord.js";
 import {mafbot} from "../bot/bot";
 import {getTokens} from "../core/db/user-token";
 import {Player} from "./game-state";
 import {logger} from "../logger";
+import {isTestUser} from "./libs/test-users.lib";
 
 export async function createGuildForPlayers (users: Player[], teamName: string) : Promise<void> {
     const userTokens = await getTokens(users.map(u => u.id));
@@ -19,7 +20,7 @@ export async function createGuildForPlayers (users: Player[], teamName: string) 
 
 export async function addUserToGuild (user: User, nick: string, guild: Guild, accessToken: string) : Promise<void> {
     logger.info(`adding ${nick} to ${guild.name}`);
-    if (Number(accessToken) >= 100) { // i.e they are NOT a test user
+    if (!isTestUser(user)) {
         await guild.addMember(user, { accessToken, nick });
     }
 }

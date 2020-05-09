@@ -2,7 +2,7 @@ import config = require('../libs/config.json');
 import setup = require('../setup');
 import state = require('../game-state');
 import {GuildMember, Message, RichEmbed, TextChannel, User} from "discord.js";
-import {moderatorSetupMessage, Vote, setModeratorMessage, Player} from "../game-state";
+import {moderatorSetupMessage, Vote, setModeratorMessage} from "../game-state";
 import {MafiaPlayer} from "../libs/setups.lib";
 import {Core} from "../../core/core";
 import {getRole, MafiaRole, MafiaStatus} from "../libs/roles.lib";
@@ -17,7 +17,7 @@ import {addUserToGuild, cleanupGuilds} from "../private-chat";
 import {checkUserAuthorization, getAccessTokenForUser} from "../../core/auth";
 import { getTokens } from '../../core/db/user-token';
 import {doAction} from "./actions";
-import {getTestUser} from "../libs/test-users.lib";
+import {getTestUser, isTestUser} from "../libs/test-users.lib";
 
 export async function startGame (channel: TextChannel, user: GuildMember, args: string[]) : Promise<void> {
     if (state.isGameInProgress()) {
@@ -157,7 +157,7 @@ export async function publicHistory (channel: TextChannel, user: GuildMember, ar
 
 export async function spoilers (channel: TextChannel, user: GuildMember) : Promise<void> {
     await history(user.user, ['last']);
-    const accessToken = await getAccessTokenForUser(user.id);
+    const accessToken = await getAccessTokenForUser(user.user);
     if (accessToken) {
         mafbot.guilds.filter(guild => guild.name.startsWith('MafBot ~ '))
             .forEach(guild => addUserToGuild(user.user, `${user.displayName} (Spectator)`, guild, accessToken));
@@ -340,7 +340,7 @@ export async function beginGame (channel: TextChannel) : Promise<void> {
             return;
         }
         const userTokens = await getTokens(state.players.map(p => p.id));
-        if (userTokens.length < state.players.length) {
+        if (userTokens.length < state.players.filter(p => !isTestUser(p.user)).length) {
             const unauthedPlayers = state.players.filter(player => userTokens.every(token => token.userid !== player.id));
             channel.send(`I REALLY WANTED TO START THE GAME................................. BUT ${unauthedPlayers.map(p => Core.findUserMention(channel, p.displayName)).join(' AND ')} ${unauthedPlayers.length > 1 ? `HAVEN'T` : `HASN'T`} AUTHENTICATED YET. PERHAPS THEY NEED SOME ASSISTANCE????`);
             return;
