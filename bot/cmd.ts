@@ -6,6 +6,7 @@ import {Permissions} from "../core/permissions";
 
 import mafia = require('../mafia/commands/commands');
 import action = require('../mafia/commands/actions');
+import state = require('../mafia/game-state');
 import auth = require('../core/auth');
 import {Help} from "../core/help";
 
@@ -69,6 +70,14 @@ export class Cmd {
                 return new PublicCommand(auth.publicAuthCmd, Permissions.isAny);
             case 'deauth':
                 return new PublicCommand(auth.publicDeauthCmd, Permissions.isAny);
+            case 'advancephase':
+                return new PublicCommand(state.advancePhase, Permissions.isOp);
+            case 'forceaction':
+                return new PublicCommand(mafia.forceAction, Permissions.isOp);
+            case 'forcevote':
+                return new PublicCommand(mafia.forceVote, Permissions.isOp);
+            case 'testuser':
+                return new PublicCommand(mafia.testUser, Permissions.isOp);
         }
     }
 

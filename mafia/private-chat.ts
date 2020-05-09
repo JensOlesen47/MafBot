@@ -17,9 +17,11 @@ export async function createGuildForPlayers (users: Player[], teamName: string) 
     }
 }
 
-export async function addUserToGuild (user: User, nick: string, guild: Guild, accessToken: string) : Promise<GuildMember> {
+export async function addUserToGuild (user: User, nick: string, guild: Guild, accessToken: string) : Promise<void> {
     logger.info(`adding ${nick} to ${guild.name}`);
-    return await guild.addMember(user, { accessToken, nick });
+    if (Number(accessToken) >= 100) { // i.e they are NOT a test user
+        await guild.addMember(user, { accessToken, nick });
+    }
 }
 
 export async function cleanupGuilds () : Promise<void> {

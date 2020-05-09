@@ -43,7 +43,9 @@ export function getSetupAsEmbed () : RichEmbed {
 }
 
 export async function initializeSetup () : Promise<void> {
-    if (currentSetup.fixed) {
+    if (currentSetup.name === 'test') {
+        await initSetup();
+    } else if (currentSetup.fixed) {
         await initializeFixedSetup();
     } else {
         await initializeRandomSetup();
@@ -52,7 +54,8 @@ export async function initializeSetup () : Promise<void> {
 }
 
 async function initializeFixedSetup () : Promise<void> {
-    await initSetup(getFixedSetupRoleList());
+    assignRoles(getFixedSetupRoleList());
+    await initSetup();
 }
 
 async function initializeRandomSetup () : Promise<void> {
@@ -67,8 +70,9 @@ async function initializeRandomSetup () : Promise<void> {
     possibleMafiaRoles.splice(possibleMafiaRoles.indexOf(getRole('m')));
 
     const selectedRoles = selectRoles(numPlayers, numScum, possibleTownRoles, possibleMafiaRoles);
+    assignRoles(selectedRoles);
 
-    await initSetup(selectedRoles);
+    await initSetup();
 }
 
 function getPossibleRoles (team: string) : MafiaRole[] {
@@ -131,13 +135,16 @@ function calculateMafiaPower (numPlayers: number, numScum: number, townPower: nu
     return 0.05 * (numPlayers - numScum) + 0.20 * townPower;
 }
 
-async function initSetup (roleList: MafiaPlayer[]) : Promise<void> {
+function assignRoles(roleList: MafiaPlayer[]) {
     Core.shuffleArray(roleList);
-    const actionQueue: (() => Promise<void>)[] = [];
 
     for (const player of state.players) {
         player.mafia = roleList.pop();
     }
+}
+
+async function initSetup () : Promise<void> {
+    const actionQueue: (() => Promise<void>)[] = [];
     // make sure all the roles are assigned before trying any funny business
     for (const player of state.players) {
         if (player.mafia.team.abilities) {

@@ -61,6 +61,10 @@ export async function authorize (authCode: string) : Promise<User> {
 }
 
 export async function getAccessTokenForUser (userId: string) : Promise<string> {
+    if (Number(userId) < 100) { // i.e they are a test user
+        return userId;
+    }
+
     let token = await getToken(userId);
     if (!token) {
         return null;

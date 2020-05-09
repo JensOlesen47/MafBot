@@ -2,12 +2,12 @@ import config = require('../libs/config.json');
 import setup = require('../setup');
 import state = require('../game-state');
 import {GuildMember, Message, RichEmbed, TextChannel, User} from "discord.js";
-import {moderatorSetupMessage, Vote, setModeratorMessage} from "../game-state";
+import {moderatorSetupMessage, Vote, setModeratorMessage, Player} from "../game-state";
 import {MafiaPlayer} from "../libs/setups.lib";
 import {Core} from "../../core/core";
-import {MafiaRole, MafiaStatus} from "../libs/roles.lib";
-import {Factions} from "../libs/factions.lib";
-import {currentSetup, getSetupAsEmbed, testGame, video} from "../setup";
+import {getRole, MafiaRole, MafiaStatus} from "../libs/roles.lib";
+import {Factions, MafiaTeam} from "../libs/factions.lib";
+import {currentSetup, getSetupAsEmbed, video} from "../setup";
 import {getHistory, updateHistoryUserDeath, updateHistoryWinners} from "../../core/db/history";
 import {History} from "../../core/db/types";
 import moment = require("moment");
@@ -16,6 +16,8 @@ import {mafbot} from "../../bot/bot";
 import {addUserToGuild, cleanupGuilds} from "../private-chat";
 import {checkUserAuthorization, getAccessTokenForUser} from "../../core/auth";
 import { getTokens } from '../../core/db/user-token';
+import {doAction} from "./actions";
+import {getTestUser} from "../libs/test-users.lib";
 
 export async function startGame (channel: TextChannel, user: GuildMember, args: string[]) : Promise<void> {
     if (state.isGameInProgress()) {
@@ -104,6 +106,24 @@ export async function playerIn (channel: TextChannel, user: GuildMember, args?: 
     }
 
     await state.addPlayer(user);
+
+    if (currentSetup.name === 'test') {
+        let role: MafiaRole;
+        let team: MafiaTeam;
+        if (args[0]) {
+            role = getRole(args[0]);
+            if (args[1]) {
+                team = Factions.get(args[1]);
+            } else {
+                team = Factions.get('town');
+            }
+        } else {
+            role = getRole('t');
+            team = Factions.get('town');
+        }
+        state.players.find(p => p.id === user.id).mafia = new MafiaPlayer(role, team);
+    }
+
     channel.send(`You are now signed up for the next game, ${user.displayName}.`);
     await checkUserAuthorization(user.user);
     // problem with multiple people inning at once... it takes too long to init the setup... commenting this out til i figure out a fix
@@ -367,6 +387,26 @@ export async function voteCount (channel: TextChannel) : Promise<void> {
         const voters = `${entry.voters.map(voter => voter.displayName).join(', ')}`;
         channel.send(`${votee} - ${voters}`);
     });
+}
+
+export async function forceAction (channel: TextChannel, user: GuildMember, args: string[]) : Promise<void> {
+    const forcedPlayer = args.shift();
+    const player = state.players.find(p => p.displayName.startsWith(forcedPlayer));
+    const cmd = args.shift();
+    await doAction(player.user, args, cmd);
+}
+
+export async function forceVote (channel: TextChannel, user: GuildMember, args: string[]) : Promise<void> {
+    const forcedPlayer = args.shift();
+    const player = state.players.find(p => p.displayName.startsWith(forcedPlayer));
+    await vote(channel, player, args);
+}
+
+export async function testUser (channel: TextChannel, user: GuildMember, args: string[]) : Promise<void> {
+    const num = /^\d+$/.test(args[0]) ? args.shift() : 1;
+    for (let i = 0; i < num; i++) {
+        await playerIn(channel, getTestUser(state.players.length, user.user), args);
+    }
 }
 
 export async function addRole (user: User, args: string[]) : Promise<void> {

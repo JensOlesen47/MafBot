@@ -122,19 +122,14 @@ const Setups: Map<string, MafiaSetup> = new Map([
         Phase.DAY,
         3
     )],
-    ['nat', new MafiaSetup(
-        'nat',
-        'nat (5 players): Night Action Test setup, not designed for actual use.',
+    ['test', new MafiaSetup(
+        'test',
+        'test (x players): Test setup, not designed for actual use.',
         false,
         false,
         true,
-        true,
-        Phase.NIGHT,
-        5,
-        5,
-        new FixedSetupArray(
-            [new FixedSetup(5, ['m/mafia', 'rb/mafia', 'c/town', 'rb/town', 'd/town'], 't')]
-        )
+        false,
+        Phase.NIGHT
     )],
     ['ss3', new MafiaSetup(
         'ss3',
