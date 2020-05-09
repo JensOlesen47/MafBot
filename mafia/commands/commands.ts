@@ -391,14 +391,14 @@ export async function voteCount (channel: TextChannel) : Promise<void> {
 
 export async function forceAction (channel: TextChannel, user: GuildMember, args: string[]) : Promise<void> {
     const forcedPlayer = args.shift();
-    const player = state.players.find(p => p.displayName.startsWith(forcedPlayer));
+    const player = state.players.find(p => p.displayName.toLowerCase().startsWith(forcedPlayer));
     const cmd = args.shift();
     await doAction(player.user, args, cmd);
 }
 
 export async function forceVote (channel: TextChannel, user: GuildMember, args: string[]) : Promise<void> {
     const forcedPlayer = args.shift();
-    const player = state.players.find(p => p.displayName.startsWith(forcedPlayer));
+    const player = state.players.find(p => p.displayName.toLowerCase().startsWith(forcedPlayer));
     await vote(channel, player, args);
 }
 

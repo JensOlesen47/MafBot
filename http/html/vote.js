@@ -115,7 +115,7 @@ function doFormal (player) {
     let timer = 60;
     if (timerInterval) clearInterval(timerInterval);
     timerInterval = setInterval(() => {
-        document.getElementById('formalTimer').innerHTML = `0:${--timer}`;
+        document.getElementById('formalTimer').innerHTML = `0:${timer <= 10 ? '0' : ''}${--timer}`;
         if (!timer && timerInterval) clearInterval(timerInterval);
     }, 1000);
 }

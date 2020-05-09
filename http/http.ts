@@ -122,10 +122,11 @@ socketServer.on('connection', (socket, req) => {
                 if (!isAdmin(json.from.userid) || !formal) {
                     return;
                 }
-                formal = null;
                 const votecount = getVotecount();
-                const voters = votecount.entries[0].voters.map(v => v.displayName);
+                const votecountEntry = votecount.entries.find(e => e.votee === formal);
+                const voters = votecountEntry ? votecountEntry.voters.map(v => v.displayName) : [];
                 checkForLynch();
+                formal = null;
                 socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'reveal', votes: voters })));
                 break;
             case 'clear':

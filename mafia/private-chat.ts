@@ -7,7 +7,7 @@ import {isTestUser} from "./libs/test-users.lib";
 
 export async function createGuildForPlayers (users: Player[], teamName: string) : Promise<void> {
     const userTokens = await getTokens(users.map(u => u.id));
-    if (userTokens.length !== users.length) {
+    if (userTokens.length !== users.filter(u => !isTestUser(u.user)).length) {
         users.forEach(user => user.send(`I REALLY WANTED TO CREATE A GROUP CHAT FOR YOU BUT NO. ONE OF YOU ISN'T AUTHENTICATED. GOOD JOB. THANKS A LOT.`));
     } else {
         const newGuild = await mafbot.user.createGuild(`MafBot ~ ${teamName} Chat`, 'us-east');

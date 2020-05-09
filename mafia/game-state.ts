@@ -132,11 +132,15 @@ export async function advancePhase () : Promise<void> {
         gamePhase.phase = Phase.DAY;
         gamePhase.number += 1;
         sendMessage(`It is now ${gamePhase.toString()}. With ${players.filter(player => player.mafia.alive).length} alive, it takes ${getLynchThreshold()} to lynch.`);
-        await Core.unmute(channel);
+        if (!video) {
+            await Core.unmute(channel);
+        }
     } else {
         gamePhase.phase = Phase.NIGHT;
         sendMessage(`It is now ${gamePhase.toString()}. Send in your actions!`);
-        await Core.mute(channel);
+        if (!video) {
+            await Core.mute(channel);
+        }
         await checkForFullActionQueue();
     }
     await checkForOnPhase();
