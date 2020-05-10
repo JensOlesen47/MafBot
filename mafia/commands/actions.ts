@@ -33,7 +33,7 @@ const actionFnList = new Map<string, (action: Action) => Promise<void>>([
 export async function resolveActions () : Promise<void> {
     actionQueue.sort((a, b) => a.priority - b.priority);
     for (const actn of actionQueue) {
-        await actionFnList.get(actn.name)(actn);
+        await actionFnList.get(actn.alias || actn.name)(actn);
     }
     actionQueue.length = 0;
 }
@@ -77,14 +77,14 @@ export async function doAction (user: User, args: string[], cmd: string) : Promi
                 user.send(`You cannot submit an action at this time.`);
                 return;
             } else {
-                await actionFnList.get(action.name)(action);
+                await actionFnList.get(action.alias || action.name)(action);
                 if (state.isGameInProgress()) {
                     console.log('advancing to night phase from dusk..');
                     await state.advancePhase();
                 }
             }
         } else {
-            await actionFnList.get(action.name)(action);
+            await actionFnList.get(action.alias || action.name)(action);
         }
         user.send(`Action confirmed: ${cmd}${action.victims.length > 0 ? ' on ' + action.victims.map(victim => victim.displayName).join(' & ') : null}.`);
     }
@@ -133,25 +133,17 @@ function getAction (actioner: Player, args: string[], cmd: string) : Action {
         return;
     }
 
-    action.name = action.alias || cmd;
     action.actioner = actioner;
     action.victims = victims;
     return action;
 }
 
 export async function checkForFullActionQueue () : Promise<void> {
-    console.log(`isnight ${state.isNight()}`);
     if (state.isNight() && state.players.every(playerHasSubmittedAction)) {
         await state.advancePhase();
     }
 
     function playerHasSubmittedAction(player: Player) {
-        console.log(player.displayName);
-        console.log(!player.mafia.alive);
-        console.log(player.mafia.role.abilities);
-        console.log(actionQueue.some(action => action.actioner.id === player.id));
-        console.log(player.mafia.role.abilities.every(ability => ability.name === 'mafiakill'));
-        console.log(actionQueue.some(action => action.name === 'mafiakill'))
         return !player.mafia.alive
             || player.mafia.role.abilities.length === 0
             || actionQueue.some(action => action.actioner.id === player.id)
