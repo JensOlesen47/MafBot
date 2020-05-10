@@ -125,7 +125,7 @@ socketServer.on('connection', (socket, req) => {
                 const votecount = getVotecount();
                 const votecountEntry = votecount.entries.find(e => e.votee === formal);
                 const voters = votecountEntry ? votecountEntry.voters.map(v => v.displayName) : [];
-                checkForLynch();
+                checkForLynch(formal);
                 formal = null;
                 socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'reveal', votes: voters })));
                 break;

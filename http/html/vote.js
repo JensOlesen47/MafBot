@@ -91,11 +91,14 @@ function updateLivingPlayers (players) {
 
     livingPlayers = players.filter(p => p.alive).map(p => p.name);
 
-    document.getElementById('livingPlayersDiv').hidden = !livingPlayers.length;
+    document.getElementById('livingPlayersDiv').hidden = false;
 
     document.getElementById('livingPlayers').innerHTML = livingPlayers
         .map(p => `<div id="livingPlayer_${p}"><span class="badge badge-secondary">${p}</span><span id="vote_${p}" class="position-fixed ml-1" hidden>🙋</span></div>`)
         .join('\n');
+
+    document.getElementById('deadPlayers').innerHTML = players.filter(p => !p.alive)
+        .map(p => `<div id="deadPlayer_${p.name}">${getBadge(p)}</div>`);
 
     document.getElementById('formalMenu').innerHTML = livingPlayers
         .map(p => `<button id="formalPlayer_${p}" class="dropdown-item" onclick="formal('${p}')">${p}</button>`)
@@ -150,22 +153,22 @@ function doHistory (formals) {
     }
 }
 
+function getBadge (player) {
+    let badgeClass;
+    if (player.alive) {
+        badgeClass = 'badge badge-secondary';
+    } else if (player.team === 'town') {
+        badgeClass = 'badge badge-success';
+    } else if (player.team === 'mafia') {
+        badgeClass = 'badge badge-danger';
+    } else {
+        badgeClass = 'badge badge-warning';
+    }
+    return `<span class="${badgeClass}">${player.name}</span>`;
+}
+
 function buildFormalCard (formal) {
     return `<div class="card m-1"><div class="card-header text-center">${getBadge(formal.votee)}</div><div class="card-body text-center">${formal.voters.map(getBadge).join('<br>')}</div></div>`;
-
-    function getBadge (player) {
-        let badgeClass;
-        if (player.alive) {
-            badgeClass = 'badge badge-secondary';
-        } else if (player.team === 'town') {
-            badgeClass = 'badge badge-success';
-        } else if (player.team === 'mafia') {
-            badgeClass = 'badge badge-danger';
-        } else {
-            badgeClass = 'badge badge-warning';
-        }
-        return `<span class="${badgeClass}">${player.name}</span>`;
-    }
 }
 
 function doLog (logs) {

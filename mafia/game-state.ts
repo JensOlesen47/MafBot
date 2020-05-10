@@ -178,7 +178,7 @@ export function resetVotes () : void {
     });
 }
 
-export async function checkForLynch () : Promise<void> {
+export async function checkForLynch (formal?: string) : Promise<void> {
     const vc = getVotecount();
     const lynchThreshold = getLynchThreshold();
     for (let entry of vc.entries) {
@@ -188,12 +188,12 @@ export async function checkForLynch () : Promise<void> {
         }
     }
     if (video) {
-        const formal = vc.entries.find(e => e.votee);
-        const formalledPlayer = players.find(p => p.displayName === formal.votee);
+        const formalVc = vc.entries.find(e => e.votee) || { votee: formal, voters: [] };
+        const formalledPlayer = players.find(p => p.displayName === formal);
         if (!testGame) {
             await addVoteHistory(formalledPlayer, vc, gamePhase.number, 2);
         }
-        recordVoteHistory(formal);
+        recordVoteHistory(formalVc);
     }
 }
 

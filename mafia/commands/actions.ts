@@ -32,7 +32,9 @@ const actionFnList = new Map<string, (action: Action) => Promise<void>>([
 
 export async function resolveActions () : Promise<void> {
     actionQueue.sort((a, b) => a.priority - b.priority);
-    actionQueue.forEach(actn => actionFnList.get(actn.name)(actn));
+    for (const actn of actionQueue) {
+        await actionFnList.get(actn.name)(actn);
+    }
     actionQueue.length = 0;
 }
 
@@ -138,8 +140,15 @@ function getAction (actioner: Player, args: string[], cmd: string) : Action {
 }
 
 export async function checkForFullActionQueue () : Promise<void> {
-    if (state.isNight() && state.players.filter(player => player.mafia.alive && player.mafia.role.abilities.length > 0).length === actionQueue.length) {
+    if (state.isNight() && state.players.every(playerHasSubmittedAction)) {
         await state.advancePhase();
+    }
+
+    function playerHasSubmittedAction(player: Player) {
+        return !player.mafia.alive
+            || player.mafia.role.abilities.length === 0
+            || actionQueue.some(action => action.actioner.id === player.id)
+            || (player.mafia.role.abilities.every(ability => ability.name === 'mafiakill') && actionQueue.some(action => action.name === 'mafiakill'));
     }
 }
 
