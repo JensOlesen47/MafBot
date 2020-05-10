@@ -33,6 +33,12 @@ export function getAbility(key: string) : MafiaAbility {
 }
 
 const Abilities: Map<string, MafiaAbility> = new Map([
+    ['none', new MafiaAbility(
+        'none',
+        0,
+        [],
+        'none: Do nothing.'
+    )],
     ['setbuddy', new MafiaAbility(
         'setbuddy',
         1,

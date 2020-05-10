@@ -165,6 +165,7 @@ export function httpUpdateLivingPlayers (playersUpate: Player[]) : void {
     players = playersUpate;
     const simplePlayers = playersUpate.map(mapToSimplePlayer);
     socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'players', players: simplePlayers })));
+    socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'history', formals: formalHistory.map(mapToSimpleFormal) })));
 
     if (players.every(p => p.mafia && !p.mafia.alive)) {
         players = [];
@@ -176,7 +177,6 @@ export function httpUpdateLivingPlayers (playersUpate: Player[]) : void {
 export function recordVoteHistory (votecountEntry: VotecountEntry) : void {
     logger.debug(`recording formal on player : ${votecountEntry.votee}`);
     formalHistory.push(votecountEntry);
-    socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'history', formals: formalHistory.map(mapToSimpleFormal) })));
 }
 
 export function httpSendMessage (message: string) : void {
