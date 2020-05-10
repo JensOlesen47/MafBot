@@ -327,13 +327,14 @@ export async function endGame () : Promise<void> {
             await player.removeRole(playerrole);
         }
     }
+    if (video) {
+        players.forEach(p => p.mafia.alive = false);
+        httpUpdateLivingPlayers(players);
+    }
     players = [];
     moderator = null;
     moderatorSetupMessage = null;
     votes = [];
-    if (video) {
-        httpUpdateLivingPlayers(players);
-    }
     setSetup(null);
     gameStatus = Status.NONE;
     gamePhase = null;

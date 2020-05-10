@@ -189,7 +189,7 @@ function mapToSimplePlayer (player: Player) : SimplePlayer {
         id: player.id,
         name: player.displayName,
         alive: player.mafia && player.mafia.alive,
-        team: player.mafia && player.mafia.alive ? null : player.mafia.team.name
+        team: !player.mafia || player.mafia.alive ? null : player.mafia.team.name
     };
 }
 
