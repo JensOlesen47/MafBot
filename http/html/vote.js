@@ -98,7 +98,8 @@ function updateLivingPlayers (players) {
         .join('\n');
 
     document.getElementById('deadPlayers').innerHTML = players.filter(p => !p.alive)
-        .map(p => `<div id="deadPlayer_${p.name}">${getBadge(p)}</div>`);
+        .map(p => `<div id="deadPlayer_${p.name}">${getBadge(p)}</div>`)
+        .join('\n');
 
     document.getElementById('formalMenu').innerHTML = livingPlayers
         .map(p => `<button id="formalPlayer_${p}" class="dropdown-item" onclick="formal('${p}')">${p}</button>`)

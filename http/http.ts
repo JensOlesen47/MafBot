@@ -166,7 +166,8 @@ export function httpUpdateLivingPlayers (playersUpate: Player[]) : void {
     const simplePlayers = playersUpate.map(mapToSimplePlayer);
     socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'players', players: simplePlayers })));
 
-    if (!players.length) {
+    if (players.every(p => p.mafia && !p.mafia.alive)) {
+        players = [];
         formalHistory = [];
         messages = [];
     }
