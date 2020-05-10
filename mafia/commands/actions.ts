@@ -140,11 +140,18 @@ function getAction (actioner: Player, args: string[], cmd: string) : Action {
 }
 
 export async function checkForFullActionQueue () : Promise<void> {
+    console.log(`isnight ${state.isNight()}`);
     if (state.isNight() && state.players.every(playerHasSubmittedAction)) {
         await state.advancePhase();
     }
 
     function playerHasSubmittedAction(player: Player) {
+        console.log(player.displayName);
+        console.log(!player.mafia.alive);
+        console.log(player.mafia.role.abilities);
+        console.log(actionQueue.some(action => action.actioner.id === player.id));
+        console.log(player.mafia.role.abilities.every(ability => ability.name === 'mafiakill'));
+        console.log(actionQueue.some(action => action.name === 'mafiakill'))
         return !player.mafia.alive
             || player.mafia.role.abilities.length === 0
             || actionQueue.some(action => action.actioner.id === player.id)
