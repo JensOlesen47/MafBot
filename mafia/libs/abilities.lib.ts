@@ -1,3 +1,5 @@
+import { cloneDeep } from "lodash";
+
 export class MafiaAbility {
     name: string;
     priority: number;
@@ -26,7 +28,11 @@ export class MafiaAbility {
     }
 }
 
-export const Abilities: Map<string, MafiaAbility> = new Map([
+export function getAbility(key: string) : MafiaAbility {
+    return cloneDeep(Abilities.get(key));
+}
+
+const Abilities: Map<string, MafiaAbility> = new Map([
     ['setbuddy', new MafiaAbility(
         'setbuddy',
         1,

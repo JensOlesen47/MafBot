@@ -1,7 +1,7 @@
 import state = require('../game-state');
 import {Player} from "../game-state";
 import {User} from "discord.js";
-import {MafiaAbility, Abilities} from "../libs/abilities.lib";
+import {getAbility, MafiaAbility} from "../libs/abilities.lib";
 import {getRole} from "../libs/roles.lib";
 import {Factions} from "../libs/factions.lib";
 import {Core} from "../../core/core";
@@ -92,7 +92,7 @@ export async function doAction (user: User, args: string[], cmd: string) : Promi
 
 function getAction (actioner: Player, args: string[], cmd: string) : Action {
     console.log('getting action: ' + cmd);
-    const action = Abilities.get(cmd) as Action;
+    const action = getAbility(cmd) as Action;
     if (args.length !== action.targets.length) {
         actioner.send(`You gave ${args.length} target${args.length !== 1 ? 's' : null} but this action requires ${action.targets.length}.`);
         return;
@@ -140,18 +140,11 @@ function getAction (actioner: Player, args: string[], cmd: string) : Action {
 }
 
 export async function checkForFullActionQueue () : Promise<void> {
-    console.log(`isnight ${state.isNight()}`);
     if (state.isNight() && state.players.every(playerHasSubmittedAction)) {
         await state.advancePhase();
     }
 
     function playerHasSubmittedAction(player: Player) {
-        console.log(player.displayName);
-        console.log(!player.mafia.alive);
-        console.log(player.mafia.role.abilities);
-        console.log(actionQueue.some(action => action.actioner.id === player.id));
-        console.log(player.mafia.role.abilities.every(ability => ability.name === 'mafiakill'));
-        console.log(actionQueue.some(action => action.name === 'mafiakill'))
         return !player.mafia.alive
             || player.mafia.role.abilities.length === 0
             || actionQueue.some(action => action.actioner.id === player.id)
@@ -184,7 +177,7 @@ export async function deduceActionFromRole (status: string, player: Player) : Pr
         });
 
         const splitAction = actionName.split('+');
-        const mafiaAbility = Abilities.get(splitAction.shift()) as Action;
+        const mafiaAbility = getAbility(splitAction.shift()) as Action;
         mafiaAbility.victims = victims;
         mafiaAbility.actioner = player;
         if (splitAction.length > 0) {
@@ -235,7 +228,7 @@ export async function giveability (action: Action) : Promise<void> {
     action.victims.forEach(victim => {
         const gifts = action.actioner.mafia.role.status.gifts;
         const randomGift = gifts[Core.randomNumber(gifts.length)];
-        const mafiaAbility = Abilities.get(randomGift);
+        const mafiaAbility = getAbility(randomGift);
         victim.mafia.role.abilities.push(mafiaAbility);
         victim.send(`You have gained a new ability: ${mafiaAbility.name}`);
     });
@@ -293,38 +286,38 @@ export async function increasestatus (action: Action) : Promise<void> {
 }
 
 async function _decreaseStatus (player: Player, status: string) : Promise<void> {
-    const action = Abilities.get('decreasestatus') as Action;
+    const action = getAbility('decreasestatus') as Action;
     action.victims = [player];
     action.status = status;
     await decreasestatus(action);
 }
 
 async function _increaseStatus (player: Player, status: string) : Promise<void> {
-    const action = Abilities.get('increasestatus') as Action;
+    const action = getAbility('increasestatus') as Action;
     action.victims = [player];
     action.status = status;
     await increasestatus(action);
 }
 
 async function tempDecreaseStatus (player: Player, status: string) : Promise<void> {
-    const action = Abilities.get('decreasestatus') as Action;
+    const action = getAbility('decreasestatus') as Action;
     action.victims = [player];
     action.status = status;
     await decreasestatus(action);
 
-    const queueIncreaseAction = Abilities.get('increasestatus') as Action;
+    const queueIncreaseAction = getAbility('increasestatus') as Action;
     action.victims = [player];
     action.status = status;
     actionQueue.push(queueIncreaseAction);
 }
 
 async function tempIncreaseStatus (player: Player, status: string) : Promise<void> {
-    const action = Abilities.get('increasestatus') as Action;
+    const action = getAbility('increasestatus') as Action;
     action.victims = [player];
     action.status = status;
     await increasestatus(action);
 
-    const queueDecreaseAction = Abilities.get('decreasestatus') as Action;
+    const queueDecreaseAction = getAbility('decreasestatus') as Action;
     action.victims = [player];
     action.status = status;
     actionQueue.push(queueDecreaseAction);

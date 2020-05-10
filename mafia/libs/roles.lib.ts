@@ -1,5 +1,5 @@
 import {GuildMember} from "discord.js";
-import {Abilities, MafiaAbility} from "./abilities.lib";
+import {getAbility, MafiaAbility} from "./abilities.lib";
 import { cloneDeep } from "lodash";
 import { Core } from "../../core/core";
 
@@ -105,7 +105,7 @@ const Roles: Map<string, MafiaRole> = new Map([
     ['c', new MafiaRole(
         'Cop',
         'You can inspect another player to learn their alignment. Your results are not guaranteed to be accurate.',
-        [Abilities.get('inspect')],
+        [getAbility('inspect')],
         new MafiaStatus(),
         ['town'],
         1,
@@ -114,7 +114,7 @@ const Roles: Map<string, MafiaRole> = new Map([
     ['d', new MafiaRole(
         'Doctor',
         'You can protect other players from kills. Each protection stops one kill, and lasts for one night.',
-        [Abilities.get('protect')],
+        [getAbility('protect')],
         new MafiaStatus(),
         ['town', 'mafia'],
         0.5,
@@ -123,7 +123,7 @@ const Roles: Map<string, MafiaRole> = new Map([
     ['v', new MafiaRole(
         'Vigilante',
         'You can kill other players. For justice.',
-        [Abilities.get('kill')],
+        [getAbility('kill')],
         new MafiaStatus(),
         ['town'],
         0.5,
@@ -132,7 +132,7 @@ const Roles: Map<string, MafiaRole> = new Map([
     ['rb', new MafiaRole(
         'Roleblocker',
         'You can block another player\'s action each night.',
-        [Abilities.get('block')],
+        [getAbility('block')],
         new MafiaStatus(),
         ['town', 'mafia'],
         0.6,
@@ -230,25 +230,25 @@ const Roles: Map<string, MafiaRole> = new Map([
     ['suibomb', new MafiaRole(
         'Suicide Bomber',
         'During the day, you may target a player to kill both you and them.',
-        [Abilities.get('suicidebomb').isDay()],
+        [getAbility('suicidebomb').isDay()],
         new MafiaStatus()
     )],
     ['inno', new MafiaRole(
         'Innocent Child',
         'You may publicly reveal yourself to be town.',
-        [Abilities.get('reveal')],
+        [getAbility('reveal')],
         new MafiaStatus()
     )],
     ['v1', new MafiaRole(
         'One-shot Vigilante',
         'You are a vigilante, but you only have one bullet left. You can kill a person during the night, but only once!',
-        [Abilities.get('kill').hasShots(1)],
+        [getAbility('kill').hasShots(1)],
         new MafiaStatus()
     )],
     ['dayvig', new MafiaRole(
         'Dayvig',
         'You have unlimited shots, try not to abuse it.',
-        [Abilities.get('kill').isDay()],
+        [getAbility('kill').isDay()],
         new MafiaStatus()
     )],
     ['parity', new MafiaRole( // not implemented
@@ -272,13 +272,13 @@ const Roles: Map<string, MafiaRole> = new Map([
     ['macho_cop', new MafiaRole( // not implemented
         'Macho Cop',
         'You can inspect another player at night, learning whether they are town or mafia. You are too cool for school and cannot be protected from night kills.',
-        [Abilities.get('inspect')],
+        [getAbility('inspect')],
         new MafiaStatus()
     )],
     ['scared_doc', new MafiaRole( // not implemented
         'Scared Doctor',
         'You can save one person other than yourself each night. However, if you so much as hint that you\'re the doctor, you will lose your powers and won\'t be able to save anybody any more.',
-        [Abilities.get('protect')],
+        [getAbility('protect')],
         new MafiaStatus()
     )]
 ]);

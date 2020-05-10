@@ -1,4 +1,4 @@
-import {Abilities, MafiaAbility} from "./abilities.lib";
+import {getAbility, MafiaAbility} from "./abilities.lib";
 
 export class MafiaTeam {
     name: string;
@@ -22,7 +22,7 @@ export const Factions: Map<string, MafiaTeam> = new Map([
         'mafia',
         'You win when you have majority and there are no other killers.',
         true,
-        [Abilities.get('mafiakill')]
+        [getAbility('mafiakill')]
     )],
     ['sk', new MafiaTeam(
         'sk',

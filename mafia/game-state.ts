@@ -2,7 +2,7 @@ import {Core} from "../core/core";
 import actions = require('./commands/actions');
 import commands = require('./commands/commands');
 import {GuildMember, Message, Role, TextChannel, User} from "discord.js";
-import {Abilities} from "./libs/abilities.lib";
+import {getAbility} from "./libs/abilities.lib";
 import {Action, checkForFullActionQueue} from "./commands/actions";
 import {MafiaPlayer} from "./libs/setups.lib";
 import {currentSetup, video, setSetup, testGame} from "./setup";
@@ -362,7 +362,7 @@ async function checkForGhostAction(user: Player) {
         duskAwaitingPlayer = user;
         await Core.mute(channel);
 
-        const giveability = Abilities.get('giveability') as Action;
+        const giveability = getAbility('giveability') as Action;
         giveability.victims = [user];
         if (!user.mafia.role.status.gifts) {
             user.mafia.role.status.gifts = [];
