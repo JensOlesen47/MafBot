@@ -49,7 +49,7 @@ export async function doAction (user: User, args: string[], cmd: string) : Promi
         user.send(`Your role cannot perform any actions.`);
     } else if (!actioner.mafia.role.abilities.find(ability => ability.name === cmd) && cmd !== 'none') {
         user.send(`Your role can only perform the following action${actioner.mafia.role.abilities.length !== 1 ? 's' : ''}: ${actioner.mafia.role.abilities.map(ability => ability.name).join(', ')}`);
-    } else if (actioner.mafia.role.abilities.find(ability => ability.name === cmd).shots <= 0) {
+    } else if (cmd !== 'none' && actioner.mafia.role.abilities.find(ability => ability.name === cmd).shots <= 0) {
         user.send(`You've already used all your shots of ${cmd}.`);
     } else if (cmd === 'mafiakill' && actionQueue.find(actn => actn.name === 'mafiakill')) {
         user.send(`Your team has already submitted a mafiakill for this phase.`);
@@ -140,11 +140,18 @@ function getAction (actioner: Player, args: string[], cmd: string) : Action {
 }
 
 export async function checkForFullActionQueue () : Promise<void> {
+    console.log(`isnight ${state.isNight()}`);
     if (state.isNight() && state.players.every(playerHasSubmittedAction)) {
         await state.advancePhase();
     }
 
     function playerHasSubmittedAction(player: Player) {
+        console.log(player.displayName);
+        console.log(!player.mafia.alive);
+        console.log(player.mafia.role.abilities);
+        console.log(actionQueue.some(action => action.actioner.id === player.id));
+        console.log(player.mafia.role.abilities.every(ability => ability.name === 'mafiakill'));
+        console.log(actionQueue.some(action => action.name === 'mafiakill'))
         return !player.mafia.alive
             || player.mafia.role.abilities.length === 0
             || actionQueue.some(action => action.actioner.id === player.id)
