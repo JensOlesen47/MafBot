@@ -1,7 +1,7 @@
 import {existsSync, readFileSync} from 'fs';
 
 export function getHtmlPage (fileName: string, args?: {[id: string]: string}) : string {
-    const filePath = `./web/html/${fileName}`;
+    const filePath = `./web/client/${fileName}`;
 
     if (!existsSync(filePath + '.html')) {
         return;
