@@ -20,6 +20,18 @@ const testUsers = [
     {
         id: '5',
         username: 'Emerald'
+    },
+    {
+        id: '6',
+        username: 'Feldspar'
+    },
+    {
+        id: '7',
+        username: 'Garnet'
+    },
+    {
+        id: '8',
+        username: 'Hematite'
     }
 ] as User[];
 
