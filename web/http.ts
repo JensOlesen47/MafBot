@@ -25,9 +25,9 @@ const app = Express();
 const certPath = '/etc/letsencrypt/live/mafbot.mafia451.com/';
 const cert = fs.readFileSync(`${certPath}fullchain.pem`, 'utf8');
 const key = fs.readFileSync(`${certPath}privkey.pem`, 'utf8');
-app.use(Express.static('./http/static', { dotfiles: 'allow' }));
+app.use(Express.static('./web/static', { dotfiles: 'allow' }));
 
-app.use(favicon('./http/favicon.ico'));
+app.use(favicon('./web/favicon.ico'));
 
 app.get('/', (req, res) => {
     const htmlPage = getHtmlPage('index');
@@ -64,7 +64,7 @@ app.get('*', (req, res) => {
     res.status(200).send(htmlPage);
 });
 
-const httpsServer = https.createServer({ key, cert }, app).listen(8443, () => console.log('http server ready!'));
+const httpsServer = https.createServer({ key, cert }, app).listen(8443, () => console.log('web server ready!'));
 
 http.createServer(((req, res) => {
     res.writeHead(301, { 'Location': `https://mafbot.mafia451.com${req.url}` });
@@ -181,7 +181,7 @@ export function recordVoteHistory (votecountEntry: VotecountEntry) : void {
 }
 
 export function httpSendMessage (message: string) : void {
-    logger.debug(`Sending message to http clients : ${message}`);
+    logger.debug(`Sending message to web clients : ${message}`);
     messages.unshift(message);
     socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'log', logs: messages.join('\n') })));
 }

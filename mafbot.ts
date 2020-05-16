@@ -1,7 +1,7 @@
 import {logger} from "./logger";
 import {ChildProcess, fork, execSync} from "child_process";
 import * as Express from 'express';
-import * as Http from "web";
+import * as Http from "http";
 import * as BodyParser from "body-parser";
 
 let botProcess: ChildProcess, httpProcess: ChildProcess, currentBranch = 'master';
@@ -31,7 +31,7 @@ Http.createServer(webhookApi).listen(8081);
 
 function startProcesses () {
     botProcess = fork(__dirname + '/bot/bot.js');
-    httpProcess = fork(__dirname + '/http/http.js');
+    httpProcess = fork(__dirname + '/web/http.js');
 
     botProcess.on('error', (error) => {
         console.log('bot process stopped due to error');
