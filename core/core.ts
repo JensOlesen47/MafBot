@@ -67,11 +67,11 @@ export class Core {
     }
 
     static async mute (channel: TextChannel) : Promise<void> {
-        await channel.overwritePermissions(channel.guild.defaultRole, { SEND_MESSAGES: false });
+        // await channel.overwritePermissions(channel.guild.defaultRole, { SEND_MESSAGES: false });
     }
 
     static async unmute (channel: TextChannel) : Promise<void> {
-        await channel.overwritePermissions(channel.guild.defaultRole, { SEND_MESSAGES: true });
+        // await channel.overwritePermissions(channel.guild.defaultRole, { SEND_MESSAGES: true });
     }
 
     static getRandomArrayValue<T> (array: T[]) : T {
