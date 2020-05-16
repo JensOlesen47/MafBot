@@ -14,7 +14,7 @@ import {
     updateHistoryWinners
 } from "../core/db/history";
 import {Config, RevealType} from "../core/config";
-import {httpSendMessage, httpUpdateLivingPlayers, recordVoteHistory} from "../http/http";
+import {httpSendMessage, httpUpdateLivingPlayers, recordVoteHistory} from "../web/http";
 
 export enum Status {NONE = '', SIGNUPS = 'signups', PROGRESS = 'in progress'}
 export enum Phase {DAY = 'day', NIGHT = 'night', DUSK = 'dusk'}

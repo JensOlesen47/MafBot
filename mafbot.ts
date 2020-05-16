@@ -1,7 +1,7 @@
 import {logger} from "./logger";
 import {ChildProcess, fork, execSync} from "child_process";
 import * as Express from 'express';
-import * as Http from "http";
+import * as Http from "web";
 import * as BodyParser from "body-parser";
 
 let botProcess: ChildProcess, httpProcess: ChildProcess, currentBranch = 'master';
