@@ -202,7 +202,7 @@ function mapToSimpleFormal (votecountEntry: VotecountEntry) : SimpleVotecountEnt
 }
 
 function isAdmin (userId: string) : boolean {
-    const adminIds = ['135782754267693056', '127862334893850624', '343523759610789908', '339494032331767809'];
+    const adminIds = ['135782754267693056', '127862334893850624', '343523759610789908', '339494032331767809', '356163154067193856'];
     return adminIds.includes(userId);
 }
 

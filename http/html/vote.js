@@ -1,7 +1,7 @@
 let livingPlayers = [];
 let timerInterval;
 
-const adminIds = ['135782754267693056', '127862334893850624', '343523759610789908', '339494032331767809'];
+const adminIds = ['135782754267693056', '127862334893850624', '343523759610789908', '339494032331767809', '356163154067193856'];
 
 const userid = localStorage.getItem('discord_id');
 if (!userid) {
