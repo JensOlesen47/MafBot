@@ -372,7 +372,7 @@ async function checkForGhostAction(user: Player) {
         await actions.giveability(giveability);
 
         sendMessage(`Waiting for ${user.displayName} to submit a ${ghostAction}...`);
-        const submitted = await Core.waitWithCheck(() => !isDusk());
+        const submitted = await Core.waitWithCheck(() => !isDusk(), 2, 600);
         if (!submitted) {
             sendMessage(`Timed out while waiting for ${user.displayName} to get his poop in a group.`);
         }
