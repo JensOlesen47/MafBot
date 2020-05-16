@@ -43,7 +43,7 @@ export async function doAction (user: User, args: string[], cmd: string) : Promi
     const actioner = state.players.find(player => player.user.id === user.id);
     if (!state.isGameInProgress()) {
         user.send(`This is not a valid thing to be doing at this time sir and/or madam.`);
-    } else if (!actioner || !actioner.mafia.alive) {
+    } else if (!actioner || (!state.isDusk() && !actioner.mafia.alive)) {
         user.send(`You are not a living player in the current game.`);
     } else if (actioner.mafia.role.abilities.length === 0) {
         user.send(`Your role cannot perform any actions.`);
@@ -256,6 +256,7 @@ export async function transform (action: Action) : Promise<void> {
         if (transformTo.length > 1) {
             victim.mafia.team = Factions.get(transformTo[1]);
         }
+        console.log(victim.mafia.role);
         if (!action.templates.includes('silent')) {
             victim.send(`You have a new role. You are now a ${victim.mafia.role.name} (${victim.mafia.team.name}).`);
         }
