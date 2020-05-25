@@ -101,22 +101,22 @@ socketServer.on('connection', (socket, req) => {
         const json = JSON.parse(message);
         switch (json.path) {
             case 'vote':
-                const voter = players.find(p => p.id === json.from.userid);
+                const voter = players.find(p => p.id === json.from.id);
                 vote({} as TextChannel, voter, [formal]);
                 break;
             case 'unvote':
-                const unvoter = players.find(p => p.id === json.from.userid);
+                const unvoter = players.find(p => p.id === json.from.id);
                 unvote({} as TextChannel, unvoter);
                 break;
             case 'in':
-                mafbot.fetchUser(json.from.userid, true).then(user => {
+                mafbot.fetchUser(json.from.id, true).then(user => {
                     const channel = { send: msg => webSendMessage(msg) } as TextChannel;
                     const guildMember = mafbot.guilds.find(g => g.id === channel.guild.id).member(user);
                     playerIn(channel, guildMember);
                 });
                 break;
             case 'formal':
-                if (!isAdmin(json.from.userid) || formal) {
+                if (!isAdmin(json.from.id) || formal) {
                     return;
                 }
                 resetVotes();
@@ -124,7 +124,7 @@ socketServer.on('connection', (socket, req) => {
                 socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'formals', username: formal })));
                 break;
             case 'reveal':
-                if (!isAdmin(json.from.userid) || !formal) {
+                if (!isAdmin(json.from.id) || !formal) {
                     return;
                 }
                 const votecount = getVotecount();
@@ -135,7 +135,7 @@ socketServer.on('connection', (socket, req) => {
                 socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'reveals', votes: voters })));
                 break;
             case 'clear':
-                if (!isAdmin(json.from.userid)) {
+                if (!isAdmin(json.from.id)) {
                     return;
                 }
                 formal = null;
@@ -143,7 +143,7 @@ socketServer.on('connection', (socket, req) => {
                 socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'clears' })));
                 break;
             case 'modkill':
-                if (!isAdmin(json.from.userid)) {
+                if (!isAdmin(json.from.id)) {
                     return;
                 }
                 modkill({} as User, [ json.username ]);
