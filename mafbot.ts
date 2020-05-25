@@ -54,5 +54,5 @@ function compile () {
 }
 
 function checkout (branchName: string) {
-    execSync(`git checkout ${branchName}`);
+    execSync(`git fetch && git checkout ${branchName}`);
 }
