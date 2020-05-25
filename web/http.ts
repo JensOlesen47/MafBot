@@ -10,6 +10,7 @@ import * as Express from 'express';
 const favicon = require('serve-favicon');
 import {
     checkForLynch,
+    GamePhase,
     getVotecount,
     isGameInProgress,
     Player,
@@ -71,20 +72,24 @@ http.createServer(((req, res) => {
     res.end();
 })).listen(8080);
 
-const socketServer = new ws.Server({server: httpsServer});
+const socketServer = new ws.Server({server: httpsServer, path: '/ws'});
 let players = [] as Player[];
 let formal: string;
 let formalHistory = [] as VotecountEntry[];
 let messages = [] as string[];
+let phase: GamePhase;
 
 socketServer.on('connection', (socket, req) => {
     const ip = req.connection.remoteAddress;
 
     socket.send(JSON.stringify({ path: 'players', players: players.map(mapToSimplePlayer) }));
-    socket.send(JSON.stringify({ path: 'history', formals: formalHistory.map(mapToSimpleFormal) }));
-    socket.send(JSON.stringify({ path: 'log', logs: messages.join('\n') }));
+    socket.send(JSON.stringify({ path: 'histories', formals: formalHistory.map(mapToSimpleFormal) }));
+    socket.send(JSON.stringify({ path: 'logs', logs: messages }));
     if (formal) {
-        socket.send(JSON.stringify({ path: 'formal', username: formal }));
+        socket.send(JSON.stringify({ path: 'formals', username: formal }));
+    }
+    if (phase) {
+        socket.send(JSON.stringify({ path: 'phases', phase: phase }));
     }
 
     socket.on('message', (message) => {
@@ -105,7 +110,7 @@ socketServer.on('connection', (socket, req) => {
                 break;
             case 'in':
                 mafbot.fetchUser(json.from.userid, true).then(user => {
-                    const channel = { send: msg => httpSendMessage(msg) } as TextChannel;
+                    const channel = { send: msg => webSendMessage(msg) } as TextChannel;
                     const guildMember = mafbot.guilds.find(g => g.id === channel.guild.id).member(user);
                     playerIn(channel, guildMember);
                 });
@@ -116,7 +121,7 @@ socketServer.on('connection', (socket, req) => {
                 }
                 resetVotes();
                 formal = json.username;
-                socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'formal', username: formal })));
+                socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'formals', username: formal })));
                 break;
             case 'reveal':
                 if (!isAdmin(json.from.userid) || !formal) {
@@ -127,7 +132,7 @@ socketServer.on('connection', (socket, req) => {
                 const voters = votecountEntry ? votecountEntry.voters.map(v => v.displayName) : [];
                 checkForLynch(formal);
                 formal = null;
-                socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'reveal', votes: voters })));
+                socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'reveals', votes: voters })));
                 break;
             case 'clear':
                 if (!isAdmin(json.from.userid)) {
@@ -135,7 +140,7 @@ socketServer.on('connection', (socket, req) => {
                 }
                 formal = null;
                 resetVotes();
-                socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'clear' })));
+                socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'clears' })));
                 break;
             case 'modkill':
                 if (!isAdmin(json.from.userid)) {
@@ -160,36 +165,56 @@ socketServer.on('error', (err) => {
     logger.error(err);
 });
 
-export function httpUpdateLivingPlayers (playersUpate: Player[]) : void {
+export function webUpdateLivingPlayers (playersUpate: Player[], deadPlayer?: Player, killedString?: string) : void {
     logger.debug(`http-update for living players : ${playersUpate.map(p => `${p.displayName} = ${p.mafia.alive}`)}`);
     players = playersUpate;
     const simplePlayers = playersUpate.map(mapToSimplePlayer);
+    if (deadPlayer) {
+        sendDeathMessage(deadPlayer, killedString);
+    }
     socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'players', players: simplePlayers })));
-    socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'history', formals: formalHistory.map(mapToSimpleFormal) })));
+    socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'histories', formals: formalHistory.map(mapToSimpleFormal) })));
 
     if (players.every(p => p.mafia && !p.mafia.alive)) {
         players = [];
         formalHistory = [];
         messages = [];
+        formal = null;
+        phase = null;
     }
 }
 
-export function recordVoteHistory (votecountEntry: VotecountEntry) : void {
+export function webRecordVoteHistory (votecountEntry: VotecountEntry) : void {
     logger.debug(`recording formal on player : ${votecountEntry.votee}`);
     formalHistory.push(votecountEntry);
-    socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'history', formals: formalHistory.map(mapToSimpleFormal) })));
+    socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'histories', formals: formalHistory.map(mapToSimpleFormal) })));
 }
 
-export function httpSendMessage (message: string) : void {
+export function webSendMessage (message: string) : void {
     logger.debug(`Sending message to web clients : ${message}`);
     messages.unshift(message);
-    socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'log', logs: messages.join('\n') })));
+    // socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'logs', logs: messages })));
+}
+
+export function webUpdatePhase (newPhase: GamePhase) : void {
+    logger.debug(`Updating web game phase : ${newPhase.toString()}`);
+    phase = newPhase;
+    socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'phases', phase: phase })));
+}
+
+function sendDeathMessage (player: Player, killedString: string) : void {
+    const message = {
+        username: player.displayName,
+        team: player.mafia.team.name,
+        method: killedString.includes('lynch') ? 'lynch' : 'kill'
+    };
+    socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'deaths', death: message })));
 }
 
 function mapToSimplePlayer (player: Player) : SimplePlayer {
     return {
         id: player.id,
-        name: player.displayName,
+        username: player.displayName,
         alive: player.mafia && player.mafia.alive,
         team: !player.mafia || player.mafia.alive ? null : player.mafia.team.name
     };
@@ -209,7 +234,7 @@ function isAdmin (userId: string) : boolean {
 
 class SimplePlayer {
     id: string;
-    name: string;
+    username: string;
     alive: boolean;
     team: string;
 }

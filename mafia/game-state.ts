@@ -14,7 +14,7 @@ import {
     updateHistoryWinners
 } from "../core/db/history";
 import {Config, RevealType} from "../core/config";
-import {httpSendMessage, httpUpdateLivingPlayers, recordVoteHistory} from "../web/http";
+import {webSendMessage, webUpdateLivingPlayers, webRecordVoteHistory, webUpdatePhase} from "../web/http";
 
 export enum Status {NONE = '', SIGNUPS = 'signups', PROGRESS = 'in progress'}
 export enum Phase {DAY = 'day', NIGHT = 'night', DUSK = 'dusk'}
@@ -82,7 +82,7 @@ export let playerrole: Role;
 export let channel: TextChannel;
 
 export async function sendMessage (msg: string) : Promise<void> {
-    video ? httpSendMessage(msg) : await channel.send(msg);
+    video ? webSendMessage(msg) : await channel.send(msg);
 }
 
 export function isGameInSignups () : boolean {
@@ -143,6 +143,10 @@ export async function advancePhase () : Promise<void> {
         }
         await checkForFullActionQueue();
     }
+
+    if (video) {
+        webUpdatePhase(gamePhase);
+    }
     await checkForOnPhase();
 }
 
@@ -157,7 +161,7 @@ export async function startGame () : Promise<void> {
     }
     await setGameInProgress();
     if (video) {
-        httpUpdateLivingPlayers(players);
+        webUpdateLivingPlayers(players);
     }
 }
 
@@ -193,7 +197,7 @@ export async function checkForLynch (formal?: string) : Promise<void> {
         if (!testGame) {
             await addVoteHistory(formalledPlayer, vc, gamePhase.number, 2);
         }
-        recordVoteHistory(formalVc);
+        webRecordVoteHistory(formalVc);
     }
 }
 
@@ -214,7 +218,7 @@ export async function lynchPlayer (fullVotecount: VotecountEntry, lyncheeName: s
             await updateHistoryUserDeath(lynchee.id, `lynched ${gamePhase.toString()}`);
         }
         if (video) {
-            recordVoteHistory(fullVotecount);
+            webRecordVoteHistory(fullVotecount);
         }
 
         await checkForOnRoleDeath(lynchee);
@@ -329,7 +333,7 @@ export async function endGame () : Promise<void> {
     }
     if (video) {
         players.forEach(p => p.mafia.alive = false);
-        httpUpdateLivingPlayers(players);
+        webUpdateLivingPlayers(players);
     }
     players = [];
     moderator = null;
@@ -387,7 +391,7 @@ async function playerDeath (user: Player, killedString: string) : Promise<void> 
     await user.removeRole(playerrole);
     user.mafia.alive = false;
     if (video) {
-        httpUpdateLivingPlayers(players);
+        webUpdateLivingPlayers(players, user, killedString);
     }
 }
 
