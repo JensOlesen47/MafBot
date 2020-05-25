@@ -50,7 +50,7 @@ function stopProcesses () {
 }
 
 function compile () {
-    execSync('git pull && tsc');
+    execSync('git pull && npm i && tsc');
 }
 
 function checkout (branchName: string) {
