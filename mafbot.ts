@@ -4,9 +4,11 @@ import * as Express from 'express';
 import * as Http from "http";
 import * as BodyParser from "body-parser";
 
-let botProcess: ChildProcess, httpProcess: ChildProcess, currentBranch = 'master';
+let botProcess: ChildProcess, httpProcess: ChildProcess;
 const webhookApi = Express();
 webhookApi.use(BodyParser.json());
+
+let currentBranch = execSync('git rev-parse --abbrev-ref HEAD');
 
 compile();
 startProcesses();
