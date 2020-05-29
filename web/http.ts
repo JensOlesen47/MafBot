@@ -75,7 +75,7 @@ http.createServer(((req, res) => {
 const socketServer = new ws.Server({server: httpsServer, path: '/ws'});
 let players = [] as Player[];
 let formal: string;
-let formalHistory = [] as VotecountEntry[];
+let history = [] as GameHistory[];
 let messages = [] as string[];
 let phase: GamePhase;
 
@@ -83,8 +83,7 @@ socketServer.on('connection', (socket, req) => {
     const ip = req.connection.remoteAddress;
 
     socket.send(JSON.stringify({ path: 'players', players: players.map(mapToSimplePlayer) }));
-    socket.send(JSON.stringify({ path: 'histories', formals: formalHistory.map(mapToSimpleFormal) }));
-    socket.send(JSON.stringify({ path: 'logs', logs: messages }));
+    socket.send(JSON.stringify({ path: 'histories', histories: history }));
     if (formal) {
         socket.send(JSON.stringify({ path: 'formals', username: formal }));
     }
@@ -173,11 +172,10 @@ export function webUpdateLivingPlayers (playersUpate: Player[], deadPlayer?: Pla
         sendDeathMessage(deadPlayer, killedString);
     }
     socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'players', players: simplePlayers })));
-    socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'histories', formals: formalHistory.map(mapToSimpleFormal) })));
 
     if (players.every(p => p.mafia && !p.mafia.alive)) {
         players = [];
-        formalHistory = [];
+        history = [];
         messages = [];
         formal = null;
         phase = null;
@@ -186,29 +184,32 @@ export function webUpdateLivingPlayers (playersUpate: Player[], deadPlayer?: Pla
 
 export function webRecordVoteHistory (votecountEntry: VotecountEntry) : void {
     logger.debug(`recording formal on player : ${votecountEntry.votee}`);
-    formalHistory.push(votecountEntry);
-    socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'histories', formals: formalHistory.map(mapToSimpleFormal) })));
+    history.push(mapToSimpleFormal(votecountEntry));
 }
 
 export function webSendMessage (message: string) : void {
     logger.debug(`Sending message to web clients : ${message}`);
     messages.unshift(message);
-    // socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'logs', logs: messages })));
 }
 
 export function webUpdatePhase (newPhase: GamePhase) : void {
     logger.debug(`Updating web game phase : ${newPhase.toString()}`);
     phase = newPhase;
     socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'phases', phase: phase })));
+    history.push({type: 'phase', phase: newPhase});
 }
 
 function sendDeathMessage (player: Player, killedString: string) : void {
+    const method = killedString.includes('lynch') ? 'vote' : 'kill';
     const message = {
         username: player.displayName,
         team: player.mafia.team.name,
-        method: killedString.includes('lynch') ? 'lynch' : 'kill'
+        method: method
     };
     socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'deaths', death: message })));
+    if (method === 'kill') {
+        history.push({type: 'kill', subject: mapToSimplePlayer(player)});
+    }
 }
 
 function mapToSimplePlayer (player: Player) : SimplePlayer {
@@ -220,9 +221,10 @@ function mapToSimplePlayer (player: Player) : SimplePlayer {
     };
 }
 
-function mapToSimpleFormal (votecountEntry: VotecountEntry) : SimpleVotecountEntry {
+function mapToSimpleFormal (votecountEntry: VotecountEntry) : GameHistory {
     return {
-        votee: mapToSimplePlayer(players.find(p => p.displayName === votecountEntry.votee)),
+        type: 'vote',
+        subject: mapToSimplePlayer(players.find(p => p.displayName === votecountEntry.votee)),
         voters: votecountEntry.voters.map(v => mapToSimplePlayer(players.find(p => v.id === p.id)))
     }
 }
@@ -239,7 +241,9 @@ class SimplePlayer {
     team: string;
 }
 
-class SimpleVotecountEntry {
-    votee: SimplePlayer;
-    voters: SimplePlayer[];
+class GameHistory {
+    type: 'phase' | 'vote' | 'kill';
+    subject?: SimplePlayer;
+    voters?: SimplePlayer[];
+    phase?: GamePhase;
 }

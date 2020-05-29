@@ -129,7 +129,7 @@ const Setups: Map<string, MafiaSetup> = new Map([
         false,
         true,
         false,
-        Phase.NIGHT
+        Phase.DAY
     )],
     ['ss3', new MafiaSetup(
         'ss3',
