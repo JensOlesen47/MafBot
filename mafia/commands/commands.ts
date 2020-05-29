@@ -40,7 +40,8 @@ export async function startGame (channel: TextChannel, user: GuildMember, args: 
     await state.setGameInSignups();
 
     state.channel = channel;
-    setup.video = ['vm', 'video'].some(i => args.includes(i));
+    // setup.video = ['vm', 'video'].some(i => args.includes(i));
+    setup.video = true;
     setup.testGame = setup.currentSetup.unimplemented || ['test', 'unranked', 'unrated'].some(i => args.includes(i));
 
     const minplayers = setup.currentSetup.minplayers || config.minimum_players;

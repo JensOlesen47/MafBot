@@ -196,7 +196,7 @@ export function webUpdatePhase (newPhase: GamePhase) : void {
     logger.debug(`Updating web game phase : ${newPhase.toString()}`);
     phase = newPhase;
     socketServer.clients.forEach(client => client.send(JSON.stringify({ path: 'phases', phase: phase })));
-    history.push({type: 'phase', phase: newPhase});
+    history.push({type: 'phase', phase: {...newPhase}});
 }
 
 function sendDeathMessage (player: Player, killedString: string) : void {
