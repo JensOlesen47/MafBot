@@ -8,7 +8,7 @@ let botProcess: ChildProcess, httpProcess: ChildProcess;
 const webhookApi = Express();
 webhookApi.use(BodyParser.json());
 
-let currentBranch = execSync('git rev-parse --abbrev-ref HEAD');
+let currentBranch = execSync('git rev-parse --abbrev-ref HEAD').toString();
 
 compile();
 startProcesses();
