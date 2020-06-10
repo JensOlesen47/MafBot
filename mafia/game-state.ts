@@ -14,7 +14,13 @@ import {
     updateHistoryWinners
 } from "../core/db/history";
 import {Config, RevealType} from "../core/config";
-import {webSendMessage, webUpdateLivingPlayers, webRecordVoteHistory, webUpdatePhase} from "../web/http";
+import {
+    webSendMessage,
+    webUpdateLivingPlayers,
+    webRecordVoteHistory,
+    webUpdatePhase,
+    webUpdateGameState, webUpdateGameSetup
+} from "../web/http";
 
 export enum Status {NONE = '', SIGNUPS = 'signups', PROGRESS = 'in progress'}
 export enum Phase {DAY = 'day', NIGHT = 'night', DUSK = 'dusk'}
@@ -96,8 +102,10 @@ export function isGameOver () : boolean {
 }
 export async function setGameInSignups () : Promise<void> {
     gameStatus = Status.SIGNUPS;
+    webUpdateGameState(gameStatus);
 }
 export async function setGameInProgress () : Promise<void> {
+    webUpdateGameState(gameStatus);
     gameStatus = Status.PROGRESS;
     const startPhase = currentSetup.start || Phase.NIGHT;
     if (startPhase === Phase.DAY) {
@@ -253,11 +261,15 @@ async function checkForOnLynch (lynchee: Player) : Promise<void> {
 export async function addPlayer (user: GuildMember) : Promise<void> {
     const player = user as Player;
     players.push(player);
+    webUpdateLivingPlayers(players);
+    webUpdateGameSetup(currentSetup);
     await user.addRole(playerrole);
 }
 
 export async function removePlayer (user: GuildMember) : Promise<void> {
     players.splice(players.indexOf(user as Player), 1);
+    webUpdateLivingPlayers(players);
+    webUpdateGameSetup(currentSetup);
     await user.removeRole(playerrole);
 }
 
@@ -342,6 +354,7 @@ export async function endGame () : Promise<void> {
     setSetup(null);
     gameStatus = Status.NONE;
     gamePhase = null;
+    webUpdateGameState(gameStatus);
     await Core.unmute(channel);
 }
 

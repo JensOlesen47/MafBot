@@ -8,6 +8,7 @@ import {logger} from "../logger";
 import {RichEmbed} from "discord.js";
 import {players} from "./game-state";
 import {createGuildForPlayers} from "./private-chat";
+import {webSendRoles, webUpdateGameSetup} from "../web/http";
 
 export let currentSetup: MafiaSetup;
 export let video: boolean;
@@ -15,6 +16,7 @@ export let testGame: boolean;
 
 export function setSetup (setupName: string) : void {
     currentSetup = getSetup(setupName);
+    webUpdateGameSetup(currentSetup);
 }
 
 // currently only supports moderated games, will hopefully be enhanced to support spoilers too
@@ -50,6 +52,7 @@ export async function initializeSetup () : Promise<void> {
     } else {
         await initializeRandomSetup();
     }
+    webSendRoles();
     logger.debug(state.players.map(player => `${player.displayName} - ${player.mafia.role.name} (${player.mafia.team.name})`));
 }
 
