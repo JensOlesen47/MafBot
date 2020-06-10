@@ -179,7 +179,7 @@ socketServer.on('error', (err) => {
 });
 
 export function webUpdateLivingPlayers (playersUpate: Player[], deadPlayer?: Player, killedString?: string) : void {
-    logger.debug(`http-update for living players : ${playersUpate.map(p => `${p.displayName} = ${p.mafia.alive}`)}`);
+    logger.debug(`http-update for living players : ${playersUpate.map(p => `${p.displayName} = ${p.mafia?.alive}`)}`);
     players = playersUpate;
     const simplePlayers = playersUpate.map(mapToSimplePlayer);
     if (deadPlayer) {
