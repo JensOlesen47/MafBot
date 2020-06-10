@@ -105,8 +105,8 @@ export async function setGameInSignups () : Promise<void> {
     webUpdateGameState(gameStatus);
 }
 export async function setGameInProgress () : Promise<void> {
-    webUpdateGameState(gameStatus);
     gameStatus = Status.PROGRESS;
+    webUpdateGameState(gameStatus);
     const startPhase = currentSetup.start || Phase.NIGHT;
     if (startPhase === Phase.DAY) {
         gamePhase = new GamePhase(Phase.NIGHT, 0);
