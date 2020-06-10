@@ -275,7 +275,7 @@ function mapToSimpleSetup (setup: MafiaSetup) : SimpleSetup {
     return {
         name: setup.name,
         helptext: setup.helptext,
-        roles: setup.fixedSetups.getForPlayers(players.length).setup.map(mapToSimpleRole)
+        roles: setup.fixed ? setup.fixedSetups.getForPlayers(players.length).setup.map(mapToSimpleRole) : []
     };
 }
 
