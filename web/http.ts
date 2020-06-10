@@ -101,10 +101,6 @@ socketServer.on('connection', (socket, req) => {
 
     socket.on('message', (message) => {
         logger.silly(`websocket message received: ${message}`);
-        if (!isGameInProgress()) {
-            logger.debug(`Ignoring websocket message: no game in progress`);
-            return;
-        }
         const json = JSON.parse(message);
         switch (json.path) {
             case 'auth':
