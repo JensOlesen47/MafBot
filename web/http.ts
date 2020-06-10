@@ -123,7 +123,7 @@ socketServer.on('connection', (socket, req) => {
             case 'in':
                 mafbot.fetchUser(json.from.id, true).then(user => {
                     const channel = { send: msg => webSendMessage(msg) } as TextChannel;
-                    const guildMember = mafbot.guilds.find(g => g.id === channel.guild.id).member(user);
+                    const guildMember = mafbot.guilds.find(g => !!g.member(user)).member(user);
                     playerIn(channel, guildMember);
                 });
                 break;
