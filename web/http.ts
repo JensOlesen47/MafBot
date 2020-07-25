@@ -102,9 +102,9 @@ app.get("/authenticate", (req, res) => {
 });
 
 app.get("*", (req, res) => {
-  fs.createReadStream(`${__dirname}/client/mafbot/dist/mafbot/index.html`).pipe(
-    res
-  );
+  fs.createReadStream(
+    `${__dirname}/../../web/client/mafbot/dist/mafbot/index.html`
+  ).pipe(res);
 });
 
 const httpsServer = https
