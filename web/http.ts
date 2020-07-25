@@ -37,10 +37,7 @@ const key = fs.readFileSync(`${certPath}privkey.pem`, "utf8");
 app.use(Express.static("./web/static", { dotfiles: "allow" }));
 
 app.use((req, res, next) => {
-  res.setHeader(
-    "Content-Security-Policy",
-    "img-src 'self' https://mafbot.mafia451.com"
-  );
+  res.setHeader("Content-Security-Policy", "img-src 'self'");
   return next();
 });
 
