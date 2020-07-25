@@ -102,11 +102,13 @@ app.get("/authenticate", (req, res) => {
   }
 });
 
-app.get("*", (req, res) => {
-  fs.createReadStream(
-    `${__dirname}/../../web/client/mafbot/dist/mafbot/index.html`
-  ).pipe(res);
-});
+// app.get("*", (req, res) => {
+//   fs.createReadStream(
+//     `${__dirname}/../../web/client/mafbot/dist/mafbot/index.html`
+//   ).pipe(res);
+// });
+
+app.use(Express.static(`${__dirname}/../../web/client/mafbot/dist/mafbot`));
 
 const httpsServer = https
   .createServer({ key, cert }, app)
