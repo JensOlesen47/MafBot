@@ -28,7 +28,6 @@ import { logger } from "../logger";
 import { mafbot } from "../bot/bot";
 import { MafiaPlayer, MafiaSetup } from "../mafia/libs/setups.lib";
 import { deleteToken } from "../core/db/user-token";
-Express.static.mime.define({ "text/javascript": ["js"] });
 const app = Express();
 
 const dummyChannel = { send: () => {} } as TextChannel;
@@ -38,7 +37,7 @@ const cert = fs.readFileSync(`${certPath}fullchain.pem`, "utf8");
 const key = fs.readFileSync(`${certPath}privkey.pem`, "utf8");
 app.use(Express.static("./web/static", { dotfiles: "allow" }));
 
-// app.use(favicon("./web/favicon.ico"));
+app.use(favicon("./web/favicon.ico"));
 
 app.get("/login", (req, res) => {
   res
