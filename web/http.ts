@@ -41,7 +41,7 @@ app.use(
   expressCspHeader({
     directives: {
       "default-src": [SELF],
-      "img-src": [SELF],
+      "img-src": [SELF, "cdn.discordapp.com"],
       "style-src": [SELF, INLINE],
     },
   })
