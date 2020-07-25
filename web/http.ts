@@ -84,7 +84,7 @@ app.get("/authenticate", (req, res) => {
         .status(301)
         .header(
           "Location",
-          `https://mafbot.mafia451.com/app/registration-confirmed?${userData}`
+          `https://mafbot.mafia451.com/registration-confirmed?${userData}`
         )
         .send();
     });
