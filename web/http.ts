@@ -4,6 +4,7 @@ const http = require("http");
 const https = require("https");
 const fs = require("fs");
 const ws = require("ws");
+import { expressCspHeader, SELF } from "express-csp-header";
 
 import * as Express from "express";
 import {
@@ -36,10 +37,14 @@ const cert = fs.readFileSync(`${certPath}fullchain.pem`, "utf8");
 const key = fs.readFileSync(`${certPath}privkey.pem`, "utf8");
 app.use(Express.static("./web/static", { dotfiles: "allow" }));
 
-// app.use((req, res, next) => {
-//   res.setHeader("Content-Security-Policy", "img-src 'self'");
-//   return next();
-// });
+app.use(
+  expressCspHeader({
+    directives: {
+      "default-src": [SELF],
+      "img-src": [SELF],
+    },
+  })
+);
 
 app.get("/login", (req, res) => {
   res
