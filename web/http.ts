@@ -28,6 +28,7 @@ import { logger } from "../logger";
 import { mafbot } from "../bot/bot";
 import { MafiaPlayer, MafiaSetup } from "../mafia/libs/setups.lib";
 import { deleteToken } from "../core/db/user-token";
+Express.static.mime.define({ "application/javascript": ["js"] });
 const app = Express();
 
 const dummyChannel = { send: () => {} } as TextChannel;
