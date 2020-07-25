@@ -36,6 +36,10 @@ const cert = fs.readFileSync(`${certPath}fullchain.pem`, "utf8");
 const key = fs.readFileSync(`${certPath}privkey.pem`, "utf8");
 app.use(Express.static("./web/static", { dotfiles: "allow" }));
 
+app.get("/favicon.ico", (req, res) => {
+  fs.createReadStream("./web/favicon.ico").pipe(res);
+});
+
 app.get("/login", (req, res) => {
   res
     .status(301)
