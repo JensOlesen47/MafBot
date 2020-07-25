@@ -6,7 +6,6 @@ const fs = require("fs");
 const ws = require("ws");
 
 import * as Express from "express";
-const favicon = require("serve-favicon");
 import {
   checkForLynch,
   GamePhase,
@@ -36,8 +35,6 @@ const certPath = "/etc/letsencrypt/live/mafbot.mafia451.com/";
 const cert = fs.readFileSync(`${certPath}fullchain.pem`, "utf8");
 const key = fs.readFileSync(`${certPath}privkey.pem`, "utf8");
 app.use(Express.static("./web/static", { dotfiles: "allow" }));
-
-// app.use(favicon("./web/favicon.ico"));
 
 app.get("/login", (req, res) => {
   res
@@ -100,12 +97,6 @@ app.get("/authenticate", (req, res) => {
       );
   }
 });
-
-// app.get("*", (req, res) => {
-//   fs.createReadStream(
-//     `${__dirname}/../../web/client/mafbot/dist/mafbot/index.html`
-//   ).pipe(res);
-// });
 
 app.use(Express.static(`${__dirname}/../../web/client/mafbot/dist/mafbot`));
 
