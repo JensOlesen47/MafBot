@@ -43,7 +43,7 @@ app.use(
       "default-src": [SELF],
       "img-src": [SELF, "cdn.discordapp.com"],
       "style-src": [SELF, INLINE, "fonts.googleapis.com"],
-      "font-src": [SELF, "fonts.googleapis.com"],
+      "font-src": [SELF, "fonts.gstatic.com"],
     },
   })
 );
