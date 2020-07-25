@@ -108,7 +108,11 @@ app.get("/authenticate", (req, res) => {
   }
 });
 
-app.use(Express.static(`${__dirname}/../../web/client/mafbot/dist/mafbot`));
+const angularPath = `${__dirname}/../../web/client/mafbot/dist/mafbot`;
+app.use(Express.static(angularPath));
+app.get("*", (req, res) => {
+  fs.createReadStream(`${angularPath}/index.html`).pipe(res);
+});
 
 const httpsServer = https
   .createServer({ key, cert }, app)
