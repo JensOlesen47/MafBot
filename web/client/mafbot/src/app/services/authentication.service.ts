@@ -26,4 +26,9 @@ export class AuthenticationService {
     localStorage.setItem('discord_user', JSON.stringify(discordUser));
     this.discordUser.next(discordUser);
   }
+
+  deleteAuthentication(): void {
+    localStorage.removeItem('discord_user');
+    this.discordUser.next(null);
+  }
 }

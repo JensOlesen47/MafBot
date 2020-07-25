@@ -4,6 +4,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { GameComponent } from './pages/game/game.component';
 import { RegisteredComponent } from './pages/registered/registered.component';
 import { HostingComponent } from './pages/hosting/hosting.component';
+import { DeregisteredComponent } from './pages/deregistered/deregistered.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -12,6 +13,7 @@ const routes: Routes = [
   { path: 'game', component: GameComponent },
   { path: 'hosting', component: HostingComponent },
   { path: 'registration-confirmed', component: RegisteredComponent },
+  { path: 'deregistration-confirmed', component: DeregisteredComponent },
 ];
 
 @NgModule({

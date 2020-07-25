@@ -64,7 +64,13 @@ app.get("/logout", (req, res) => {
     return;
   }
   deleteToken(userId).then(() => {
-    res.status(301).header("Location", "https://mafbot.mafia451.com/").send();
+    res
+      .status(301)
+      .header(
+        "Location",
+        "https://mafbot.mafia451.com/deregistration-confirmed"
+      )
+      .send();
   });
 });
 

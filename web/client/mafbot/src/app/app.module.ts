@@ -41,6 +41,7 @@ import { HostingComponent } from './pages/hosting/hosting.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { HttpClientModule } from '@angular/common/http';
+import { DeregisteredComponent } from './pages/deregistered/deregistered.component';
 
 @NgModule({
   declarations: [
@@ -65,6 +66,7 @@ import { HttpClientModule } from '@angular/common/http';
     RegisteredComponent,
     NightPhaseComponent,
     HostingComponent,
+    DeregisteredComponent,
   ],
   imports: [
     BrowserModule,
