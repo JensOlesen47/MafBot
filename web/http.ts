@@ -178,6 +178,9 @@ socketServer.on("connection", (socket, req) => {
         unvote({} as TextChannel, unvoter);
         break;
       case "in":
+        if (!json.from.id) {
+          return;
+        }
         mafbot.fetchUser(json.from.id, true).then((user) => {
           const channel = { send: (msg) => webSendMessage(msg) } as TextChannel;
           const guildMember = mafbot.guilds

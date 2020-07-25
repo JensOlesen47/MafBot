@@ -177,9 +177,8 @@ export class WebsocketService {
   constructor(private authenticationService: AuthenticationService) {
     this.authenticationService.discordUser$.subscribe((user) => {
       this.user = user;
+      this.pushMessage({ path: SocketClientPaths.AUTH });
     });
-
-    this.pushMessage({ path: SocketClientPaths.AUTH });
 
     window.addEventListener('unload', () => this.socketServer.complete());
 
