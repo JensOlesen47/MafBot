@@ -1,0 +1,33 @@
+<br />
+<div class="center-text">
+  <h3 class="mat-h3">
+    Assigning roles for <code>{{ setup.setup }}</code>
+  </h3>
+  <div *ngFor="let role of possibleRoles; index as i">
+    <mat-form-field>
+      <mat-label>{{ role.name }}</mat-label>
+      <mat-select>
+        <mat-option
+          [value]="null"
+          (onSelectionChange)="updateSetup($event, i)"
+        ></mat-option>
+        <mat-option
+          *ngFor="let user of activeUsers"
+          [value]="user.id"
+          [disabled]="isPlayerAlreadyChosen(user)"
+          (onSelectionChange)="updateSetup($event, i)"
+        >
+          {{ user.username }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <button
+    mat-raised-button
+    [disabled]="!isValid()"
+    (click)="submit()"
+    color="primary"
+  >
+    Submit
+  </button>
+</div>

@@ -1,0 +1,13 @@
+<div class="center-text" *ngIf="setup">
+  <h2 class="mat-h2 underlined">Setup</h2>
+  <h3 class="mat-h3">
+    <strong>{{ setup.name.toUpperCase() }}</strong>
+  </h3>
+  <p>{{ setup.helptext }}</p>
+  <p *ngIf="setup.roles && setup.roles.length">
+    <span class="setup-details"><strong>Role List:</strong></span>
+    <span *ngFor="let role of setup.roles" class="setup-details"
+      >{{ role.name }} ({{ role.team }})</span
+    >
+  </p>
+</div>

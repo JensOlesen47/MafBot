@@ -1,0 +1,15 @@
+@import "~@angular/material/theming";
+
+@include mat-core();
+
+$maf-robot-primary: mat-palette($mat-blue-gray, 700, 500, 800);
+$maf-robot-accent: mat-palette($mat-amber, A200, A100, A400);
+$maf-robot-warn: mat-palette($mat-red);
+
+$maf-robot-theme: mat-light-theme(
+  $maf-robot-primary,
+  $maf-robot-accent,
+  $maf-robot-warn
+);
+
+@include angular-material-theme($maf-robot-theme);

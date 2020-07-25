@@ -1,0 +1,77 @@
+@import "src/themes/maf-robot";
+
+.mat-chip {
+  width: auto !important;
+  align-self: center;
+}
+
+.notification-content {
+  display: flex;
+  align-items: center;
+}
+
+.notification-border {
+  padding: 16px 8px;
+  margin-top: 1px;
+  margin-bottom: 1px;
+  border-width: 2px;
+  border-style: solid;
+}
+
+.notification_primary {
+  @extend .notification-border;
+  border-image: linear-gradient(
+      to right,
+      mat-color($maf-robot-primary) 0%,
+      #fafafa 75%
+    )
+    1;
+  background: linear-gradient(90deg, #e5e5e5 0%, #fafafa 75%);
+}
+
+.notification_accent {
+  @extend .notification-border;
+  border-image: linear-gradient(
+      to right,
+      mat-color($maf-robot-accent) 0%,
+      #fafafa 75%
+    )
+    1;
+  background: linear-gradient(90deg, #ffffb5 0%, #fafafa 75%);
+}
+
+.notification_warn {
+  @extend .notification-border;
+  border-image: linear-gradient(
+      to right,
+      mat-color($maf-robot-warn) 0%,
+      #fafafa 75%
+    )
+    1;
+  background: linear-gradient(90deg, #ffe5e5 0%, #fafafa 75%);
+}
+
+.notification-icon {
+  margin-right: 8px;
+  height: 100%;
+}
+
+.notification-chevron {
+  display: flex;
+  align-items: center;
+  font-size: 3em;
+  margin-right: 8px;
+  margin-left: -8px;
+}
+
+.notification-subject {
+  height: 1.5em;
+}
+
+.notification-object {
+  margin: 2px 1px;
+}
+
+.notification-header {
+  margin: 0;
+}

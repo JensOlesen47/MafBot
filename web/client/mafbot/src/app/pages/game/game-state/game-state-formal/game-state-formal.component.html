@@ -1,0 +1,12 @@
+<div class="center-text">
+  <h2 class="mat-h2">{{ data.formalledPlayer }} is under formal!</h2>
+  <maf-game-vote
+    [isVoting]="data.isVoting"
+    [isVoting$]="data.isVoting$"
+  ></maf-game-vote
+  ><br />
+  <maf-countdown-timer
+    [durationRemaining]="data.timeRemaining"
+    totalDuration="60"
+  ></maf-countdown-timer>
+</div>

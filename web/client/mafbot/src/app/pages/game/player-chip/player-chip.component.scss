@@ -1,0 +1,29 @@
+@import "src/themes/maf-robot";
+
+.player-chip {
+  color: mat_color($maf-robot-accent, lighter) !important;
+  width: auto !important;
+  height: auto;
+  white-space: nowrap;
+  cursor: default;
+}
+
+.town-chip {
+  background-color: darkgreen !important;
+}
+
+.mafia-chip {
+  background-color: darkred !important;
+}
+
+.unrevealed-chip {
+  background-color: mat_color($maf-robot-primary, lighter) !important;
+}
+
+@for $i from 1 to 4 {
+  .chip-size-#{$i} {
+    font-size: #{$i * 0.5 + 0.5}em;
+    border-radius: #{$i * 16}px;
+    padding: #{$i * 3}px #{$i * 6}px;
+  }
+}

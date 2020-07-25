@@ -1,0 +1,93 @@
+<mat-drawer-container class="game-page-container">
+  <mat-drawer #drawer mode="over" class="half-drawer">
+    <mat-tab-group color="accent" backgroundColor="primary">
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>people</mat-icon>
+        </ng-template>
+        <maf-game-player-chips></maf-game-player-chips>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>account_box</mat-icon>
+        </ng-template>
+        <maf-game-role></maf-game-role>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>article</mat-icon>
+        </ng-template>
+        <maf-game-setup></maf-game-setup>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-drawer>
+  <mat-drawer-content>
+    <div *ngIf="gameState === 'in progress'" style="height: 100%;">
+      <div style="position: absolute;">
+        <button
+          mat-icon-button
+          (click)="drawer.toggle()"
+          class="game-menu-button"
+        >
+          <mat-icon color="primary">people</mat-icon>
+        </button>
+        <maf-game-admin-menu class="game-menu-button"></maf-game-admin-menu>
+        <button
+          *ngIf="formalInterval"
+          mat-icon-button
+          (click)="openFormalModal()"
+          class="game-menu-button"
+        >
+          <mat-icon
+            color="primary"
+            [matBadge]="formalTimer"
+            matBadgeColor="accent"
+            >alarm</mat-icon
+          >
+        </button>
+        <button
+          *ngIf="nightInterval"
+          mat-icon-button
+          (click)="openNightModal()"
+          class="game-menu-button"
+        >
+          <mat-icon
+            color="primary"
+            [matBadge]="nightTimer"
+            matBadgeColor="accent"
+            >brightness_3</mat-icon
+          >
+        </button>
+      </div>
+
+      <h1 class="color-primary mat-h1 phase-header" *ngIf="phase">
+        {{ phase.phase.toUpperCase() + " " + phase.number }}
+      </h1>
+      <mat-divider></mat-divider>
+
+      <maf-game-state class="scrollable-child"></maf-game-state>
+    </div>
+
+    <div
+      *ngIf="gameState === 'signups'"
+      class="color-primary center-text"
+      style="padding-top: 16px;"
+    >
+      <h3 class="mat-h3">A game is in signups!</h3>
+      <button mat-button color="accent" (click)="in()">Sign me up</button>
+      <div *ngIf="currentSetup">
+        <p>Setup: {{ currentSetup.name }} - {{ currentSetup.helptext }}</p>
+        <p>Roles: {{ getRoleNames() }}</p>
+      </div>
+      <maf-game-player-chips></maf-game-player-chips>
+    </div>
+
+    <div
+      *ngIf="!gameState"
+      class="color-primary center-text"
+      style="padding-top: 16px;"
+    >
+      <h3 class="mat-h3">Please wait patiently until a game begins.</h3>
+    </div>
+  </mat-drawer-content>
+</mat-drawer-container>

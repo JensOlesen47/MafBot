@@ -1,0 +1,8 @@
+<div class="notification-list">
+  <maf-game-notification
+    *ngFor="let notification of notifications; let i = index"
+    [config]="notification"
+    [index]="i"
+    class="notification-list-item"
+  ></maf-game-notification>
+</div>

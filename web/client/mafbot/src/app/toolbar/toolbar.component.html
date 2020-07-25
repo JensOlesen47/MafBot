@@ -1,0 +1,36 @@
+<mat-toolbar color="primary" class="d-flex">
+  <button mat-flat-button color="primary">
+    <span class="mat-h2">MAFBOT</span>
+  </button>
+  <span class="right-align">
+    <button *ngIf="!user" mat-raised-button color="accent" (click)="login()">
+      Log in with Discord
+    </button>
+    <button
+      mat-icon-button
+      class="avatar"
+      [matMenuTriggerFor]="userMenu"
+      *ngIf="user"
+    >
+      <img
+        class="avatar"
+        [src]="
+          'https://cdn.discordapp.com/avatars/' +
+          user.id +
+          '/' +
+          user.avatar +
+          '.png?size=64'
+        "
+      />
+    </button>
+    <mat-menu #userMenu="matMenu">
+      <span mat-menu-item disabled *ngIf="user">
+        {{ user.username }}{{ user.hash ? "#" + user.hash : "" }}
+      </span>
+      <mat-divider></mat-divider>
+      <button mat-menu-item *ngIf="user" (click)="logout()">
+        Logout
+      </button>
+    </mat-menu>
+  </span>
+</mat-toolbar>

@@ -1,0 +1,46 @@
+<div
+  *ngIf="config.subject"
+  [ngClass]="
+    config.type === 'kill' ? 'notification_warn' : 'notification_primary'
+  "
+>
+  <div class="notification-content">
+    <mat-icon
+      [color]="config.type === 'kill' ? 'warn' : 'primary'"
+      class="notification-icon"
+    >
+      {{ config.type === "kill" ? "local_fire_department" : "gavel" }}
+    </mat-icon>
+    <maf-player-chip
+      [name]="config.subject.username"
+      size="2"
+      [team]="config.subject.team"
+      class="notification-subject"
+    ></maf-player-chip>
+    <mat-icon
+      *ngIf="config.voters?.length"
+      color="primary"
+      class="notification-chevron"
+      >arrow_left</mat-icon
+    >
+    <mat-chip-list *ngIf="config.voters?.length" [selectable]="false">
+      <maf-player-chip
+        *ngFor="let voter of config.voters"
+        [name]="voter.username"
+        [team]="voter.team"
+        class="notification-object"
+      ></maf-player-chip>
+    </mat-chip-list>
+  </div>
+</div>
+
+<div *ngIf="config.type === 'phase'" class="notification_accent">
+  <div class="notification-content">
+    <mat-icon color="primary" class="notification-icon">
+      {{ config.phase.phase === "day" ? "brightness_5" : "brightness_3" }}
+    </mat-icon>
+    <h3 class="mat-h3 notification-header">
+      {{ config.phase.phase.toUpperCase() + " " + config.phase.number }}
+    </h3>
+  </div>
+</div>

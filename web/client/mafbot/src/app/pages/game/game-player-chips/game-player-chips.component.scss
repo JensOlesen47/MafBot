@@ -1,0 +1,12 @@
+.centered-list-item {
+  align-self: center;
+  margin-bottom: 8px;
+}
+
+.player-chip-column-container {
+  display: flex;
+}
+
+.player-chip-column {
+  flex-grow: 1;
+}

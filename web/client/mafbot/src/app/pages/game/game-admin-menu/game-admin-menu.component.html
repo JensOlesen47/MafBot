@@ -1,0 +1,32 @@
+<button mat-icon-button [matMenuTriggerFor]="gameAdminMenu">
+  <mat-icon color="primary">menu</mat-icon>
+</button>
+
+<mat-menu #gameAdminMenu="matMenu">
+  <button mat-menu-item [matMenuTriggerFor]="formalMenu">Formal</button>
+  <button mat-menu-item (click)="revealVotes()">Reveal Votes</button>
+  <button mat-menu-item (click)="cancelFormal()">Cancel Formal</button>
+  <button mat-menu-item class="color-warn" [matMenuTriggerFor]="modkillMenu">
+    Modkill
+  </button>
+</mat-menu>
+
+<mat-menu #formalMenu="matMenu">
+  <button
+    mat-menu-item
+    *ngFor="let player of playerUsernames"
+    (click)="formalPlayer(player)"
+  >
+    {{ player }}
+  </button>
+</mat-menu>
+
+<mat-menu #modkillMenu="matMenu">
+  <button
+    mat-menu-item
+    *ngFor="let player of playerUsernames"
+    (click)="modkillPlayer(player)"
+  >
+    {{ player }}
+  </button>
+</mat-menu>

@@ -1,0 +1,9 @@
+<mat-basic-chip
+  class="player-chip"
+  [ngClass]="[
+    !team ? 'unrevealed-chip' : team === 'town' ? 'town-chip' : 'mafia-chip',
+    'chip-size-' + size
+  ]"
+>
+  <span>{{ name }}</span>
+</mat-basic-chip>

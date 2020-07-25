@@ -1,1 +1,65 @@
-/* You can add global styles to this file, and also import other style files */
+@import "~@angular/material/theming";
+@import "themes/maf-robot";
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: #fafafa;
+}
+
+.center-text {
+  text-align: center;
+}
+
+.underlined {
+  border-bottom: solid 1px;
+}
+
+.color-primary {
+  color: mat-color($maf-robot-primary);
+}
+.color-primary_light {
+  color: mat-color($maf-robot-primary, lighter);
+}
+.color-primary_dark {
+  color: mat-color($maf-robot-primary, darker);
+}
+
+.color-accent {
+  color: mat-color($maf-robot-accent);
+}
+.color-accent_light {
+  color: mat-color($maf-robot-accent, lighter);
+}
+.color-accent_dark {
+  color: mat-color($maf-robot-accent, darker);
+}
+
+.color-warn {
+  color: mat-color($maf-robot-warn);
+}
+
+.mat-chip-list-wrapper {
+  margin: 0 !important;
+}
+
+.mat-toolbar-single-row {
+  height: 56px !important;
+}
+
+.mat-tab-group {
+  height: 100%;
+}
+.mat-tab-body-wrapper {
+  height: 100%;
+}
+.mat-tab-header {
+  margin-bottom: 5px;
+}
+.mat-tab-label {
+  min-width: 0 !important;
+}

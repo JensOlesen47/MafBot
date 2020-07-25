@@ -1,0 +1,33 @@
+.notification-list {
+  overflow-y: hidden;
+}
+
+.notification-list-item {
+  position: relative;
+}
+
+//maf-game-notification {
+//  &:nth-child(odd) {
+//    animation: slide-down-odd 1.5s ease-out;
+//  }
+//
+//  &:nth-child(even) {
+//    animation: slide-down-even 1.5s ease-out;
+//  }
+//}
+//@keyframes slide-down-odd {
+//  from {
+//    bottom: 100%;
+//  }
+//  to {
+//    bottom: 0;
+//  }
+//}
+//@keyframes slide-down-even {
+//  from {
+//    bottom: 100%;
+//  }
+//  to {
+//    bottom: 0;
+//  }
+//}

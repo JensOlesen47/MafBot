@@ -1,0 +1,14 @@
+.right-align {
+  justify-content: right;
+  flex-grow: 1;
+  display: flex;
+}
+
+.avatar {
+  border-radius: 50px;
+  img {
+    border-radius: 50px;
+    width: 100%;
+    height: 100%;
+  }
+}

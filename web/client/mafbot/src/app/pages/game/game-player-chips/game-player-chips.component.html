@@ -1,0 +1,16 @@
+<div class="center-text" *ngIf="players.length > 0">
+  <h2 class="mat-h2 underlined">Players</h2>
+  <div class="player-chip-column-container">
+    <div *ngFor="let playerSublist of players" class="player-chip-column">
+      <mat-chip-list class="mat-chip-list-stacked" [selectable]="false">
+        <maf-player-chip
+          *ngFor="let player of playerSublist"
+          [team]="player.team"
+          [name]="player.username"
+          class="centered-list-item"
+          size="1"
+        ></maf-player-chip>
+      </mat-chip-list>
+    </div>
+  </div>
+</div>

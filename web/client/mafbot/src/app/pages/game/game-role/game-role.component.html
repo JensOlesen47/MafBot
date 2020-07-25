@@ -1,0 +1,15 @@
+<div class="center-text" *ngIf="role">
+  <h2 class="mat-h2 underlined">Role</h2>
+  <h3 class="mat-h3">
+    <strong>{{ role.name }} ({{ role.team }})</strong>
+  </h3>
+  <p>{{ role.helptext }}</p>
+  <p>
+    <span *ngIf="role.actions && role.actions.length" class="role-details"
+      >Actions: {{ role.actions.join(", ") }}</span
+    >
+    <span *ngIf="role.buddies && role.buddies.length" class="role-details"
+      >Your buddies are: {{ role.buddies.join(", ") }}</span
+    >
+  </p>
+</div>

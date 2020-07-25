@@ -1,0 +1,10 @@
+.log-area {
+  max-height: 30vh;
+  overflow-x: auto;
+  overflow-y: scroll;
+  border: 1px solid #bbbbbb;
+  background: #eeeeee;
+  word-break: break-word;
+  white-space: pre-line;
+  padding: 2px 2px 2px 5px;
+}

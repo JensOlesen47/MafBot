@@ -1,0 +1,11 @@
+<div class="spinner-container">
+  <mat-progress-spinner
+    [color]="spinnerColor"
+    diameter="120"
+    mode="determinate"
+    [value]="percentRemaining"
+  ></mat-progress-spinner>
+  <div class="spinner-text" [ngClass]="'color-' + spinnerColor">
+    {{ timeRemaining }}
+  </div>
+</div>
