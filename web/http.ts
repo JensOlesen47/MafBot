@@ -36,6 +36,14 @@ const cert = fs.readFileSync(`${certPath}fullchain.pem`, "utf8");
 const key = fs.readFileSync(`${certPath}privkey.pem`, "utf8");
 app.use(Express.static("./web/static", { dotfiles: "allow" }));
 
+app.use((req, res, next) => {
+  res.setHeader(
+    "Content-Security-Policy",
+    "img-src 'self' https://mafbot.mafia451.com"
+  );
+  return next();
+});
+
 app.get("/login", (req, res) => {
   res
     .status(301)
