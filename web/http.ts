@@ -42,7 +42,7 @@ app.use(
     directives: {
       "default-src": [SELF],
       "img-src": [SELF, "cdn.discordapp.com"],
-      "style-src": [SELF, INLINE],
+      "style-src": [SELF, INLINE, "fonts.googleapis.com"],
       "font-src": [SELF, "fonts.googleapis.com"],
     },
   })
