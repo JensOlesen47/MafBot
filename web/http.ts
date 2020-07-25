@@ -4,7 +4,6 @@ const http = require("http");
 const https = require("https");
 const fs = require("fs");
 const ws = require("ws");
-import { getHtmlPage } from "./http.html";
 
 import * as Express from "express";
 const favicon = require("serve-favicon");
@@ -39,11 +38,6 @@ const key = fs.readFileSync(`${certPath}privkey.pem`, "utf8");
 app.use(Express.static("./web/static", { dotfiles: "allow" }));
 
 app.use(favicon("./web/favicon.ico"));
-
-app.get("/", (req, res) => {
-  const htmlPage = getHtmlPage("index");
-  res.status(200).send(htmlPage);
-});
 
 app.get("/login", (req, res) => {
   res
@@ -108,8 +102,9 @@ app.get("/authenticate", (req, res) => {
 });
 
 app.get("*", (req, res) => {
-  const htmlPage = getHtmlPage("not-found");
-  res.status(200).send(htmlPage);
+  fs.createReadStream(`${__dirname}/client/mafbot/dist/mafbot/index.html`).pipe(
+    res
+  );
 });
 
 const httpsServer = https
