@@ -4,7 +4,7 @@ const http = require("http");
 const https = require("https");
 const fs = require("fs");
 const ws = require("ws");
-import { expressCspHeader, SELF } from "express-csp-header";
+import { expressCspHeader, SELF, INLINE } from "express-csp-header";
 
 import * as Express from "express";
 import {
@@ -42,6 +42,7 @@ app.use(
     directives: {
       "default-src": [SELF],
       "img-src": [SELF],
+      "style-src": [SELF, INLINE],
     },
   })
 );
