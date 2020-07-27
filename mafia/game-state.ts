@@ -451,6 +451,7 @@ async function checkForGhostAction(user: Player) {
   const ghostAction = user.mafia.role.status.ghostaction;
   if (ghostAction) {
     gamePhase.phase = Phase.DUSK;
+    webUpdatePhase(gamePhase);
     duskAwaitingPlayer = user;
     await Core.mute(channel);
 
