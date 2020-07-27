@@ -17,6 +17,7 @@ export enum SocketServerPaths {
   CURRENTSETUPS = 'currentsetups',
   ROLES = 'roles',
   ACTIVES = 'actives',
+  ENDGAMES = 'endgames',
 }
 
 export enum SocketClientPaths {
@@ -28,6 +29,7 @@ export enum SocketClientPaths {
   FORMAL = 'formal',
   MODKILL = 'modkill',
   IN = 'in',
+  ACTION = 'action',
 }
 
 export class SocketServerMessage {
@@ -85,8 +87,16 @@ export class ActivesSocketServerMessage extends SocketServerMessage {
   users: DiscordUser[];
 }
 
+export class EndgamesSocketServerMessage extends SocketServerMessage {
+  winner: string;
+}
+
 export class UsernameSocketClientMessage extends SocketClientMessage {
   username: string;
+}
+
+export class ActionSocketClientMessage extends SocketClientMessage {
+  action: Action;
 }
 
 export class Player {
@@ -124,6 +134,11 @@ export class Role {
   helptext: string;
   actions: string[];
   buddies: string[];
+}
+
+export class Action {
+  ability: string;
+  target: string;
 }
 
 export type GameState = '' | 'signups' | 'in progress';
@@ -173,6 +188,9 @@ export class WebsocketService {
 
   private activesSubject = new ReplaySubject<DiscordUser[]>(1);
   activesStream = this.activesSubject.asObservable();
+
+  private endgamesSubject = new ReplaySubject<string>(1);
+  endgamesStream = this.endgamesSubject.asObservable();
 
   constructor(private authenticationService: AuthenticationService) {
     this.authenticationService.discordUser$.subscribe((user) => {
@@ -230,6 +248,11 @@ export class WebsocketService {
           break;
         case SocketServerPaths.ACTIVES:
           this.activesSubject.next((data as ActivesSocketServerMessage).users);
+          break;
+        case SocketServerPaths.ENDGAMES:
+          this.endgamesSubject.next(
+            (data as EndgamesSocketServerMessage).winner
+          );
           break;
         default:
           throw new Error('Unrecognized websocket path');

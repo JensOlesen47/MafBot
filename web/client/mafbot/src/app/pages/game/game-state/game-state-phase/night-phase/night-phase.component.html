@@ -5,4 +5,17 @@
     [durationRemaining]="data.timeRemaining"
     totalDuration="300"
   ></maf-countdown-timer>
+  <div>
+    <mat-form-field *ngFor="let action of actions">
+      <mat-label>{{ action.ability }}</mat-label>
+      <mat-select [(ngModel)]="action.target">
+        <mat-option *ngFor="let player of livingPlayers" [value]="player">{{
+          player
+        }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <button mat-flat-button color="primary" (click)="submitActions()">
+      Submit
+    </button>
+  </div>
 </div>

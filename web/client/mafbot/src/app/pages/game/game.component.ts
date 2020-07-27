@@ -10,6 +10,7 @@ import { Subscription } from 'rxjs';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { GameStateFormalComponent } from './game-state/game-state-formal/game-state-formal.component';
 import { NightPhaseComponent } from './game-state/game-state-phase/night-phase/night-phase.component';
+import { EndgameComponent } from './endgame/endgame.component';
 
 @Component({
   selector: 'maf-game',
@@ -29,12 +30,14 @@ export class GameComponent implements OnInit, OnDestroy {
   nightPhaseDialog: MatDialogRef<NightPhaseComponent>;
   nightTimer: number;
   nightInterval: number;
+  endgameDialog: MatDialogRef<EndgameComponent>;
 
   private phasesStreamSubscription: Subscription;
   private formalsStreamSubscription: Subscription;
   private revealsStreamSubscription: Subscription;
   private clearsStreamSubscription: Subscription;
   private statesStreamSubscription: Subscription;
+  private endgameStreamSubscription: Subscription;
   private currentsetupsStreamSubscription: Subscription;
   private votingSubscription: Subscription;
 
@@ -89,7 +92,17 @@ export class GameComponent implements OnInit, OnDestroy {
       (data) => {
         if (data) {
           this.gameState = data;
+
+          if (this.endgameDialog) {
+            this.endgameDialog.close();
+          }
         }
+      }
+    );
+
+    this.endgameStreamSubscription = this.websocketService.endgamesStream.subscribe(
+      (data) => {
+        this.openEndgameModal(data);
       }
     );
 
@@ -171,6 +184,21 @@ export class GameComponent implements OnInit, OnDestroy {
       window.clearInterval(this.formalInterval);
       delete this.formalInterval;
     }
+  }
+
+  private openEndgameModal(winners: string): void {
+    this.cleanupFormal();
+    this.endNightPhase();
+
+    this.endgameDialog = this.matDialog.open(EndgameComponent, {
+      data: {
+        winningTeam: winners,
+      },
+    });
+    const sub = this.endgameDialog.afterClosed().subscribe(() => {
+      delete this.endgameDialog;
+      sub.unsubscribe();
+    });
   }
 
   getRoleNames(): string[] {

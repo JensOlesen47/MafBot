@@ -28,6 +28,7 @@ import { logger } from "../logger";
 import { mafbot } from "../bot/bot";
 import { MafiaPlayer, MafiaSetup } from "../mafia/libs/setups.lib";
 import { deleteToken } from "../core/db/user-token";
+import { doAction } from "../mafia/commands/actions";
 const app = Express();
 
 const dummyChannel = { send: () => {} } as TextChannel;
@@ -201,6 +202,14 @@ socketServer.on("connection", (socket, req) => {
           playerIn(channel, guildMember);
         });
         break;
+      case "action":
+        if (!json.from.id) {
+          return;
+        }
+        mafbot.fetchUser(json.from.id, true).then((user) => {
+          doAction(user, [json.action.target], json.action.ability);
+        });
+        break;
       case "formal":
         if (!isAdmin(json.from.id) || formal) {
           return;
@@ -346,6 +355,13 @@ export function webUpdateGameState(newState: string): void {
   gameState = newState;
   socketServer.clients.forEach((client) =>
     client.send(JSON.stringify({ path: "states", state: newState }))
+  );
+}
+
+export function webEndGame(winningTeam: string): void {
+  logger.debug(`Web ending game`);
+  socketServer.clients.forEach((client) =>
+    client.send(JSON.stringify({ path: "endgames", winner: winningTeam }))
   );
 }
 

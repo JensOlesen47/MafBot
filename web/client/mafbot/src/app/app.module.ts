@@ -42,6 +42,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { HttpClientModule } from '@angular/common/http';
 import { DeregisteredComponent } from './pages/deregistered/deregistered.component';
+import { EndgameComponent } from './pages/game/endgame/endgame.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -67,6 +69,7 @@ import { DeregisteredComponent } from './pages/deregistered/deregistered.compone
     NightPhaseComponent,
     HostingComponent,
     DeregisteredComponent,
+    EndgameComponent,
   ],
   imports: [
     BrowserModule,
@@ -89,6 +92,7 @@ import { DeregisteredComponent } from './pages/deregistered/deregistered.compone
     MatTabsModule,
     MatFormFieldModule,
     MatSelectModule,
+    FormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
