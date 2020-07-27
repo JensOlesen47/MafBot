@@ -54,7 +54,7 @@ export class GameComponent implements OnInit, OnDestroy {
     this.phasesStreamSubscription = this.websocketService.phasesStream.subscribe(
       (phase) => {
         this.phase = phase;
-        if (phase.phase === 'night') {
+        if (phase.phase === 'night' || phase.phase === 'dusk') {
           window.setTimeout(() => this.startNightPhase(), 2000);
         } else if (phase.phase === 'day' && this.nightInterval) {
           this.endNightPhase();

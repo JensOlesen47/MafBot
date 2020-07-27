@@ -315,18 +315,25 @@ export function webUpdateLivingPlayers(
   }
 }
 
+function sendRoleToPlayer(p: Player) {
+  const userClient = userClientMap.get(p.user);
+  if (userClient) {
+    userClient.send(
+      JSON.stringify({ path: "roles", role: mapToSimpleRole(p.mafia) })
+    );
+  } else {
+    logger.warn(`Could not find socket connection for ${p.user.username}`);
+  }
+}
+
 export function webSendRoles(): void {
   logger.debug(`web sending roles`);
-  players.forEach((p) => {
-    const userClient = userClientMap.get(p.user);
-    if (userClient) {
-      userClient.send(
-        JSON.stringify({ path: "roles", role: mapToSimpleRole(p.mafia) })
-      );
-    } else {
-      logger.warn(`Could not find socket connection for ${p.user.username}`);
-    }
-  });
+  players.forEach((p) => sendRoleToPlayer(p));
+}
+
+export function webSendRoleUpdate(player: Player): void {
+  logger.debug(`web updating role for ${player.user.username}`);
+  sendRoleToPlayer(player);
 }
 
 export function webRecordVoteHistory(votecountEntry: VotecountEntry): void {
