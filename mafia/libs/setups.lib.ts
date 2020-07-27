@@ -229,7 +229,7 @@ const Setups: Map<string, MafiaSetup> = new Map([
     "vengeful",
     new MafiaSetup(
       "vengeful",
-      "vengeful (5 players): A fixed setup with one mafia godfather, one mafia goon, and three vengeful townies. If a vengeful townie is lynched day one, they get to kill someone. If the godfather is lynched day one, town wins.",
+      "vengeful (5 players): A fixed setup with one mafia godfather, one mafia goon, and three vengeful townies. If a vengeful townie is banished day one, they get to kill someone. If the godfather is banished day one, town wins.",
       false,
       false,
       false,
