@@ -291,6 +291,7 @@ export async function giveability(action: Action): Promise<void> {
     const mafiaAbility = getAbility(randomGift);
     victim.mafia.role.abilities.push(mafiaAbility);
     victim.send(`You have gained a new ability: ${mafiaAbility.name}`);
+    webSendRoleUpdate(victim);
   });
 }
 

@@ -23,6 +23,7 @@ export class GameStateDefaultComponent implements OnInit, OnDestroy {
   private formalsStreamSubscription: Subscription;
   private deathsStreamSubscription: Subscription;
   private phasesStreamSubscription: Subscription;
+  private statesStreamSubscription: Subscription;
 
   constructor(private websocketService: WebsocketService) {}
 
@@ -98,6 +99,14 @@ export class GameStateDefaultComponent implements OnInit, OnDestroy {
     this.websocketService.historiesStream.pipe(first()).subscribe((data) => {
       this.notifications = data.reverse();
     });
+
+    this.statesStreamSubscription = this.websocketService.statesStream.subscribe(
+      (data) => {
+        if (data === 'signups') {
+          this.notifications = [];
+        }
+      }
+    );
   }
 
   ngOnDestroy(): void {
@@ -105,6 +114,7 @@ export class GameStateDefaultComponent implements OnInit, OnDestroy {
     this.formalsStreamSubscription.unsubscribe();
     this.deathsStreamSubscription.unsubscribe();
     this.phasesStreamSubscription.unsubscribe();
+    this.statesStreamSubscription.unsubscribe();
   }
 
   private pushNotification(item: NotificationConfig): void {
