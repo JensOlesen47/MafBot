@@ -102,7 +102,7 @@ export class GameStateDefaultComponent implements OnInit, OnDestroy {
 
     this.statesStreamSubscription = this.websocketService.statesStream.subscribe(
       (data) => {
-        if (data === 'signups') {
+        if (data) {
           this.notifications = [];
         }
       }

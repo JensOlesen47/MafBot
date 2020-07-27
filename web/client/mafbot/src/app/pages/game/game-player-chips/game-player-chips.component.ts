@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Player, WebsocketService } from '../../../services/websocket.service';
 import { Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
+import { skip } from 'rxjs/operators';
 
 @Component({
   selector: 'maf-game-player-chips',
@@ -12,6 +13,7 @@ export class GamePlayerChipsComponent implements OnInit, OnDestroy {
   players = [[]] as Player[][];
 
   private playersStreamSubscription: Subscription;
+  private statesStreamSubscription: Subscription;
 
   constructor(
     private websocketService: WebsocketService,
@@ -19,22 +21,6 @@ export class GamePlayerChipsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // this.players = [[
-    //   {username: 'Urist', alive: true} as Player,
-    //   {username: 'Mantis', alive: false, team: 'town'} as Player,
-    //   {username: 'Elli', alive: true} as Player,
-    //   {username: 'Keychain', alive: false, team: 'mafia'} as Player,
-    //   {username: 'clem', alive: true} as Player,
-    //   {username: 'Srceenplay', alive: true} as Player
-    // ],
-    //   [
-    //   {username: 'StarV', alive: true} as Player,
-    //   {username: 'M2H', alive: true} as Player,
-    //   {username: 'Josh', alive: true} as Player,
-    //   {username: 'DrCoconut', alive: true} as Player,
-    //     {username: 'Fatmo', alive: true} as Player,
-    //     {username: 'UFO Fever', alive: true} as Player]
-    // ];
     this.playersStreamSubscription = this.websocketService.playersStream.subscribe(
       (data) => {
         if (data.length > 6) {
@@ -63,6 +49,14 @@ export class GamePlayerChipsComponent implements OnInit, OnDestroy {
         }
       }
     );
+
+    this.statesStreamSubscription = this.websocketService.statesStream
+      .pipe(skip(1))
+      .subscribe((state) => {
+        if (state) {
+          this.players = [[]];
+        }
+      });
   }
 
   ngOnDestroy(): void {

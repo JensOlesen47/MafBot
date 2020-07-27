@@ -7,6 +7,7 @@ import {
 } from '../../../../../services/websocket.service';
 import { Subscription, forkJoin } from 'rxjs';
 import { AuthenticationService } from '../../../../../services/authentication.service';
+import { take } from 'rxjs/operators';
 
 export interface NightPhaseDialogData {
   timeRemaining: number;
@@ -34,16 +35,18 @@ export class NightPhaseComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.rolesStreamSubscription = this.websocketService.rolesStream.subscribe(
       (role) => {
-        this.actions = role.actions.map((action) => ({
-          ability: action,
-          target: '',
-        }));
+        this.actions = role.actions
+          .filter((a) => a !== 'mafiakill')
+          .map((action) => ({
+            ability: action,
+            target: '',
+          }));
       }
     );
 
     this.playersStreamSubscription = forkJoin([
-      this.websocketService.playersStream,
-      this.authenticationService.discordUser$,
+      this.websocketService.playersStream.pipe(take(1)),
+      this.authenticationService.discordUser$.pipe(take(1)),
     ]).subscribe((values) => {
       const players = values[0];
       const currentUser = values[1];
