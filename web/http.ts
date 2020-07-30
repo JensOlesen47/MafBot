@@ -82,7 +82,11 @@ app.get("/logout", (req, res) => {
 
 app.post("/api/hosted", (req, res) => {
   const reqbody = req.body as HostedSetup;
-  startGame(dummyChannel, null, [reqbody.setup, "hosted"]).then(() => {
+  const videomafiachannel = mafbot.guilds
+    .find((g) => g.id === "420783655263141888")
+    .channels.find((c) => c.id === "581244993801420801") as TextChannel;
+
+  startGame(videomafiachannel, null, [reqbody.setup, "hosted"]).then(() => {
     reqbody.players.forEach((p) => {
       mafbot.fetchUser(p.userid, true).then((user) => {
         const guildMember = mafbot.guilds
