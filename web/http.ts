@@ -4,6 +4,7 @@ const http = require("http");
 const https = require("https");
 const fs = require("fs");
 const ws = require("ws");
+const bodyParser = require("body-parser");
 import { expressCspHeader, SELF, INLINE } from "express-csp-header";
 
 import * as Express from "express";
@@ -48,6 +49,9 @@ app.use(
     },
   })
 );
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 app.get("/login", (req, res) => {
   res
