@@ -274,23 +274,6 @@ socketServer.on("connection", (socket, req) => {
     updateActive();
     logger.debug(`Closed ws connection at ${ip}`);
   });
-
-  function updateActive() {
-    socket.send(
-      JSON.stringify({
-        path: "actives",
-        users: Array.from(userClientMap.keys()).map(
-          (u) =>
-            ({
-              id: u.id,
-              username: u.username,
-              avatar: u.avatar,
-              hash: u.discriminator,
-            } as DiscordUser)
-        ),
-      })
-    );
-  }
 });
 
 socketServer.on("error", (err) => {
@@ -332,6 +315,25 @@ function sendRoleToPlayer(p: Player) {
   } else {
     logger.warn(`Could not find socket connection for ${p.user.username}`);
   }
+}
+
+function updateActive() {
+  socketServer.clients.forEach((socket) =>
+    socket.send(
+      JSON.stringify({
+        path: "actives",
+        users: Array.from(userClientMap.keys()).map(
+          (u) =>
+            ({
+              id: u.id,
+              username: u.username,
+              avatar: u.avatar,
+              hash: u.discriminator,
+            } as DiscordUser)
+        ),
+      })
+    )
+  );
 }
 
 export function webSendRoles(): void {
