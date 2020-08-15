@@ -55,7 +55,7 @@ export async function startGame(
   // setup.video = ['vm', 'video'].some(i => args.includes(i));
   setup.video = true;
   setup.testGame =
-    setup.currentSetup.unimplemented ||
+    // setup.currentSetup.unimplemented ||
     ["test", "unranked", "unrated"].some((i) => args.includes(i));
   setup.hosted = args.includes("hosted");
 
