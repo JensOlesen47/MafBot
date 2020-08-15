@@ -135,6 +135,24 @@ const Setups: Map<string, MafiaSetup> = new Map([
     ),
   ],
   [
+    "mountainous",
+    new MafiaSetup(
+      "mountainous",
+      "mountainous (11 players): Only townies and mafia. For purists.",
+      true,
+      false,
+      false,
+      true,
+      Phase.DAY,
+      5,
+      20,
+      new FixedSetupArray([
+        new FixedSetup(5, ["m/mafia"], "t"),
+        new FixedSetup(11, ["m/mafia", "m/mafia"], "t"),
+      ])
+    ),
+  ],
+  [
     "straight",
     new MafiaSetup(
       "straight",
@@ -439,6 +457,33 @@ const Setups: Map<string, MafiaSetup> = new Map([
         new FixedSetup(
           9,
           ["m/mafia", "m/mafia", "m/mafia", "c/town", "c/town", "c/town"],
+          "t"
+        ),
+      ])
+    ),
+  ],
+  [
+    "circus",
+    new MafiaSetup(
+      "circus",
+      "circus (12 players): Tracker + doctor vs strongman + ninja",
+      false,
+      true,
+      false,
+      true,
+      Phase.DAY,
+      12,
+      12,
+      new FixedSetupArray([
+        new FixedSetup(
+          12,
+          [
+            "m/mafia",
+            "ninja/mafia",
+            "strongman/mafia",
+            "tracker/town",
+            "d/town",
+          ],
           "t"
         ),
       ])

@@ -153,6 +153,10 @@ const Roles: Map<string, MafiaRole> = new Map([
     ),
   ],
   [
+    "tracker",
+    new MafiaRole("Tracker", "You can track.", [], new MafiaStatus(), ["town"]),
+  ],
+  [
     "rb",
     new MafiaRole(
       "Roleblocker",
@@ -187,6 +191,22 @@ const Roles: Map<string, MafiaRole> = new Map([
       1,
       true
     ),
+  ],
+  [
+    "strongman",
+    new MafiaRole(
+      "Strongman",
+      "Your kills go through protection",
+      [],
+      new MafiaStatus(),
+      ["mafia"]
+    ),
+  ],
+  [
+    "ninja",
+    new MafiaRole("Ninja", "You cannot be tracked", [], new MafiaStatus(), [
+      "mafia",
+    ]),
   ],
   [
     "ss",

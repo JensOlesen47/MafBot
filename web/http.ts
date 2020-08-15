@@ -306,11 +306,14 @@ export function webUpdateLivingPlayers(
   }
 }
 
-function sendRoleToPlayer(p: Player) {
+function sendRoleToPlayer(p: Player, isGameStart = false) {
   const userClient = userClientMap.get(p.user);
   if (userClient) {
     userClient.send(
-      JSON.stringify({ path: "roles", role: mapToSimpleRole(p.mafia) })
+      JSON.stringify({
+        path: "roles",
+        role: mapToSimpleRole(p.mafia, isGameStart),
+      })
     );
   } else {
     logger.warn(`Could not find socket connection for ${p.user.username}`);
@@ -338,7 +341,7 @@ function updateActive() {
 
 export function webSendRoles(): void {
   logger.debug(`web sending roles`);
-  players.forEach((p) => sendRoleToPlayer(p));
+  players.forEach((p) => sendRoleToPlayer(p, true));
 }
 
 export function webSendRoleUpdate(player: Player): void {
@@ -433,12 +436,12 @@ function mapToSimpleSetup(setup: MafiaSetup): SimpleSetup {
     roles: setup.fixed
       ? setup.fixedSetups
           .getForPlayers(players.length)
-          .setup.map(mapToSimpleRole)
+          .setup.map((s) => mapToSimpleRole(s))
       : [],
   };
 }
 
-function mapToSimpleRole(role: MafiaPlayer): SimpleRole {
+function mapToSimpleRole(role: MafiaPlayer, sendBuddies = false): SimpleRole {
   return {
     name: role.role.name,
     team: role.team.name,
