@@ -148,7 +148,7 @@ const Setups: Map<string, MafiaSetup> = new Map([
       20,
       new FixedSetupArray([
         new FixedSetup(5, ["m/mafia"], "t"),
-        new FixedSetup(11, ["m/mafia", "m/mafia"], "t"),
+        new FixedSetup(8, ["m/mafia", "m/mafia"], "t"),
       ])
     ),
   ],
