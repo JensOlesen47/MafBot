@@ -489,4 +489,22 @@ const Setups: Map<string, MafiaSetup> = new Map([
       ])
     ),
   ],
+  [
+    "whiteflag",
+    new MafiaSetup(
+      "whiteflag",
+      "White Flag (10 players): If there are 3 town left, scum win. If there is 1 scum left, town win.",
+      false,
+      true,
+      false,
+      true,
+      Phase.DAY,
+      10,
+      10,
+      new FixedSetupArray([
+        new FixedSetup(10, ["m/mafia", "m/mafia", "m/mafia"], "t"),
+      ]),
+      true
+    ),
+  ],
 ]);
